@@ -1,4 +1,10 @@
-//LU decomposition for Program1. Computation time is calculated for each value of n (10^n = # of mesh points) seperately.
+//LU decomposition for Program1.
+//Imputs: The program requires 2 imputs from the command line: output_file_name n
+//I.e. if we pass the program: out 3  it will repeat the algorithm for 10, 100, and 1000 mesh points.
+//Computation time is calculated for each value of n (10^n = # of mesh points) seperately.
+
+//Coded by: Timofey Golubev, Hao Lin, and Xingze Mao
+
 //Include statements for header files
 #include <iostream>
 #include <fstream>
