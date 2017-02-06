@@ -2,5 +2,7 @@ This project uses three numerical algebra algorithms to solve the Poisson equati
 
 File organization:
 src contains the c++ code for the three algorithms. It also contains matlab code which generates charts of the results from the c++ code output files.
+
 Benchmarks contains sample output files. 
+
 Report contains the report.
