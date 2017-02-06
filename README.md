@@ -1,2 +1,3 @@
 # PHY905MSU
-Computational Physics
+
+Projects and material for PHY905 Computational Physics
