@@ -24,9 +24,14 @@ using namespace std::chrono; //for high res clock
 double offdiag(mat A, int& p, int& q, int n);   //pass by ref p and q
 void Jacobi_rotate ( mat& A, mat& R, int k, int l, int n );
 
+// object for output files, for input files use ifstream
+ofstream ofile;  //allows to work with output files in compact way
+
 int main(int argc, char *argv[])
 {
   int n;
+  string filename; //  This is a useful way to define a text string, alternatively you can use characters
+
   //If in command-line has less than 1 argument, write out an error.
   if( argc <= 1 ){
        cout << "Bad Usage: " << argv[0] <<
@@ -34,7 +39,8 @@ int main(int argc, char *argv[])
         exit(1);
    }
    else{
-      n = atoi(argv[1]);  //atoi: convert ascii input to integer. Input number of mesh points to use.
+      filename = argv[1];        // first command line argument after name of program is put into element 1 of array: we use this for name of output file
+      n = atoi(argv[2]);  //atoi: convert ascii input to integer. Input number of mesh points to use.
    }
 
   //   Declare Variables, Pointers, and Arrays
@@ -44,6 +50,9 @@ int main(int argc, char *argv[])
   vec rho(n);            //rho values vector ("x"-values)
   vec V(n);              //vector for the potential
   int num_eig = 7;   //num of min eigvalues want to output
+
+  // Declare new file name
+  string fileout = filename;
 
   //Fill vectors rho and V
   for(int i=0; i<n; i++){
@@ -116,14 +125,44 @@ int main(int argc, char *argv[])
    double max_value;
 
    int index;
+   int groundstate_index;
+   vec groundstate_eigvector;
    vec min_eig_values(num_eig);   //vector to store min eigvalues
    max_value= max(eig_values);
    for (int i=0; i<num_eig; i++){
        min_eig_values(i) = min(eig_values);
        index = index_min(eig_values); //find index of minimum eig_value
+       if (i==0){
+           groundstate_index = index;  //save ground state index (will correspond to column in A where it occurs) to use for groundstate eigvector output
+           groundstate_eigvector = R.col(groundstate_index);  //arma synthax: extract column vector
+       }
        eig_values(index) = max_value;  //set the minimum value found to = max value in matrix
+
+
+
    }
    cout<<min_eig_values<<endl;
+
+   //Setup output file
+   ofile.open(fileout);
+   ofile << setiosflags(ios::showpoint | ios::uppercase); //sets to write i.e. 10^6 as E6
+
+
+   // Write to file:
+   //     ofile << "       x:             approx:          exact:       relative error" << endl;
+   //vec rho_out(n+1);
+   //rho_out(0) = 0.0;
+   //rho_out(1,n) = rho;
+   mat Output(n,2);
+
+   Output.col(0) = rho;
+   Output.col(1) = groundstate_eigvector;
+   //ofile << setw(15) << setprecision(8) << 0.0 << " " << 0.0 << endl;   //output start point
+   ofile << setw(15) << setprecision(8) << Output;
+   //ofile << setw(15) << setprecision(8) << groundstate_eigvector;
+   ofile.close();
+
+
   return 0;
 }
 

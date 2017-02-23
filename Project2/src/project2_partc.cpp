@@ -23,12 +23,16 @@ using namespace std;
 using namespace arma;
 using namespace std::chrono; //for high res clock
 
+// object for output files, for input files use ifstream
+ofstream ofile;  //allows to work with output files in compact way
+
 double offdiag(mat A, int& p, int& q, int n);   //pass by ref p and q
 void Jacobi_rotate ( mat& A, mat& R, int k, int l, int n );
 
 int main(int argc, char *argv[])
 {
   int n;
+  string filename;
   //If in command-line has less than 1 argument, write out an error.
   if( argc <= 1 ){
        cout << "Bad Usage: " << argv[0] <<
@@ -36,18 +40,23 @@ int main(int argc, char *argv[])
         exit(1);
    }
    else{
-      n = atoi(argv[1]);  //atoi: convert ascii input to integer. Input number of mesh points to use.
+      filename = argv[1];
+      n = atoi(argv[2]);  //atoi: convert ascii input to integer. Input number of mesh points to use.
+
    }
 
   //   Declare Variables, Pointers, and Arrays
-  double rho_max = 6.0;  //problem will be solved over range [0, rho_max]. If set too low (i.e. < 6.0) it overestimates eigvalues
+  double rho_max = 50.0;  //problem will be solved over range [0, rho_max]. Range must be changed for using different w_r's
   double h = rho_max/((double) n);  //define h=step size
   double hh = h*h;
+  double alpha = 1; //set alpha=1
   vec rho(n);            //rho values vector ("x"-values)
   vec V(n);              //vector for the potential
   int num_eig = 3;   //num of min eigvalues want to output
   vec w_r_vector;
-  w_r_vector << 0.01<< 0.5 << 1 << 5 << endr;        //Define the w_r values we want to study
+  w_r_vector << 0.05 << 0.25 << 1.0 << 1/54.7386 << endr;        //Define the w_r values we want to study
+
+  mat Output(n, 5);
 
   //Main loop to repeat the eigenvalue computation for different values of w_r (reflects strenght of oscillator potential)
   for(int k = 0; k<4; k++){
@@ -57,7 +66,7 @@ int main(int argc, char *argv[])
       for(int i=0; i<n; i++){
           rho(i) = (i+1)*h;         //1st element of rho will = h. We exclude the endpoints rho(0)=0 and rho(rho_max)=0.
           //V(i) = (rho(i))*(rho(i)+w_r*w_r + 1/rho(i));  //harmonic oscillator potential with repulsive Coulomb interaction btw. 2 electrons
-          V(i) = (rho(i))*(rho(i)*w_r*w_r);  //harmonic oscillator potential WITHOUT repulsive Coulomb interaction (for testing)
+          V(i) = rho(i)*rho(i)*w_r*w_r+1/rho(i);  //harmonic oscillator potential WITHOUT repulsive Coulomb interaction (for testing)
        }
 
       //Define matrix
@@ -125,15 +134,38 @@ int main(int argc, char *argv[])
        double max_value;
 
        int index;
+       int groundstate_index;
        vec min_eig_values(num_eig);   //vector to store min eigvalues
+       vec groundstate_eigvector;
        max_value= max(eig_values);
        for (int i=0; i<num_eig; i++){
            min_eig_values(i) = min(eig_values);
            index = index_min(eig_values); //find index of minimum eig_value
+           if (i==0){
+               groundstate_index = index;  //save ground state index (will correspond to column in A where it occurs) to use for groundstate eigvector output
+               groundstate_eigvector = R.col(groundstate_index);  //arma synthax: extract column vector
+           }
            eig_values(index) = max_value;  //set the minimum value found to = max value in matrix
        }
        cout<<min_eig_values<<endl;
+
+
+       Output.col(0) = rho*alpha;
+       Output.col(k+1) = groundstate_eigvector;
+
+
   }
+
+  //Output eigenvectors
+  //Setup output file
+  ofile.open(filename);
+  ofile << setiosflags(ios::showpoint | ios::uppercase); //sets to write i.e. 10^6 as E6
+
+
+  // Write to file:
+  //     ofile << "       x:             approx:          exact:       relative error" << endl;
+   ofile << setw(15) << setprecision(8) << Output;
+   ofile.close();
       return 0;
  }
 
