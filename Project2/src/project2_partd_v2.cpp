@@ -1,18 +1,22 @@
-//Project2 part b: The non-interacting case
-//Performs Jacobi rotation to find the eigenvalues and eigenvectors of matrix which is formed from the discretization of the Schrodinger equation
-//for 1 electron in a simple harmonic oscillator potential given by vector V.
+//Project2 part d Version 2: The Interacting Case
+//Performs Jacobi rotation to find the eigenvalues of matrix which is formed from the discretization of the Schrodinger equation
+//for 2 interacting electrons in a harmonic oscillator potential. The Coulomb interaction and potential they are in is described by
+//vector V. The calculation can be done for different oscillator 'frequencies' w_r (describes strenth of the potential) specified
+//by user input in the terminal window.
+
 //Eigenvalues are also calculated by armadillo's eig_sym function to ensure the accuracy of Jacobi rotation algorithm.
 //CPU times for the two eigenvalue  solvers are compared.
 
-//Input: The program requires the desired names of the output files for ground state eigvector and lowest eigenvalues
-//and integer number of mesh points (n) to use for discretization.
-//(i.e. n=200-300 works well for the simple harmonic oscillator potential). An example input would be "out 200".
+//Input: The program requires the desired name of the output file, number of mesh points (n) to use for discretization, w_r value, and
+//rho_max value. Rho_max describes the maximum radius to which the discretization will be carried out. Note: If rho_max is not sufficiently
+//large, the results will be incorrect! The necessary value of rho_max varries with w_r (larger for smaller w_r).
+// An example input would be "out 150 0.5 10".
 
-//Output: The lowest several (# = num_eig) eigenvalues are output to the terminal. The ground state eigenvector (wavefunction(rho))
-//and lowest eigvalues are output to output files.
+//Output: The lowest several (#=num_eig) eigenvalues are output to the terminal.
+//The ground state eigenvector (wavefunction(r)) is output to the output file.
 
 //Coded by: Tim Golubev, Hao Lin, Xingze Mao
-//--------------------------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------------------------
 
 //Include statements for header files
 #include <iostream>
@@ -22,56 +26,61 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cmath>
-#include <string>
-#include <chrono>
+#include <cmath>    //  Mathematical functions like sin, cos etc
+#include <string>   //  useful library to operate on characters
+#include <chrono>  //for high resolution clock
 #include <armadillo.h>
 
 using namespace std;
 using namespace arma;
 using namespace std::chrono; //for high res clock
 
-double offdiag(mat A, int& p, int& q, int n);                 //pass by ref p and q
+double offdiag(mat A, int& p, int& q, int n);   //pass by ref p and q
 void Jacobi_rotate ( mat& A, mat& R, int k, int l, int n );
 
-// object for output files, for input files use ifstream
+// objects for output files, for input files use ifstream
 ofstream eigvec;
 ofstream eigvalues;
 
 int main(int argc, char *argv[])
 {
-  // Declarations
-  double rho_max = 6.0;              //problem will be solved over range [0, rho_max]. If set too low (i.e. < 6.0) it overestimates eigvalues
-  int num_eig = 5;                   //num of min eigvalues want to output
   int meshpts;
-  string eigvec_file;
-  string eigvalue_file;
+  string eigvec_filename;      //string for filename
+  string eigvalue_filename;
+  double w_r;
+  double rho_max;
 
   //If in command-line has less than 1 argument, write out an error.
   if( argc <= 1 ){
        cout << "Bad Usage: " << argv[0] <<
-            " read also file names for eigvector and eigvalues on same line and number of mesh points n" << endl;
+            " read also file name on same line and number of mesh points n" << endl;
         exit(1);
    }
    else{
-      eigvec_file = argv[1];
-      eigvalue_file = argv[2];
-      meshpts = atoi(argv[3]);         //atoi: convert ascii input to integer. Input number of mesh points to use.
+      eigvec_filename = argv[1];
+      eigvalue_filename = argv[2];
+      meshpts = atoi(argv[3]);  //atoi: convert ascii input string to integer. Input number of mesh points to use.
+      w_r = stod(argv[4]); //convert string to double
+      rho_max = stod(argv[5]);
    }
 
-  //Discretization
-  double h = rho_max/((double) meshpts);   //define h=step size
-  int n = meshpts -1;                      //We want to skip the endpoints. They are known from boundary conditions.
+  // Declarations
+  //double rho_max = 50.0;  //problem will be solved over range [0, rho_max]. If set too low (i.e. < 6.0) it overestimates eigvalues
+  double alpha = 1; //set alpha=1
+  int num_eig = 3;   //num of min eigvalues want to output
+
+  double h = rho_max/((double) meshpts);  //define h=step size
   double hh = h*h;
-  vec rho(n);                              //rho values vector ("x"-values)
-  vec V(n);                                //vector for the potential
+  int n = meshpts -1;    //we skip the endpts
+  vec rho(n);            //rho values vector ("x"-values)
+  vec V(n);              //vector for the potential
 
   //Fill vectors rho and V
   for(int i=0; i<n; i++){
-      rho(i) = (i+1)*h;                    //1st element of rho will = h. We exclude the endpoints rho(0)=0 and rho(rho_max).
-      V(i) = (rho(i))*(rho(i));            //harmonic oscillator potential
-  }
-
+      rho(i) = (i+1)*h;         //1st element of rho will = h. We exclude the endpoints rho(0)=0 and rho(rho_max).
+      V(i) = rho(i)*rho(i)*w_r*w_r + 1/rho(i);  //harmonic oscillator potential with repulsive Coulomb interaction btw. 2 electrons
+      //V(i) = rho(i)*rho(i)*w_r*w_r; //harmonic oscillator potential WITHOUT Coulomb interaction FOR TESTING
+      }
   //Define and fill matrix from discretization of Schrodinger eqn.
   mat A(n,n);
   for(int i = 0; i < n; i++) {
@@ -128,49 +137,51 @@ int main(int argc, char *argv[])
   duration<double> time2 = duration_cast<duration<double>>(finish2-start2);
   cout << "Jacobi rotate CPU time = " << time2.count() << endl;
 
-  //Vector with eigenvalues filled from diagonalized matrix A
+  //cout<< maxnondiag << endl;
+
+  //Vector with eigenvalues read off of diagonal elements of A
   vec eig_values(n);
   for (int i=0; i<n; i++){
      eig_values(i) = A(i,i);
   }
 
-  //Find and output lowest eigenvalues
-  double max_value;
-  int index;
-  int groundstate_index;
-  vec groundstate_eigvector;
-  vec min_eig_values(num_eig);   //vector to store min eigvalues
-  max_value= max(eig_values);
-  for (int i=0; i<num_eig; i++){
-      min_eig_values(i) = min(eig_values);
-      index = index_min(eig_values);                         //find index of minimum eig_value
-      if (i==0){                                             //i=0 corresponds to ground state
-          groundstate_index = index;                         //save ground state index
-          groundstate_eigvector = R.col(groundstate_index);  //arma synthax: extract column vector from matrix R
-      }
-      eig_values(index) = max_value;  //set the minimum value found to = max value in matrix
-  }
-  cout<<min_eig_values<<endl;
+   //Find and output lowest eigenvalues
+   double max_value;
+   int index;
+   int groundstate_index;
+   vec groundstate_eigvector;
+   vec min_eig_values(num_eig);   //vector to store min eigvalues
+   max_value= max(eig_values);
+   for (int i=0; i<num_eig; i++){
+       min_eig_values(i) = min(eig_values);
+       index = index_min(eig_values); //find index of minimum eig_value
+       if (i==0){
+           groundstate_index = index;  //save ground state index (will correspond to column in R where it occurs) to use for groundstate eigvector output
+           groundstate_eigvector = R.col(groundstate_index);  //arma synthax: extract column vector from matrix R
+       }
+       eig_values(index) = max_value;  //set the minimum value found to = max value in matrix
+
+   }
+   cout<<min_eig_values<<endl;
 
    //Setup output file
-   eigvec.open(eigvec_file);
+   eigvec.open(eigvec_filename);         //after initial opening of the output file, file is referred to by the ofstream object name.
    eigvec << setiosflags(ios::showpoint | ios::uppercase); //sets to write i.e. 10^6 as E6
-
    // Write to file:
    double bndry_value = 0.0;
-   mat Output(n,2);  //Define matrix for output of rho and ground state eigenvector
-   Output.col(0) = rho;
+   mat Output(n,2);  //Define matrix for output of rho, ground state eigvector, and lowest eigvalues
+   Output.col(0) = rho*alpha;  //fill 1st column with r=rho*alpha values
    Output.col(1) = groundstate_eigvector;
-   eigvec << "meshpoints = " << meshpts << endl;
-   eigvec << "   Rho " << "         G.S. Wavefnc" <<endl;
+   eigvec << "w_r = " << w_r<< "  meshpts = " << meshpts << endl;
+   eigvec << "   Rel. Coord." << "  G.S. Wavefnc" << endl;
    eigvec << setprecision(8) << "   " <<bndry_value << "   " << bndry_value <<endl;
-   eigvec << setw(13) << setprecision(8) << Output;                         //width 13 ensures alignment when add endpts
+   eigvec << setw(13) << setprecision(8) << Output;
    eigvec << setprecision(8) <<rho_max << "   " << bndry_value <<endl;
    eigvec.close();
 
-   eigvalues.open(eigvalue_file);
+   eigvalues.open(eigvalue_filename);
    eigvalues << setiosflags(ios::showpoint | ios::uppercase); //sets to write i.e. 10^6 as E6
-   eigvalues << "meshpoints = " << meshpts << "  rho_max = " << rho_max << endl;
+   eigvalues << "w_r = " << w_r<< "  meshpts = " << meshpts << "  rho_max = " << rho_max << endl;
    eigvalues << "Lowest eigenvalues = " << endl;
    eigvalues << setprecision(8) << min_eig_values << endl;
    eigvalues.close();
