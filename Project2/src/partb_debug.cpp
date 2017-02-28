@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
   string filename;
 
   //If in command-line has less than 1 argument, write out an error.
-  if( argc <= 1 ){
-       cout << "Bad Usage: " << argv[0] <<
+  if( argc <= 2 ){
+       cout << "Bad Usage: " <<
             " read also file name on same line and number of mesh points n" << endl;
         exit(1);
    }
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
      }
          iterations++;
   }
-  cout << "Orthonormality tests passed" << endl;
+  cout << "Orthonormality tests passed" << endl<< endl;
 
   //stop clock timer and output time duration
   high_resolution_clock::time_point finish2 = high_resolution_clock::now();

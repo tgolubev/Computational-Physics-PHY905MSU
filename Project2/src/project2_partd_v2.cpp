@@ -50,10 +50,14 @@ int main(int argc, char *argv[])
   double w_r;
   double rho_max;
 
-  //If in command-line has less than 1 argument, write out an error.
-  if( argc <= 1 ){
-       cout << "Bad Usage: " << argv[0] <<
-            " read also file name on same line and number of mesh points n" << endl;
+  //If in command-line has insufficient number of arguments, write out an error.
+  //argv[0] stores the path and .exe name that is being run
+  if( argc <= 5 ){
+       cout << "Bad Usage: "
+            " Input must be: filename1 filename2 meshpts w_r rho_max" << endl
+       <<"filname1 stores the g.s. eigenvector, filename2 stores the eigenvalue"
+       << endl <<"meshpts = number of meshpts" << endl << "w_r = oscillator frequency" << endl
+       << "rho_max = defines right endpt of rho" << endl;
         exit(1);
    }
    else{

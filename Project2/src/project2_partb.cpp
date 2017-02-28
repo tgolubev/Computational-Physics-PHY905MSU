@@ -48,15 +48,15 @@ int main(int argc, char *argv[])
   string eigvalue_file;
 
   //If in command-line has less than 1 argument, write out an error.
-  if( argc <= 1 ){
-       cout << "Bad Usage: " << argv[0] <<
-            " read also file names for eigvector and eigvalues on same line and number of mesh points n" << endl;
+  if( argc <= 3 ){
+       cout << "Bad Usage: " <<
+            " read also two file names for eigvector and eigvalues output on same line and integer number of mesh points" << endl;
         exit(1);
    }
    else{
       eigvec_file = argv[1];
       eigvalue_file = argv[2];
-      meshpts = atoi(argv[3]);         //atoi: convert ascii input to integer. Input number of mesh points to use.
+      meshpts = atoi(argv[3]);             //atoi: convert ascii input to integer. Input number of mesh points to use.
    }
 
   //Discretization

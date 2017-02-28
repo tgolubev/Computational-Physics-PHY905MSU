@@ -48,13 +48,13 @@ void Discretization(vec& rho, vec& V, mat& A, double w_r, int n, double rho_max,
 void Perform_Jacobi_rotation(mat& A, mat& R, int n);
 
 // objects for output files, for input files use ifstream
-ofstream eigvec;  //allows to work with output files in compact way
+ofstream eigvec;    //object for 1st output file
 ofstream eigvalues; //object for 2nd output file
 
 int main(int argc, char *argv[])
 {
   // Declarations
-  double rho_max = 150.0;   //problem will be initially  solved using a very large rho_max to ensure wavefnc goes to 0 within the range.
+  double rho_max = 100.0;   //problem will be initially solved using a very large rho_max to ensure wavefnc goes to 0 within the range.
   double alpha = 1;
   int num_eig = 3;          //num of min eigvalues want to output
   int meshpts;
@@ -62,21 +62,23 @@ int main(int argc, char *argv[])
   string eigvalue_filename;
   double w_r;
 
-  //If in command-line has less than 1 argument, write out an error.
-  if( argc <= 1 ){
-       cout << "Bad Usage: " << argv[0] <<
-            " Input must be: filename meshpts_number w_r" << endl;
+  //If in command-line insufficient # of arguments, write out an error.
+  if( argc <= 4 ){
+       cout << "Bad Usage: "
+            " Input must be: filename1 filename2 meshpts w_r" << endl
+       <<"filname1 stores the g.s. eigenvector, filename2 stores the eigenvalue"
+       << endl <<"meshpts = number of meshpts" << endl << "w_r = oscillator frequency" << endl;
         exit(1);
    }
    else{
       eigvec_filename = argv[1];
       eigvalue_filename = argv[2];
       meshpts = atoi(argv[3]);    //atoi: convert ascii input string to integer. Input number of mesh points to use.
-      w_r = stod(argv[4]);  //convert string to double
+      w_r = stod(argv[4]);       //stod convert string to double
    }
 
   //Discretize the problem
-  int n = meshpts-1;    //we skip the endpts
+  int n = meshpts-1;     //we skip the endpts
   vec rho(n);            //rho values vector ("x"-values)
   vec V(n);              //vector for the potential
   mat A(n,n);
@@ -158,17 +160,17 @@ int main(int argc, char *argv[])
             groundstate_index = index;                         //save ground state index
             groundstate_eigvector = R.col(groundstate_index);  //arma synthax: extract column vector from matrix R
         }
-        eig_values(index) = max_value;  //set the minimum value found to = max value in matrix
+        eig_values(index) = max_value;                         //set the minimum value found to = max value in matrix
     }
     cout<<min_eig_values<<endl;
 
    //Setup output file
-   eigvec.open(eigvec_filename);         //after initial opening of the output file, file is referred to by the ofstream object name.
-   eigvec << setiosflags(ios::showpoint | ios::uppercase); //sets to write i.e. 10^6 as E6
+   eigvec.open(eigvec_filename);                               //after initial opening of file, it's referred to by the ofstream object name.
+   eigvec << setiosflags(ios::showpoint | ios::uppercase);     //sets to write i.e. 10^6 as E6
    // Write to file:
    double bndry_value = 0.0;
-   mat Output(n,2);  //Define matrix for output of rho, ground state eigvector, and lowest eigvalues
-   Output.col(0) = rho*alpha;  //fill 1st column with r=rho*alpha values
+   mat Output(n,2);                                            //Define matrix for output of rho, ground state eigvector, and lowest eigvalues
+   Output.col(0) = rho*alpha;                                  //fill 1st column with r=rho*alpha values
    Output.col(1) = groundstate_eigvector;
    eigvec << "w_r = " << w_r<< "  meshpts = " << meshpts << endl;
    eigvec << "   Rel. Coord." << "  G.S. Wavefnc" << endl;
@@ -257,13 +259,13 @@ return;
 
 void Discretization(vec& rho, vec& V, mat& A, double w_r, int n, double rho_max, double meshpts)
 {
-    double h = rho_max/((double) meshpts);  //define h=step size
+    double h = rho_max/((double) meshpts);        //define h=step size
     double hh = h*h;
     //Fill vectors rho and V
     for(int i=0; i<n; i++){
-        rho(i) = (i+1)*h;                       //1st element of rho will = h. We exclude the endpoints rho(0)=0 and rho(rho_max).
+        rho(i) = (i+1)*h;                         //1st element of rho will = h. We exclude the endpoints rho(0)=0 and rho(rho_max).
         V(i) = rho(i)*rho(i)*w_r*w_r + 1/rho(i);  //harmonic oscillator potential with repulsive Coulomb interaction btw. 2 electrons
-        //V(i) = rho(i)*rho(i)*w_r*w_r; //harmonic oscillator potential WITHOUT Coulomb interaction FOR TESTING
+        //V(i) = rho(i)*rho(i)*w_r*w_r;           //harmonic oscillator potential WITHOUT Coulomb interaction FOR TESTING
         }
 
     //Fill matrix from discretization of Schrodinger eqn.
@@ -285,8 +287,8 @@ void Perform_Jacobi_rotation(mat& A, mat& R, int n)
 {
 double tolerance = 1.0E-10;
 int iterations = 0;
-double maxnondiag = 1.0;    //initialize
-int maxiter = n*n; //anything <n^2 for maxiter gives results that don't match eig_sym solver
+double maxnondiag = 1.0;                        //initialize
+int maxiter = n*n;                              //anything <n^2 gives results that don't match eig_sym solver
 while ( maxnondiag > tolerance && iterations <= maxiter)
 {
    int p, q;
@@ -296,4 +298,4 @@ while ( maxnondiag > tolerance && iterations <= maxiter)
 
 }
 return;
-}//end of functioin Perform_Jacobi_rotation
+}//end of function Perform_Jacobi_rotation
