@@ -2,25 +2,29 @@
 %functions of the relative coordinate r and different values of w_r.
 
 clear 
-[File,Path]=uigetfile('*.txt','MultiSelect','off');
- 
- data = importdata([Path File], ' ', 2);     %importdata(FILENAME, DELIM, NHEADERLINES) loads data into a struct from 
-                                             %ASCII file FILENAME, reading numeric data starting from line NHEADERLINES+1.
-                                             %struct has fields data and
-                                             %textdata
-    
+[File,Path]=uigetfile('*.txt','MultiSelect','on');
 
- r = data.data(:,1);             %to extract the data from the struct, use data.data
- wavefnc1 = data.data(:,2);
- wavefnc2 = data.data(:,3);
- wavefnc3 = data.data(:,4);
- wavefnc4 = data.data(:,5);
+N = numel(File);                                              %Counts the number of files that are in the cell array "File" that was outputted by uigetfile. 
+
+for  num=1:N                                                  %Repeat loop for each file (each single curve analyzed seperately)
+
+   name= File(1,num);
+   str=sprintf('%s', [Path name{1}]);                         %makes str be the name of file (along with its path)
+   format shortG                                              %change formating so doesn't show 0's for e-11 values. 
+
  
- h = plot(r,wavefnc1);
- set(h,'LineWidth',1.5);                              
- hold on     
- xlabel({'r'});
- ylabel({'Wavefnc(r)'});
- plot(r, wavefnc2);
- plot(r, wavefnc3);
- plot(r, wavefnc4);
+   data = importdata(str, ' ', 2);                            %importdata(FILENAME, DELIM, NHEADERLINES) loads data into a struct from 
+                                                              %ASCII file FILENAME, reading numeric data starting from line NHEADERLINES+1.
+                                                              %struct has fields data and text data
+                                          
+   r_values(:,num) = data.data(:,1);                          %to extract the data from the struct, use data.data
+   wavefnc_values(:,num) = data.data(:,2);
+ 
+   h = plot(r_values(:,num),wavefnc_values(:,num));           %plot the r_values and wavefnc_value that correspond to the current file
+   set(h,'LineWidth',1.5);                              
+   hold on     
+   xlabel({'Relative Coordinate r'});
+   ylabel({'Wavefnc(r)'});
+   
+end
+
