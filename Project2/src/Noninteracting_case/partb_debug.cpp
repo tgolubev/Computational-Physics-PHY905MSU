@@ -7,7 +7,8 @@
 //Unit tests:
 //1. Function for finding the largest non-diagonal element is tested on a 5x5 matrix.
 //2. Jacobi rotation algo result is tested with armadillo's eig_sym fnc.
-//3. Preservation of orthogonality of eigenvectors is verified. NEED TO ADD THIS STILL
+//3. Preservation of orthonormality of eigenvectors is verified by after every 10 tranformations in
+//   Jacobi rotation algo, checking the norm of a random eigenvector and dot product of 2 random eigenvectors.
 
 //Input: The program requires the desired name of the output file and the number of mesh points (n) to use for discretization.
 //(i.e. n=200-300 works well for the simple harmonic oscillator potential). An example input would be "out 200".
