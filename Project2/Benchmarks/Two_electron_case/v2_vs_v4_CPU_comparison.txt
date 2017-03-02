@@ -1,0 +1,33 @@
+Version 4 (auto rho_max finding)
+
+
+rho_max = 8.25
+Armadillo eig_sym CPU time = 0.00172365
+   2.2300
+   4.1339
+   6.0724
+
+Jacobi rotate CPU time = 1.28108
+   2.2301
+   4.1338
+   6.0724
+
+Press <RETURN> to close this window...
+
+
+
+-----------------------------------------------
+Version 2 (manually enter rho_max)
+
+rho_max = 8.25
+Armadillo eig_sym CPU time = 0.0032891
+   2.2300
+   4.1339
+   6.0724
+
+Jacobi rotate CPU time = 1.35939
+   2.2301
+   4.1338
+   6.0724
+
+Press <RETURN> to close this window...
