@@ -54,7 +54,7 @@ ofstream eigvalues; //object for 2nd output file
 int main(int argc, char *argv[])
 {
   // Declarations
-  double rho_max = 100.0;   //problem will be initially solved using a very large rho_max to ensure wavefnc goes to 0 within the range.
+  double rho_max = 150.0;   //problem will be initially solved using a very large rho_max to ensure wavefnc goes to 0 within the range.
   double alpha = 1;
   int num_eig = 3;          //num of min eigvalues want to output
   int meshpts;
