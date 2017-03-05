@@ -1,0 +1,8 @@
+This project solve the time-independent Schrodinger equations for two systems, using Jacobi's method. One system is a single electron in a simple harmonic oscillator potential. The second system concerns the motion of two electrons in a range of harmonic oscillator potentials. The program outputs the lowest eigenvalues and ground state eigenvectors.
+
+File organization:
+src contains the c++ code for the two systems. It also contains matlab code for plotting results from the c++ code output files.
+
+Benchmarks contains sample output files. 
+
+Report contains the report.
