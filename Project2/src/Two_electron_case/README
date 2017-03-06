@@ -11,3 +11,6 @@ Version 4: Runs for a single w_r value and finds the optimal rho_max to use auto
 the problem but it doesn't offer the flexibility to experiment with different values of rho_max.
 
 (Version 3 was identical to  Version 4, but less compactly coded, so it is not included here).
+
+The main unit testing of Jacobi rotation algorithm was done in the single electron case debug version of the code. In the two electron case,
+since the same eigenvalue solver algorithm is used, we only kept the comparison with Armadillo's eigenvalue solver.
