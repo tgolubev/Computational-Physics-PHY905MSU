@@ -1,2 +1,1 @@
-The debug version contains all unit tests we implemented. In all other versions, we only kept the comparison with Armadillo's eigenvalue solver 
-eig_sym in order to conserve computational resources and clean-up the command window output.
+The debug version contains all unit tests we implemented. In all other versions, we only kept the comparison with Armadillo's eigenvalue solver eig_sym in order to conserve computational resources and clean-up the command window output.
