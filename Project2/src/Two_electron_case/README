@@ -1,8 +1,8 @@
-The several versions of code here all solve the same problem, but allow for different inputs from the user and output formats.
+The several versions of code here all solve the same problem, but allow for different inputs from the user and different output formats.
 
 Version 1: Allows to run the program for 4 different w_r values at once (w_r values are specified within the .cpp file) and outputs all
 4 groundstate eigenvectors in a single txt file for easy comparison. This is useful for a quick estimate, but since it uses the same rho_max 
-for all w_r, it is not optimal. 
+for all w_r, it is not optimal in terms of accuracy. 
 
 Version 2: Runs for a single w_r value with a user inputed (from command window) rho_max. This allows to experiment with using different
 rho_max values.
