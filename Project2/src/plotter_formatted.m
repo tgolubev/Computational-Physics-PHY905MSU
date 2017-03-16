@@ -8,7 +8,7 @@
 %Coded by Timofey Golubev
 
 clear                                                         %clear variables
-[File,Path]=uigetfile('*.txt','MultiSelect','on');
+[File,Path]=uigetfile('*.txt','MultiSelect','off');
 
 N = numel(File);                                              %Counts the number of files that are in the cell array "File" that was outputted by uigetfile. 
 
