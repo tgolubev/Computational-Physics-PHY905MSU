@@ -5,12 +5,13 @@
 #include <cmath>
 #include "time.h"
 
+//Constructors
 solver::solver()
 {
     total_planets = 0;
     radius = 100;
     total_mass = 0;
-    G = 4*M_PI*M_PI;
+    G = 4*M_PI*M_PI;       //M_PI is the pi in c++: #define _USE_MATH_DEFINES
     totalKinetic = 0;
     totalPotential = 0;
 }
@@ -25,11 +26,15 @@ solver::solver(double radi)
     totalPotential = 0;
 }
 
-void solver::add(planet newplanet)
+//functions
+void solver::add(planet newplanet)        //calling add, pass a planet object to it, inside the fnc add the object is named "newplanet"
 {
-    total_planets += 1;
-    total_mass += newplanet.mass;
-    all_planets.push_back(newplanet);
+    total_planets += 1;                   // "+=" means total_planets = total_planets +1
+    total_mass += newplanet.mass;        //adds new planet's mass to total system mass
+    all_planets.push_back(newplanet);    //push_back() is fnc. of the C++ vector class which adds a new element to the end of a vector
+                                         //We wrote: #include <vector>  and using std::vector;  in planet.h so can immediately use push_back w/o ::vector
+                                         //all_planets is defined as vector property of the objects of our solver class.
+
 }
 
 void solver::addM(planet newplanet)
@@ -69,6 +74,7 @@ void solver::print_energy(std::ofstream &output, double time,double epsilon)
     }
 }
 
+/*
 void solver::RungeKutta4(int dimension, int integration_points, double final_time, bool stellar, bool simple, int print_number,double epsilon)
 {   // 4th order Runge-Kutta solver for a planet cluster / spherical solver
 
@@ -231,6 +237,7 @@ void solver::RungeKutta4(int dimension, int integration_points, double final_tim
     output_energy.close();
 }
 
+*/
 void solver::VelocityVerlet(int dimension, int integration_points, double final_time, bool stellar, bool simple, int print_number, double epsilon)
 {   /*  Velocity-Verlet solver for two coupeled ODEs in a given number of dimensions.
     The algorithm is, exemplified in 1D for position x(t), velocity v(t) and acceleration a(t):
@@ -246,7 +253,7 @@ void solver::VelocityVerlet(int dimension, int integration_points, double final_
     double time_step = final_time/((double) integration_points);
     double time = 0.0;
     double loss = 0.; // Possible energy loss
-    int lostPlanets[integration_points];
+    int *lostPlanets = new int[integration_points];  //dynamic allocation necessary for VSC++ compiler
 
     // Create files for data storage
     char *filename = new char[1000];

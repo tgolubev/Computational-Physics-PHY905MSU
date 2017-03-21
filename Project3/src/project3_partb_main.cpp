@@ -87,10 +87,10 @@ int main()
 
         //check that values from planet1 were actually passed to the object and can read from object. Object properties declared in planet.h
         //and defined in planet.cpp
-        cout << planet1.mass<< endl;
-        cout << planet1.position[0]<< endl;
+        //cout << planet1.mass<< endl;
+        //cout << planet1.position[0]<< endl;
 
-
+/*
         // RK4
         solver binary_rk(5.0);
         binary_rk.add(planet1);
@@ -100,15 +100,19 @@ int main()
             x[j] = planet1.position[j];
             v[j] = planet1.velocity[j];
         }
+        */
 
         // VV
-        solver binary_vv(5.0);
+        solver binary_vv(5.0);     //create object called binary_vv, member of the class solver, pass to it the radi (radius OF THE PLANET)
+                                   //this is  the  solver for binary (2 planet) system
         binary_vv.add(planet1);
         binary_vv.add(planet2);
 
         print_initial(dimension,time_step,final_time,x,v,integration_points);
 
         // Evolution of binary system
+        /*
+        //RK4
         cout << endl << "RK4: " << endl;
         binary_rk.RungeKutta4(dimension,integration_points,final_time,force,simple,1,0.);
 
@@ -118,11 +122,13 @@ int main()
         }
         print_final(dimension,x,v);
 
+        */
+        //VV
         cout << endl << "VV:" << endl;
         binary_vv.VelocityVerlet(dimension,integration_points,final_time,force,simple,1,0.);
 
         for(int j=0;j<dimension;j++){
-            x[j] = binary_vv.all_planets[0].position[j];
+            x[j] = binary_vv.all_planets[0].position[j];    //sets x array values equal to positions of 1st planet (all_planets[0])
             v[j] = binary_vv.all_planets[0].velocity[j];
         }
         print_final(dimension,x,v);
