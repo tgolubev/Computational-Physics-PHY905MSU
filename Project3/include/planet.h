@@ -29,7 +29,7 @@ public:
     planet(double M,double x,double y,double z,double vx, double vy,double vz);  //initialize by passing these variables
 
     // Functions
-    double distance(planet otherPlanet);
+    double distance(planet otherPlanet);        //NOTE: this has 1 argument "otherPlanet" of the class "planet"
     double GravitationalForce(planet otherPlanet, double Gconst);
     double Acceleration(planet otherPlanet, double Gconst);
     double KineticEnergy();

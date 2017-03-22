@@ -5,6 +5,8 @@
 #include <cmath>
 #include "time.h"
 
+//Note:because we are currently not using any namespace, we must specifiy either solver:: or std::
+
 //Constructors
 solver::solver()
 {
@@ -37,7 +39,7 @@ void solver::add(planet newplanet)        //calling add, pass a planet object to
 
 }
 
-void solver::addM(planet newplanet)
+void solver::addM(planet newplanet)     //Adds a planet without adding the mass of the planet to the total system mass (WHY?)
 {
     total_planets +=1;
     all_planets.push_back(newplanet);
@@ -45,8 +47,11 @@ void solver::addM(planet newplanet)
 
 void solver::GravitationalConstant()
 {
-    G = (4*M_PI*M_PI/32)*radius*radius*radius/total_mass;
+    G = (4*M_PI*M_PI/32)*radius*radius*radius/total_mass;    //This is gravitational constant for an N body cluster (not earth-sun system where G = 4*pi*pi).
 }
+
+//-----------------------------------------------------------------------------------------------------
+//Write to file functions
 
 void solver::print_position(std::ofstream &output, int dimension, double time,int number)
 {   // Writes mass, position and velocity to a file "output"
@@ -54,7 +59,9 @@ void solver::print_position(std::ofstream &output, int dimension, double time,in
     else{
         for(int i=0;i<number;i++){
             planet &current = all_planets[i];
-            output << time << "\t" << i+1 << "\t" << current.mass;
+            //MAYBE IF WE SET PRECISION HERE CAN GET THE OUTPUT FILES TO LOOK NICER
+
+            output << time << "\t" << i+1 << "\t" << current.mass;         //"\t" is a tab. i.e. "Hello\tWorld" will output "Hello     World"
             for(int j=0;j<dimension;j++) output << "\t" << current.position[j];
             for(int j=0;j<dimension;j++) output << "\t" << current.velocity[j];
             output << std::endl;
@@ -74,6 +81,9 @@ void solver::print_energy(std::ofstream &output, double time,double epsilon)
     }
 }
 
+//-----------------------------------------------------------------------------------
+
+//Solver functions
 /*
 void solver::RungeKutta4(int dimension, int integration_points, double final_time, bool stellar, bool simple, int print_number,double epsilon)
 {   // 4th order Runge-Kutta solver for a planet cluster / spherical solver
@@ -238,16 +248,15 @@ void solver::RungeKutta4(int dimension, int integration_points, double final_tim
 }
 
 */
+//---------------------------------------------------------------------------------------------------------------------------------------------
 void solver::VelocityVerlet(int dimension, int integration_points, double final_time, bool stellar, bool simple, int print_number, double epsilon)
 {   /*  Velocity-Verlet solver for two coupeled ODEs in a given number of dimensions.
     The algorithm is, exemplified in 1D for position x(t), velocity v(t) and acceleration a(t):
     x(t+dt) = x(t) + v(t)*dt + 0.5*dt*dt*a(t);
     v(t+dt) = v(t) + 0.5*dt*[a(t) + a(t+dt)];*/
 
-
-
-    if(!simple) GravitationalConstant();
-    //std::cout << "G = " << G << std::endl;
+    if(!simple) GravitationalConstant();          //if(!simple) means if simple (boolean expression) is false, then.....
+    std::cout << "G = " << G << std::endl;
 
     // Define time step
     double time_step = final_time/((double) integration_points);
@@ -256,19 +265,28 @@ void solver::VelocityVerlet(int dimension, int integration_points, double final_
     int *lostPlanets = new int[integration_points];  //dynamic allocation necessary for VSC++ compiler
 
     // Create files for data storage
-    char *filename = new char[1000];
+    char *filename = new char[1000];   //set up dynamiccally alocated character string w/ pointer pointing to memory adress of "filename"
     char *filenameE = new char[1000];
     char *filenameB = new char[1000];
     char *filenameLost = new char[1000];
-    if(stellar){
+    if(stellar){      //if bolean value stellar=true, name the files w/ logical names for stellar system
+
+        //sprintf notation: If a = 5, b = 3, then "(filename, "%d plus %d is %d", a, b, a+b);" will return "5 plus 3 is 8".
+        //replaces the %d's with values of the variables that follow the string in " " in order that the variables are listed.
+
+        //%.3f means to print the variable as a floating point decimal with a precision of at least 3 digits.
+        //So i.e.: sprintf(filename, "cluster_VV_%d_%.3f.txt",total_planets,time_step); will replace the %.3f with time_step to
+        //3 digits precision, so i.e. if it's 0.15, it will display as 0.150. If 0.005, it displays as 0.005
+
         sprintf(filename, "cluster_VV_%d_%.3f.txt",total_planets,time_step); // If N-body cluster
-        sprintf(filenameE, "cluster_VV_energy_%d_%.3f.txt",total_planets,time_step);
+        sprintf(filenameE, "cluster_VV_energy_%d_%.3f.txt",total_planets,time_step); //make filenameE = cluster_VV_energy_[total_planets
         sprintf(filenameB,"cluster_bound_%d_%.3f.txt",total_planets,time_step);
         sprintf(filenameLost,"cluster_lost_%d_%.3f.txt",total_planets,time_step);
     }
     else sprintf(filename, "analytic_VV_%d_%.3f.txt",integration_points,time_step); // If 1D 2-body analytic case
+    //define objects of class ofstream which will be for the output files. Each object has a filename.
     std::ofstream output_file(filename);
-    std::ofstream output_energy(filenameE);
+    std::ofstream output_energy(filenameE);  //i.e. filenameE is what the output_energy file will be named.
     std::ofstream output_bound(filenameB);
     std::ofstream output_lost(filenameLost);
 
@@ -289,7 +307,7 @@ void solver::VelocityVerlet(int dimension, int integration_points, double final_
     n+=1;
 
     // Set up clock to measure the time usage
-    clock_t planett_VV,finish_VV;
+    clock_t planett_VV,finish_VV;   //clock time values
     planett_VV = clock();
 
     // PLANETT CALCULATIONS
@@ -387,7 +405,7 @@ void solver::VelocityVerlet(int dimension, int integration_points, double final_
     delete_matrix(acceleration);
     delete_matrix(acceleration_new);
 }
-
+//---------------------------------------------------------------------------------------------------------------------------------------
 double ** solver::setup_matrix(int height,int width)
 {   // Function to set up a 2D array
 

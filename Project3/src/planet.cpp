@@ -27,13 +27,19 @@ planet::planet(double M, double x, double y, double z, double vx, double vy, dou
 }
 
 
-double planet::distance(planet otherPlanet)
+double planet::distance(planet otherPlanet)   //CAREFUL!: this passes "otherPlanet" which of type/class "planet". It "planet" is not an argument!
 {
     double x1,y1,z1,x2,y2,z2,xx,yy,zz;
 
-    x1 = this->position[0];
-    y1 = this->position[1];
+
+    x1 = this->position[0];        //"this" is a constant pointer that holds the memory address of the current object ("planet")
+    y1 = this->position[1];        //-> is class member access operator
     z1 = this->position[2];
+
+    //Unless a class member name is hidden, using the class member name is equivalent to using
+    //the class member name with the this pointer and the class member access operator (->).
+    //Often use this-> to emphasize that accessing a member of a class.
+    //another convention is to use "m_" prefix for all members of classes, i.e. m_planet and then drop the "this->"
 
     x2 = otherPlanet.position[0];
     y2 = otherPlanet.position[1];
@@ -49,25 +55,27 @@ double planet::distance(planet otherPlanet)
 double planet::GravitationalForce(planet otherPlanet,double Gconst)
 {
     double r = this->distance(otherPlanet);
-    if(r!=0) return Gconst*this->mass*otherPlanet.mass/(r*r);
+    if(r!=0) return Gconst*this->mass*otherPlanet.mass/(r*r);   //F = Gm1m2/r^2
     else return 0;
 }
 
 double planet::Acceleration(planet otherPlanet, double Gconst)
 {
     double r = this->distance(otherPlanet);
-    if(r!=0) return this->GravitationalForce(otherPlanet,Gconst)/(this->mass*r);
+    if(r!=0) return this->GravitationalForce(otherPlanet,Gconst)/(this->mass*r);  // a = F/m1  "return this->GravitationalForce" means it will
+                                                                                  //find and return gravitationalforce on the current object due to the "otherPlanet"
+
     else return 0;
 }
 
 double planet::KineticEnergy()
 {
-    double velocity2 = (this->velocity[0]*this->velocity[0]) + (this->velocity[1]*this->velocity[1]) + (this->velocity[2]*this->velocity[2]);
-    return 0.5*this->mass*velocity2;
+    double velocity_sqrd = (this->velocity[0]*this->velocity[0]) + (this->velocity[1]*this->velocity[1]) + (this->velocity[2]*this->velocity[2]);
+    return 0.5*this->mass*velocity_sqrd;
 }
 
 double planet::PotentialEnergy(planet &otherPlanet, double Gconst, double epsilon)
 {
-    if(epsilon==0.0) return -Gconst*this->mass*otherPlanet.mass/this->distance(otherPlanet);
-    else return (Gconst*this->mass*otherPlanet.mass/epsilon)*(atan(this->distance(otherPlanet)/epsilon) - (0.5*M_PI));
+    if(epsilon==0.0) return -Gconst*this->mass*otherPlanet.mass/this->distance(otherPlanet);      //U = -Gm1m2/r
+    else return (Gconst*this->mass*otherPlanet.mass/epsilon)*(atan(this->distance(otherPlanet)/epsilon) - (0.5*M_PI));  //WHAT IS THIS FORMULA??
 }
