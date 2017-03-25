@@ -31,9 +31,12 @@ public:
     // Functions
     double distance(planet otherPlanet);        //NOTE: this has 1 argument "otherPlanet" of the class "planet"
     double GravitationalForce(planet otherPlanet, double Gconst);
+    double planet::X_GravitationalForce(planet otherPlanet,double Gconst);
+    double planet::Y_GravitationalForce(planet otherPlanet,double Gconst);
+    double planet::Z_GravitationalForce(planet otherPlanet,double Gconst);
     double Acceleration(planet otherPlanet, double Gconst);
     double KineticEnergy();
-    double PotentialEnergy(planet &otherPlanet, double Gconst, double epsilon);
+    double planet::PotentialEnergy(planet &otherPlanet, double Gconst);
 
 };
 

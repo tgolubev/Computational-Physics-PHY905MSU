@@ -59,6 +59,30 @@ double planet::GravitationalForce(planet otherPlanet,double Gconst)
     else return 0;
 }
 
+double planet::X_GravitationalForce(planet otherPlanet,double Gconst)
+{
+    double r = this->distance(otherPlanet);
+    double relative_x = otherPlanet.position[0]-this->position[0];
+    if(r!=0) return Gconst*this->mass*otherPlanet.mass*relative_x/(r*r*r);   //F = Gm1m2/r^2
+    else return 0;
+}
+
+double planet::Y_GravitationalForce(planet otherPlanet,double Gconst)
+{
+    double r = this->distance(otherPlanet);
+    double relative_y = otherPlanet.position[1]-this->position[1];
+    if(r!=0) return Gconst*this->mass*otherPlanet.mass*relative_y/(r*r*r);
+    else return 0;
+}
+
+double planet::Z_GravitationalForce(planet otherPlanet,double Gconst)
+{
+    double r = this->distance(otherPlanet);
+    double relative_z = otherPlanet.position[2]-this->position[2];
+    if(r!=0) return Gconst*this->mass*otherPlanet.mass*relative_z/(r*r*r);
+    else return 0;
+}
+
 double planet::Acceleration(planet otherPlanet, double Gconst)
 {
     double r = this->distance(otherPlanet);
@@ -74,8 +98,9 @@ double planet::KineticEnergy()
     return 0.5*this->mass*velocity_sqrd;
 }
 
-double planet::PotentialEnergy(planet &otherPlanet, double Gconst, double epsilon)
+double planet::PotentialEnergy(planet &otherPlanet, double Gconst)
 {
-    if(epsilon==0.0) return -Gconst*this->mass*otherPlanet.mass/this->distance(otherPlanet);      //U = -Gm1m2/r
-    else return (Gconst*this->mass*otherPlanet.mass/epsilon)*(atan(this->distance(otherPlanet)/epsilon) - (0.5*M_PI));  //WHAT IS THIS FORMULA??
+    return -Gconst*this->mass*otherPlanet.mass/this->distance(otherPlanet);      //U = -Gm1m2/r
+    //if(epsilon==0.0) return -Gconst*this->mass*otherPlanet.mass/this->distance(otherPlanet);      //U = -Gm1m2/r
+    //else return (Gconst*this->mass*otherPlanet.mass/epsilon)*(atan(this->distance(otherPlanet)/epsilon) - (0.5*M_PI));  //WHAT IS THIS FORMULA??
 }
