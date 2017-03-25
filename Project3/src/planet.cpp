@@ -1,7 +1,10 @@
+//#include <iostream>
 #include "planet.h"
+#include <cstring>
 
 planet::planet()
 {
+    name = "nameless_planet";  //to assign hardcoded value for a string must use quotation marks
     mass = 1.;
     position[0] = 1.;
     position[1] = 0.;
@@ -13,8 +16,9 @@ planet::planet()
     kinetic = 0.;
 }
 
-planet::planet(double M, double x, double y, double z, double vx, double vy, double vz)
+planet::planet(std::string planet_name, double M, double x, double y, double z, double vx, double vy, double vz)
 {
+    name = planet_name;
     mass = M;
     position[0] = x;
     position[1] = y;

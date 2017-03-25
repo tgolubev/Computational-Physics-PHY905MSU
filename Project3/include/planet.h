@@ -9,8 +9,10 @@
 
 #define PLANET_H   //defines PLANET_H if it has not yet been defined (checked by #ifndef)
 #define _USE_MATH_DEFINES
+//#include <iostream>
 #include <cmath>
 #include <vector>
+#include <cstring>  //to enable using strings
 using std::vector;
 
 
@@ -18,6 +20,7 @@ class planet
 {
 public:
     // Properties
+    std::string name;    //because we are using std::vector namespace, need to specify std namespace here
     double mass;
     double position[3];  //array
     double velocity[3];
@@ -26,7 +29,7 @@ public:
 
     // Initializers (aka constructers) for the objects (planet) of the class
     planet();                                                                    //initialize by passing no values to it
-    planet(double M,double x,double y,double z,double vx, double vy,double vz);  //initialize by passing these variables
+    planet(std::string planet_name, double M,double x,double y,double z,double vx, double vy,double vz);  //initialize by passing these variables
 
     // Functions
     double distance(planet otherPlanet);        //NOTE: this has 1 argument "otherPlanet" of the class "planet"
