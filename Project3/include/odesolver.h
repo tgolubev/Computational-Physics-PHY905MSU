@@ -20,7 +20,7 @@ public:
     double totalPotential;
 
     //Constructor
-    ODEsolver(int zero);
+    ODEsolver();
 
     // functions
     void add(planet newplanet);

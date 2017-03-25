@@ -4,12 +4,10 @@
 #include <cmath>
 #include <time.h>
 
-//NOTE: for some reason it gave error when tried to use constructor w/o passing anything
-//to it. So made constructor pass zero to it
 
-ODEsolver::ODEsolver(int zero)
+ODEsolver::ODEsolver()          //to use this constructor in code, just use i.e. : ODEsolver object_name;     //NOT: ODEsolver object_name()
 {
-    total_planets = zero;
+    total_planets = 0;
     Gconst = 4*M_PI*M_PI;       //M_PI is the pi in c++: #define _USE_MATH_DEFINES
     totalKinetic = 0;
     totalPotential = 0;
@@ -58,10 +56,18 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
   double TimeStep = FinalTime/((double) IntegrationPoints);
   //std::vector<planet>::const_iterator j;
 
+
+
   // Create files for data storage
   char *filename = new char[1000];   //set up dynamiccally alocated character string w/ pointer pointing to memory adress of "filename"
   char *filenameE = new char[1000];
 
+  /*for(int i=0; i<total_planets;i++){
+      std::string argument = to_string(i);  //convert i to string
+      filename.append(argument);          //appends the 'argument' to our output file filename. The arguments will be i (i.e. 1, 2, 3)
+      filenameE.append(argument);
+   }
+*/
   //sprintf notation: If a = 5, b = 3, then "(filename, "%d plus %d is %d", a, b, a+b);" will return "5 plus 3 is 8".
   //replaces the %d's with values of the variables that follow the string in " " in order that the variables are listed.
 
@@ -91,10 +97,10 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
     //will use the previous time step values to compute next time step values and output values
     //to file in each time step.
 
-      time +=TimeStep;  //add 1 timestep each iteration, starting from i=0 iteration
-      //std::cout<<time<<std::endl;
+    time +=TimeStep;  //add 1 timestep each iteration, starting from i=0 iteration
+    //std::cout<<time<<std::endl;
 
-      int current_index;    //Declare outside of for loop because want to use in more than 1 loop
+    int current_index;    //Declare outside of for loop because want to use in more than 1 loop
     for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
        planet &current = all_planets[current_index];  //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
 
@@ -108,8 +114,8 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
            Fz += current.Z_GravitationalForce(other, Gconst);
        }
 
-       std::cout << "Fx = " << Fx <<std::endl;
-       //FX IS NOT CHANGING CURRENTLY!
+       //std::cout << "Fx = " << Fx <<std::endl;
+
        //update positions by 1 time step
        current.position[0]=current.position[0]+TimeStep*current.velocity[0];
        current.position[1]=current.position[1]+TimeStep*current.velocity[1];
@@ -120,15 +126,14 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
        current.velocity[0] = current.velocity[0] - (Fx/current.mass)*TimeStep;
        current.velocity[1] = current.velocity[1] - (Fy/current.mass)*TimeStep;
        current.velocity[2] = current.velocity[2] - (Fz/current.mass)*TimeStep;
-
-       std::cout<<"velocity = " << current.velocity[0] <<std::endl;
+       //std::cout<<"velocity = " << current.velocity[0] <<std::endl;
     }
+
     //print the current values to output file
     print_position(output_file,time,total_planets);
-    //std::cout<<"time = " << time <<std::endl;
     print_energy(output_energy,time);
 
-       //std::cout<<"position = " << current.position[0]<<std::endl;
+    //std::cout<<"position = " << current.position[0]<<std::endl;
     }
 
   // Close files
