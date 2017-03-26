@@ -29,6 +29,7 @@ public:
     double **ODEsolver::save_initial_values();
     void ODEsolver::reset_initial_values(double** initial_values);
     double **ODEsolver::setup_matrix(int height,int width);
+    void ODEsolver::delete_matrix(double **matrix);
     void print_position(std::ofstream &output, double time, int number);
     void print_energy(std::ofstream &output, double time);
     void Euler(int IntegrationPoints, double FinalTime);

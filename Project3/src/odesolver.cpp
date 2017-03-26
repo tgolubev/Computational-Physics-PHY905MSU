@@ -4,6 +4,7 @@
 #include <cmath>
 #include <time.h>
 #include <array>
+#include <iomanip>
 
 
 ODEsolver::ODEsolver()          //to use this constructor in code, just use i.e. : ODEsolver object_name;     //NOT: ODEsolver object_name()
@@ -73,11 +74,10 @@ void ODEsolver::print_position(std::ofstream &output, double time,int number)
 {   // Writes mass, position and velocity to a file "output"
         for(int i=0;i<number;i++){
             planet &current = all_planets[i];
-            //MAYBE IF WE SET PRECISION HERE CAN GET THE OUTPUT FILES TO LOOK NICER
-
+            output << std::setiosflags(std::ios::showpoint | std::ios::uppercase);     //sets to write i.e. 10^6 as E6
             output << time << "\t" << i+1 << "\t" << current.mass;         //"\t" is a tab. i.e. "Hello\tWorld" will output "Hello     World"
-            for(int j=0;j<3;j++) output << "\t" << current.position[j];    //for 3D
-            for(int j=0;j<3;j++) output << "\t" << current.velocity[j];
+            for(int j=0;j<3;j++) output << "\t" << std::setprecision(8) << current.position[j];    //for 3D
+            for(int j=0;j<3;j++) output << "\t" << std::setprecision(8) << current.velocity[j];
             output << std::endl;
         }
 }
@@ -112,6 +112,14 @@ double **ODEsolver::setup_matrix(int height,int width)  //returns a double_point
         }
     }
     return matrix;
+}
+
+void ODEsolver::delete_matrix(double **matrix)         //accepts a double_pointer as input
+{   // Function to deallocate memory of a 2D array which  has # of rows = total_planets
+
+    for (int i=0; i<total_planets; i++)
+        delete [] matrix[i];
+    delete [] matrix;
 }
 
 void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
@@ -201,6 +209,9 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
   output_energy.close();
 
   reset_initial_values(initial);
+
+  //Clear memory
+  delete_matrix(initial);
   }
 
 void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
@@ -304,6 +315,11 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
 
   //Reset initial values
   reset_initial_values(initial);
+
+  // Clear memory
+  delete_matrix(ith_accel);
+  delete_matrix(initial);
+
 
 }
 
