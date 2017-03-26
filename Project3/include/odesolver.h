@@ -5,6 +5,7 @@
 #include "planet.h"
 #include <vector>
 #include <fstream>
+#include <array>
 
 using std::vector;
 
@@ -16,6 +17,7 @@ public:
     double Gconst;
     int total_planets;
     vector<planet> all_planets;   //vector with  elements of objects planets
+    vector<std::string> planet_names;
     double totalKinetic;
     double totalPotential;
 
@@ -24,10 +26,12 @@ public:
 
     // functions
     void add(planet newplanet);
+    double **ODEsolver::save_initial_values();
+    void ODEsolver::reset_initial_values(double** initial_values);
     void print_position(std::ofstream &output, double time, int number);
     void print_energy(std::ofstream &output, double time);
     void Euler(int IntegrationPoints, double FinalTime);
-    void VelocityVerlet(int dimension, int integration_points, double final_time, int print_number, double epsilon);
+    void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime);
     void GravitationalForce(planet &current, planet &other, double &Fx, double &Fy, double &Fz, double epsilon);
     void KineticEnergySystem();
     void PotentialEnergySystem();
