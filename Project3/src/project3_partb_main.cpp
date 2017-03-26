@@ -36,8 +36,12 @@ int main()
     //tests
     cout << "Gconst = " <<binary.Gconst << endl;
     cout << "Number of Planets = " <<binary.total_planets<<endl;
+    //test planet_names (vector of strings)
+    for(int i=0; i<binary.total_planets;i++){
+    cout << "Planet" << i+1 << "'s name is " << binary.planet_names[i] <<endl;
+    }
 
-    binary.Euler(integration_points, final_time);  //Apply Euler's method
+    binary.Euler(integration_points, final_time);  //Run Euler's method ODEsolver
 
 /*  // RK4
     solver binary_rk(5.0);
@@ -50,14 +54,11 @@ int main()
      }
  */
 
-    /*
-    // VV
-    solver binary_vv(5.0);     //create object called binary_vv, member of the class solver, pass to it the radi (radius OF THE PLANET)
-                               //this is  the  solver for binary (2 planet) system
-    binary_vv.add(planet1);
-    binary_vv.add(planet2);
 
-    print_initial(dimension,time_step,final_time,x,v,integration_points);
+    // Velocity Verlet
+    binary.VelocityVerlet(integration_points, final_time); //Run VVerlet ODEsolver
+
+    //print_initial(dimension,time_step,final_time,x,v,integration_points);
 
     // Evolution of binary system
     /*
@@ -80,10 +81,6 @@ int main()
     }
     print_final(dimension,x,v);
     */
-
-
-
-
 
 
     return 0;
