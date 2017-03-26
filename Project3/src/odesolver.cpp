@@ -94,6 +94,26 @@ void ODEsolver::print_energy(std::ofstream &output, double time)
     }
 }
 
+double **ODEsolver::setup_matrix(int height,int width)  //returns a double_pointer
+{   // Function to set up a 2D array
+
+    // Set up matrix
+    double **matrix;
+    matrix = new double*[height];
+
+    // Allocate memory
+    for(int i=0;i<height;i++)
+        matrix[i] = new double[width];
+
+    // Set values to zero
+    for(int i = 0; i < height; i++){
+        for(int j = 0; j < width; j++){
+            matrix[i][j] = 0.0;
+        }
+    }
+    return matrix;
+}
+
 void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
 { 
   double **initial = save_initial_values();              //initial contains the ADDRESS of the array of initial values
@@ -207,7 +227,9 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
 
     // Initialize forces and acceleration
     double ith_Fx,ith_Fy,ith_Fz, next_Fx, next_Fy, next_Fz;
-    double ith_accel[3], next_accel[3];
+    double **ith_accel = setup_matrix(total_planets,3);
+    //double ith_accel[3],
+    double next_accel[3];
 
     // Write initial values to file
     print_position(output_file,time, total_planets);
@@ -224,7 +246,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
       for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
          planet &current = all_planets[current_index];                      //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
 
-         ith_Fx = ith_Fy = ith_Fz = next_Fx = next_Fy = next_Fz = 0.0; // Reset forces for each time iteration
+         ith_Fx = ith_Fy = ith_Fz = next_Fx = next_Fy = next_Fz = 0.0; // Reset forces for each time iteration and planet
 
          for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
              if(n==current_index)continue;       //skip this case
@@ -234,18 +256,25 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
              ith_Fz += current.Z_GravitationalForce(other, Gconst);
          }
          //Note: the forces already have the proper sign!
-         ith_accel[0] = ith_Fx/current.mass;
-         ith_accel[1] = ith_Fy/current.mass;
-         ith_accel[2] = ith_Fz/current.mass;
+         ith_accel[current_index][0] = ith_Fx/current.mass;
+         ith_accel[current_index][1] = ith_Fy/current.mass;
+         ith_accel[current_index][2] = ith_Fz/current.mass;
 
          // Calculate new position for current planet
          for(int j=0; j<3; j++) {
-             current.position[j] += current.velocity[j]*TimeStep + 0.5*TimeStep_sqrd*ith_accel[j];
+             current.position[j] += current.velocity[j]*TimeStep + 0.5*TimeStep_sqrd*ith_accel[current_index][j];
          }
 
-         //WE MIGHT NEED TO CALCULATE NEW POSITIONS FOR ALL PLANETS FIRST, BEFORE RECALCULATING FORCES!
+         //CALCULATE NEW POSITIONS FOR ALL PLANETS FIRST, BEFORE RECALCULATING FORCES!
+      }
 
-         //Recalculate the forces
+         //Now that have found new positions for all planets, recalculate the forces
+      for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
+         planet &current = all_planets[current_index];                      //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
+
+         next_Fx = next_Fy = next_Fz = 0.0; // Reset forces for each time iteration and planet
+
+
          for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
              if(n==current_index)continue;       //skip this case
              planet &other = all_planets[n];    //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
@@ -259,7 +288,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
          next_accel[2] = next_Fz/current.mass;
 
          // Calculate new velocity for current planet
-         for(int j=0; j<3; j++) current.velocity[j] += 0.5*TimeStep*(ith_accel[j] + next_accel[j]);
+         for(int j=0; j<3; j++) current.velocity[j] += 0.5*TimeStep*(ith_accel[current_index][j] + next_accel[j]);
 
      }
 
