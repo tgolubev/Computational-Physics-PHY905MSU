@@ -1,5 +1,5 @@
-%This plots the wavefunction for two electrons (project2 partd result) as
-%functions of the relative coordinate r and different values of w_r.
+%This plots the results for Project 3 part_a, non-object oriented earth-sun
+%system.
 
 clear 
 [File,Path]=uigetfile('*.txt','MultiSelect','off');
@@ -8,9 +8,12 @@ clear
                                              %ASCII file FILENAME, reading numeric data starting from line NHEADERLINES+1.
                                              %struct has fields data and
                                              %textdata
+    %to extract the data from the struct, use data.data
     
+    %HOWEVER, if heave NHEADERLINES=0, then the importdata doesn't return a
+    %struct, but returns a regular matrix, so extract data as in below.
 
- x = data(:,2);             %to extract the data from the struct, use data.data
+ x = data(:,2);             
  y = data(:,3);
  
  h = plot(x,y);
