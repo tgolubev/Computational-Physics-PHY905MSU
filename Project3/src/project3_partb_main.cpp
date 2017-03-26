@@ -19,6 +19,7 @@ int main()
     //int dimension;           // No. of spatial dimensions
 
     //Set-up planets
+
     planet planet1("Earth",0.000003,1.,0.0,0.0,0.0,6.3,0.); // planet1 (name,mass,x,y,z,vx,vy,vz)   //name must be in " " marks
     planet planet2("Sun",1.,0.,0.,0.,0.,0.,0.);           // planet2 (name,mass,x,y,z,vx,vy,vz)
 
@@ -43,6 +44,9 @@ int main()
 
     binary.Euler(integration_points, final_time);  //Run Euler's method ODEsolver
 
+    //NOTE: CURRENTLY THE SUN MOVES WIERDLY. VERY SMALL, OSCILLATORY MOTIONS. Can plot seperately
+    //from earth to see this.
+
 /*  // RK4
     solver binary_rk(5.0);
     binary_rk.add(planet1);
@@ -60,27 +64,6 @@ int main()
 
     //print_initial(dimension,time_step,final_time,x,v,integration_points);
 
-    // Evolution of binary system
-    /*
-    //RK4
-    cout << endl << "RK4: " << endl;
-    binary_rk.RungeKutta4(dimension,integration_points,final_time,force,simple,1,0.);
-
-    for(int j=0;j<dimension;j++){
-        x[j] = binary_rk.all_planets[0].position[j];
-        v[j] = binary_rk.all_planets[0].velocity[j];
-    }
-    print_final(dimension,x,v);
-
-    cout << endl << "VV:" << endl;
-    binary_vv.VelocityVerlet(dimension,integration_points,final_time,force,simple,1,0.);
-
-    for(int j=0;j<dimension;j++){
-        x[j] = binary_vv.all_planets[0].position[j];    //sets x array values equal to positions of 1st planet (all_planets[0])
-        v[j] = binary_vv.all_planets[0].velocity[j];
-    }
-    print_final(dimension,x,v);
-    */
 
 
     return 0;

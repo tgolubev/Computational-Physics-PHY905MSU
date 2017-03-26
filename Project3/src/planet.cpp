@@ -63,7 +63,7 @@ double planet::GravitationalForce(planet otherPlanet,double Gconst)
     else return 0;
 }
 
-double planet::X_GravitationalForce(planet otherPlanet,double Gconst)
+double planet::X_GravitationalForce(planet otherPlanet,double Gconst)   //NOTE: these gravforces already have the proper sign!!
 {
     double r = this->distance(otherPlanet);
     double relative_x = otherPlanet.position[0]-this->position[0];

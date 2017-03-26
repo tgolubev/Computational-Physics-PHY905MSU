@@ -161,11 +161,11 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
        current.position[1]=current.position[1]+TimeStep*current.velocity[1];
        current.position[2]=current.position[2]+TimeStep*current.velocity[2];
 
-       //update velocities by 1 time step
-       //NOT SURE HERE IF SHOULD BE - OR +
-       current.velocity[0] = current.velocity[0] - (Fx/current.mass)*TimeStep;
-       current.velocity[1] = current.velocity[1] - (Fy/current.mass)*TimeStep;
-       current.velocity[2] = current.velocity[2] - (Fz/current.mass)*TimeStep;
+       //update velocities by 1 time step (NOTE: the forces already have the proper sign)
+
+       current.velocity[0] = current.velocity[0] + (Fx/current.mass)*TimeStep;
+       current.velocity[1] = current.velocity[1] + (Fy/current.mass)*TimeStep;
+       current.velocity[2] = current.velocity[2] + (Fz/current.mass)*TimeStep;
        //std::cout<<"velocity = " << current.velocity[0] <<std::endl;
     }
 
@@ -233,15 +233,17 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
              ith_Fy += current.Y_GravitationalForce(other, Gconst);
              ith_Fz += current.Z_GravitationalForce(other, Gconst);
          }
-         //CHECK THE SIGNS HERE!
-         ith_accel[0] = -ith_Fx/current.mass;
-         ith_accel[1] = -ith_Fy/current.mass;
-         ith_accel[2] = -ith_Fz/current.mass;
+         //Note: the forces already have the proper sign!
+         ith_accel[0] = ith_Fx/current.mass;
+         ith_accel[1] = ith_Fy/current.mass;
+         ith_accel[2] = ith_Fz/current.mass;
 
          // Calculate new position for current planet
          for(int j=0; j<3; j++) {
              current.position[j] += current.velocity[j]*TimeStep + 0.5*TimeStep_sqrd*ith_accel[j];
          }
+
+         //WE MIGHT NEED TO CALCULATE NEW POSITIONS FOR ALL PLANETS FIRST, BEFORE RECALCULATING FORCES!
 
          //Recalculate the forces
          for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
@@ -252,10 +254,9 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
              next_Fz += current.Z_GravitationalForce(other, Gconst);
          }
 
-         //CHECK THE SIGNS HERE!
-         next_accel[0] = -next_Fx/current.mass;
-         next_accel[1] = -next_Fy/current.mass;
-         next_accel[2] = -next_Fz/current.mass;
+         next_accel[0] = next_Fx/current.mass;
+         next_accel[1] = next_Fy/current.mass;
+         next_accel[2] = next_Fz/current.mass;
 
          // Calculate new velocity for current planet
          for(int j=0; j<3; j++) current.velocity[j] += 0.5*TimeStep*(ith_accel[j] + next_accel[j]);
