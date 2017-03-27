@@ -35,8 +35,8 @@ public:
     void Euler(int IntegrationPoints, double FinalTime);
     void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime);
     void GravitationalForce(planet &current, planet &other, double &Fx, double &Fy, double &Fz, double epsilon);
-    void KineticEnergySystem();
-    void PotentialEnergySystem();
+    double KineticEnergySystem();
+    double PotentialEnergySystem();
     double EnergyLoss();
     bool Bound(planet OnePlanet);
 };

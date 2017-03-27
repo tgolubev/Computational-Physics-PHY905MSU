@@ -24,10 +24,10 @@ clear
  z2 = data(planet2_indices,6);
 
  
- h = plot3(x2,y2,z2);   %3D plot is called by plot3
+ h = plot3(x1,y1,z1);   %3D plot is called by plot3
  set(h,'LineWidth',1.5);                              
  hold on     
  xlabel({'x'});
  ylabel({'y'});
- %plot3(x2,y2,z2);
+ plot3(x2,y2,z2);
  

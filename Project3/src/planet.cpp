@@ -96,6 +96,12 @@ double planet::Acceleration(planet otherPlanet, double Gconst)
     else return 0;
 }
 
+double planet::Velocity_scalar()
+{
+    double Velocity_scalar = sqrt((this->velocity[0]*this->velocity[0]) + (this->velocity[1]*this->velocity[1]) + (this->velocity[2]*this->velocity[2]));
+    return Velocity_scalar;
+}
+
 double planet::KineticEnergy()
 {
     double velocity_sqrd = (this->velocity[0]*this->velocity[0]) + (this->velocity[1]*this->velocity[1]) + (this->velocity[2]*this->velocity[2]);
