@@ -20,12 +20,12 @@ ODEsolver::ODEsolver()          //to use this constructor in code, just use i.e.
 //functions
 void ODEsolver::add(planet newplanet)        //calling add, pass a planet object to it, inside the fnc add the object is named "newplanet"
 {
-    total_planets += 1;                   // "+=" means total_planets = total_planets +1
-    all_planets.push_back(newplanet);    //push_back() is fnc. of the C++ vector class which adds a new element to the end of a vector
-                                         //We wrote: #include <vector>  and using std::vector;  in planet.h so can immediately use push_back w/o ::vector
-                                         //all_planets is defined as vector property of the objects of our solver class.
-
+    total_planets += 1;                      // "+=" means total_planets = total_planets +1
+    all_planets.push_back(newplanet);
     planet_names.push_back(newplanet.name);
+    /*push_back() is fnc. of the C++ vector class which adds a new element to the end of a vector
+    We wrote: #include <vector>  and using std::vector;  in planet.h so can immediately use push_back w/o ::vector
+    all_planets is defined as vector property of the objects of our solver class.*/
 }
 
 double **ODEsolver::save_initial_values()        //** here means it returns a pointer
@@ -33,10 +33,10 @@ double **ODEsolver::save_initial_values()        //** here means it returns a po
     //Save initial values into a (total_planets, 6) size array for reset later. Columns 1-3 are initial positions, 4-6 are initial velocities
     std::cout<<"Initial Values save test: " << std::endl;
     double **initial_values;
-    initial_values = new double*[total_planets];    //each row is each planet
+    initial_values = new double*[total_planets];          //each row is each planet
     for(int i=0;i<total_planets;i++){
-       planet current = all_planets[i];      //select each planet out of vector of planet objects
-       initial_values[i] = new double[6];    //3 for positions, 3 for velocities
+       planet current = all_planets[i];                   //select each planet out of vector of planet objects
+       initial_values[i] = new double[6];                 //3 for positions, 3 for velocities
        for(int j=0;j<6;j++){
            if(j<3){
             initial_values[i][j] = current.position[j];
@@ -44,9 +44,8 @@ double **ODEsolver::save_initial_values()        //** here means it returns a po
            }else{
             initial_values[i][j] = current.velocity[j-3];  //velocities are stored in elements 0-2 of velocity[]
             std::cout<<initial_values[i][j]<<std::endl;
+           }
        }
-
-    }
     }
     return initial_values;  //returns a pointer to initial_positions
 }
@@ -129,56 +128,47 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
                                                         //**initial = the value of the first element of the array
 
   double TimeStep = FinalTime/((double) IntegrationPoints);
-  //std::vector<planet>::const_iterator j;
 
   // Create files for data storage
   char *filename = new char[1000];   //set up dynamiccally alocated character string w/ pointer pointing to memory adress of "filename"
   char *filenameE = new char[1000];
-
+  sprintf(filename, "Euler_%d_Planets_%.3f_Positions.txt",total_planets,TimeStep);
+  sprintf(filenameE, "Euler_%d_Planets_%.3f_Energies.txt",total_planets,TimeStep);
   /*sprintf notation: If a = 5, b = 3, then "(filename, "%d plus %d is %d", a, b, a+b);" will return "5 plus 3 is 8".
   replaces the %d's with values of the variables that follow the string in " " in order that the variables are listed.
   %.3f means to print the variable as a floating point decimal with a precision of at least 3 digits.
-  So i.e.: sprintf(filename, "cluster_VV_%d_%.3f.txt",total_planets,time_step); will replace the %.3f with time_step to
+  So i.e.: sprintf(filename, "Euler_%d_%.3f.txt",total_planets,time_step); will replace the %.3f with time_step to
   3 digits precision, so i.e. if it's 0.15, it will display as 0.150. If 0.005, it displays as 0.005
   */
 
-  sprintf(filename, "Euler_%d_Planets_%.3f_Positions.txt",total_planets,TimeStep);
-  sprintf(filenameE, "Euler_%d_Planets_%.3f_Energies.txt",total_planets,TimeStep); //make filenameE = 'Euler_[total#ofplanets}_planets_[timestep, displayed to 3 digits].txt'
-
   //define objects of class ofstream which will be for the output files. Each object has a filename.
   std::ofstream output_file(filename);
-  std::ofstream output_energy(filenameE);  //i.e. filenameE is what the output_energy file will be named.
+  std::ofstream output_energy(filenameE);  //i.e. filenameE is the name of the string which contains the filename
 
-  // Initialize forces and time
-  double Fx,Fy,Fz; // Forces in each dimension
+  // Initialize time and write initial values to file
   double time = 0.0;
-
-  // Write initial values to file
   print_position(output_file,time,total_planets);
   print_energy(output_energy,time);
+
+  // Initialize force components
+  double Fx,Fy,Fz;
 
   //Save the initial total system energies and angular momentums
   double Initial_kinetic, Initial_potential;
   double *initial_ang_mom = new double[total_planets];
   Initial_kinetic = totalKinetic;
   Initial_potential = totalPotential;
-  for(int n=1;n<total_planets;n++){       //planet n=0 is center of mass of system
+  for(int n=0;n<total_planets;n++){
         planet current = all_planets[n];
-        initial_ang_mom[n] = (current.mass)*(current.Velocity_scalar())*(current.distance(all_planets[0]));    //THIS ASSUMES planet 0 is the center of mass of system about which all others rotate!
+        initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
         std::cout << "Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
-  }
+  }    //SHOULD WE BE CHECKING CONSERVATIONS OF TOTAL ANG MOMENTUM OF ALL PLANETS, NOT EACH ONE SEPERATELY?
 
-  for(int i=0; i<IntegrationPoints; i++)   //loop for time steps
+  for(int i=0; i<IntegrationPoints; i++)   //loop over time steps
   {
-    //for(j = all_planets.begin(); j!=all_planets.end(); ++j)   //for loop for vectors
-    //Here to save active memory, we will not save all of the values at all time steps. We
-    //will use the previous time step values to compute next time step values and output values
-    //to file in each time step.
-
-    time +=TimeStep;  //add 1 timestep each iteration, starting from i=0 iteration
+    time +=TimeStep;         //add 1 timestep each iteration, starting from i=0 iteration
     //std::cout<<time<<std::endl;
-
-    int current_index;    //Declare outside of for loop because want to use in more than 1 loop
+    int current_index;    //Declare outside of for loop over indices because want to use in more than 1 loop
     for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
        planet &current = all_planets[current_index];  //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
 

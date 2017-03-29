@@ -19,7 +19,8 @@ int main()
     double final_time = 50.;       // End time of calculation
 
     //Set-up planets
-    planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);              // planet1 (name,mass,x,y,z,vx,vy,vz)
+    planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);              // planet1 (name,mass,x,y,z,vx,vy,vz)  //NOTE: right now the Sun is at origin of coordinate system
+                                                             //later will set the true COM of solar system to be the origin.
     planet planet2("Earth",0.000003,1.,0.0,0.0,0.0,6.3,0.);  // planet2 (name,mass,x,y,z,vx,vy,vz)   //name must be in " " marks
 
     //Output the properties of the planets

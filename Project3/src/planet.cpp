@@ -30,6 +30,12 @@ planet::planet(std::string planet_name, double M, double x, double y, double z, 
     kinetic = 0.;
 }
 
+double planet::radius()
+{   //Computes the scalar radius of the planet from coordinate system origin
+    double r = sqrt(this->position[0]*this->position[0]+ this->position[1]*this->position[1]+ this->position[2]*this->position[2]);
+    return r;
+
+}
 
 double planet::distance(planet otherPlanet)   //CAREFUL!: this passes "otherPlanet" which of type/class "planet". It "planet" is not an argument!
 {
