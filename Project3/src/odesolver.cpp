@@ -14,7 +14,6 @@ ODEsolver::ODEsolver()          //to use this constructor in code, just use i.e.
     Gconst = 4*M_PI*M_PI;       //M_PI is the pi in c++: #define _USE_MATH_DEFINES
     totalKinetic = 0;
     totalPotential = 0;
-
 }
 
 
@@ -162,7 +161,7 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
   for(int n=0;n<total_planets;n++){
         planet current = all_planets[n];
         initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
-        std::cout << "Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
+        std::cout << all_planets[n].name << "'s Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
   }    //SHOULD WE BE CHECKING CONSERVATIONS OF TOTAL ANG MOMENTUM OF ALL PLANETS, NOT EACH ONE SEPERATELY?
 
   for(int i=0; i<IntegrationPoints; i++)   //loop over time steps
@@ -275,7 +274,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
     for(int n=0;n<total_planets;n++){       //planet n=0 is center of mass of system
           planet current = all_planets[n];
           initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
-          std::cout << "Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
+          std::cout << all_planets[n].name << "'s Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
     }//SHOULD WE BE CALCULATING TOTAL ANG MOMENTUM FOR ALL PLANETS INSTEAD?
 
     for(int i=0; i<IntegrationPoints; i++)   //loop for time steps

@@ -1,3 +1,7 @@
+//This is the three-body problem of the Sun, Earth, and Jupiter. The Sun is still kept fixed as the center of mass of system (and at the origin of our
+//coordinate system).
+
+
 #define _USE_MATH_DEFINES
 #include <iostream>
 #include <cmath>
@@ -13,7 +17,7 @@ using namespace std;
 using namespace chrono;
 
 int main()
-{    
+{
     // Numerical setup
     int integration_points = 10000;  // No. of integration points
     double final_time = 50.;       // End time of calculation
@@ -22,30 +26,35 @@ int main()
     //NOTE: right now the Sun is at origin of coordinate system, later will set the true COM of solar system to be the origin.
     planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);              // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
     planet planet2("Earth",0.000003,1.,0.,0.,0.,6.3,0.);
+    planet planet3("Jupiter",0.00095,-1.,0.,0,0.,-6.3,0.);
+
+    //Setup the three body system
+    ODEsolver three_body;         //create object of class ODEsolver with default constructor ODEsolver(). If put the () in declaration here, it doesn't work!
+    three_body.add(planet1);      //add planets to the solver
+    three_body.add(planet2);
+    three_body.add(planet3);
 
     //Output the properties of the planets
-    cout << planet1.name << "'s Mass = " <<planet1.mass<< endl;
-    cout << planet1.name <<"'s Initial Position = " << planet1.position[0] << "," <<planet1.position[1]<<","<<planet1.position[2]<< endl;
-    cout << planet2.name << "'s Mass = " <<planet2.mass<< endl;
-    cout << planet2.name <<"'s Initial Position = " << planet2.position[0] << "," <<planet2.position[1]<<","<<planet2.position[2]<< endl;
-
-    //Setup the binary system
-    ODEsolver binary;         //create object of class ODEsolver with default constructor ODEsolver(). If put the () in declaration here, it doesn't work!
-    binary.add(planet1);      //add planets to the solver
-    binary.add(planet2);
-    //Tests of the setup
-    cout << "Gconst = " <<binary.Gconst << endl;
-    cout << "Number of Planets = " <<binary.total_planets<<endl;
-    //test planet_names (vector of strings)
-    for(int i=0; i<binary.total_planets;i++){
-    cout << "Planet" << i+1 << "'s name is " << binary.planet_names[i] <<endl;
+    for(int i=0;i<three_body.total_planets;i++)
+    {
+      cout << three_body.all_planets[i].name << "'s Mass = " <<three_body.all_planets[i].mass<< endl;
+      cout << three_body.all_planets[i].name <<"'s Initial Position = " << three_body.all_planets[i].position[0] << ","
+           << three_body.all_planets[i].position[1]<<","<< three_body.all_planets[i].position[2]<< endl;
     }
+    //Tests of the setup
+    cout << "Gconst = " <<three_body.Gconst << endl;
+    cout << "Number of Planets = " <<three_body.total_planets<<endl;
+
+    //test planet_names (vector of strings)
+    //for(int i=0; i<binary.total_planets;i++){
+    //cout << "Planet" << i+1 << "'s name is " << binary.planet_names[i] <<endl;
+    //}
 
     //Euler method
     //start clock timer
     high_resolution_clock::time_point start1 = high_resolution_clock::now();
 
-    binary.Euler(integration_points, final_time);  //Run Euler's method ODEsolver
+    three_body.Euler(integration_points, final_time);  //Run Euler's method ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish1 = high_resolution_clock::now();
@@ -59,7 +68,7 @@ int main()
     //start clock timer
     high_resolution_clock::time_point start2 = high_resolution_clock::now();
 
-    binary.VelocityVerlet(integration_points, final_time); //Run VVerlet ODEsolver
+    three_body.VelocityVerlet(integration_points, final_time); //Run VVerlet ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();
