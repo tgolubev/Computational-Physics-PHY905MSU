@@ -19,14 +19,14 @@ using namespace chrono;
 int main()
 {
     // Numerical setup
-    int integration_points = 10000;  // No. of integration points
+    int integration_points = 10000;  // No. of integration points (10,000 takes a few seconds, 100,000 takes ~30sec)
     double final_time = 50.;       // End time of calculation
 
     //Set-up planets
     //NOTE: right now the Sun is at origin of coordinate system, later will set the true COM of solar system to be the origin.
     planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);              // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
     planet planet2("Earth",0.000003,1.,0.,0.,0.,6.3,0.);
-    planet planet3("Jupiter",0.00095,-1.,0.,0,0.,-6.3,0.);
+    planet planet3("Jupiter",0.00095,5.2,0.,0,0.,-6.3,0.);  //VELOCITY NEEDs TO BE CHANGED TO REFLECT REAL JUPITER!
 
     //Setup the three body system
     ODEsolver three_body;         //create object of class ODEsolver with default constructor ODEsolver(). If put the () in declaration here, it doesn't work!
@@ -61,8 +61,7 @@ int main()
     duration<double> time1 = duration_cast<duration<double>>(finish1-start1);
     cout << "Euler Solver CPU time = " << time1.count() << endl;
 
-    //NOTE: CURRENTLY THE SUN MOVES WIERDLY. VERY SMALL, OSCILLATORY MOTIONS. Can plot seperately
-    //from earth to see this
+    //NOTE: CURRENTLY THE SUN MOVES. When add jupiter, it moves in a line, quite significantly.
 
     // Velocity Verlet
     //start clock timer
