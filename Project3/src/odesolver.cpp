@@ -5,6 +5,7 @@
 #include <time.h>
 #include <array>
 #include <iomanip>
+#include <string>       //need this to be able to cout strings
 
 
 ODEsolver::ODEsolver()          //to use this constructor in code, just use i.e. : ODEsolver object_name;     //NOT: ODEsolver object_name()
@@ -174,9 +175,9 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
 
        Fx = Fy = Fz = 0.0; // Reset forces before each run
 
-       for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
+       for(int n=0; n<total_planets; n++){                 //Calculate pairwise grav. force
            if(n==current_index)continue;                   //skip this case
-           planet &other = all_planets[n];   //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
+           planet &other = all_planets[n];                 //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
            Fx += current.X_GravitationalForce(other, Gconst);
            Fy += current.Y_GravitationalForce(other, Gconst);
            Fz += current.Z_GravitationalForce(other, Gconst);
@@ -185,15 +186,15 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
        //std::cout << "Fx = " << Fx <<std::endl;
 
        //update positions by 1 time step
-       current.position[0]=current.position[0]+TimeStep*current.velocity[0];
-       current.position[1]=current.position[1]+TimeStep*current.velocity[1];
-       current.position[2]=current.position[2]+TimeStep*current.velocity[2];
+       current.position[0]+=TimeStep*current.velocity[0];
+       current.position[1]+=TimeStep*current.velocity[1];
+       current.position[2]+=TimeStep*current.velocity[2];
 
        //update velocities by 1 time step (NOTE: the forces already have the proper sign)
 
-       current.velocity[0] = current.velocity[0] + (Fx/current.mass)*TimeStep;
-       current.velocity[1] = current.velocity[1] + (Fy/current.mass)*TimeStep;
-       current.velocity[2] = current.velocity[2] + (Fz/current.mass)*TimeStep;
+       current.velocity[0]+=(Fx/current.mass)*TimeStep;
+       current.velocity[1]+=(Fy/current.mass)*TimeStep;
+       current.velocity[2]+=(Fz/current.mass)*TimeStep;
        //std::cout<<"velocity = " << current.velocity[0] <<std::endl;
     }
 
@@ -202,8 +203,6 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
     print_energy(output_energy,time);
 
     //std::cout<<"position = " << current.position[0]<<std::endl;
-
-
  }
 
   // Close files
@@ -218,19 +217,21 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
 
   //Angular Momentum conservation check
   double *ang_mom_change = new double[total_planets];
-    for(int n=1;n<total_planets;n++){       //planet n=0 is center of mass of system
-          planet current = all_planets[n];
-          std::cout<<"Final ang momentum = " << current.mass*current.Velocity_scalar()*current.distance(all_planets[0])<<std::endl;
-          ang_mom_change[n] = (current.mass)*(current.Velocity_scalar())*(current.distance(all_planets[0]))-initial_ang_mom[n];    //THIS ASSUMES planet 0 is the center of mass of system about which all others rotate!
-          std::cout << "Angular momentum change = " <<100*ang_mom_change[n]/initial_ang_mom[n] << " %" << std::endl;
-    }
+  for(int n=0;n<total_planets;n++){       //planet n=0 is center of mass of system
+        planet current = all_planets[n];
+        //std::cout<<"Final ang momentum = " << current.mass*current.Velocity_scalar()*current.radius()<<std::endl;
+        ang_mom_change[n] = current.mass*current.Velocity_scalar()*current.radius()-initial_ang_mom[n];
+        if(initial_ang_mom[n]!=0.0){
+        std::cout << current.name << "'s Relative angular momentum change = " <<100.0*ang_mom_change[n]/initial_ang_mom[n] << " %" << std::endl;
+        }else std::cout << current.name <<"'s Initial angular momentum was 0, Angular momentum change = " << ang_mom_change[n] << std::endl;
+  }
 
   //Energy conservation checks
   //std::cout<< "Initial Energies = " <<Initial_kinetic << "\t" << Initial_potential <<std::endl;
   double KE_change = totalKinetic - Initial_kinetic;
   double PE_change = totalPotential -Initial_potential;
-  std::cout << "Kinetic energy change = " << 100.0*KE_change/Initial_kinetic <<" %" << std::endl;
-  std::cout <<"Potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;    //use abs b/c PE<0
+  std::cout << "Relative kinetic energy change = " << 100.0*KE_change/Initial_kinetic <<" %" << std::endl;
+  std::cout <<"Relative potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;    //use abs b/c PE<0
   std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl;
   }
 
@@ -254,7 +255,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
     sprintf(filenameE, "VVerlet_%d_Planets_%.3f_Energies.txt",total_planets,TimeStep);
     //define objects of class ofstream which will be for the output files. Each object has a filename.
     std::ofstream output_file(filename);
-    std::ofstream output_energy(filenameE);  //i.e. filenameE is what the output_energy file will be named.
+    std::ofstream output_energy(filenameE);
 
     // Initialize forces and acceleration
     double ith_Fx,ith_Fy,ith_Fz, next_Fx, next_Fy, next_Fz;
@@ -266,26 +267,21 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
     print_position(output_file,time, total_planets);
     print_energy(output_energy,time);
 
-
     //Save the initial total system energies and angular momentums
     double Initial_kinetic, Initial_potential;
     double *initial_ang_mom = new double[total_planets];
     Initial_kinetic = totalKinetic;
     Initial_potential = totalPotential;
-    for(int n=1;n<total_planets;n++){       //planet n=0 is center of mass of system
+    for(int n=0;n<total_planets;n++){       //planet n=0 is center of mass of system
           planet current = all_planets[n];
-          initial_ang_mom[n] = (current.mass)*(current.Velocity_scalar())*(current.distance(all_planets[0]));    //THIS ASSUMES planet 0 is the center of mass of system about which all others rotate!
+          initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
           std::cout << "Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
-    }
-
-
+    }//SHOULD WE BE CALCULATING TOTAL ANG MOMENTUM FOR ALL PLANETS INSTEAD?
 
     for(int i=0; i<IntegrationPoints; i++)   //loop for time steps
     { //will use the previous time step values to compute next time step values and output values
       //to file in each time step.
-
-
-      time +=TimeStep;  //add 1 timestep each iteration, starting from i=0 iteration
+      time +=TimeStep;
       //std::cout<<time<<std::endl;
 
       int current_index;    //Declare outside of for loop because want to use in more than 1 loop
@@ -306,7 +302,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
          ith_accel[current_index][1] = ith_Fy/current.mass;
          ith_accel[current_index][2] = ith_Fz/current.mass;
 
-         // Calculate new position for current planet
+         // Calculate new position components for current planet
          for(int j=0; j<3; j++) {
              current.position[j] += current.velocity[j]*TimeStep + 0.5*TimeStep_sqrd*ith_accel[current_index][j];
          }
@@ -314,7 +310,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
          //CALCULATE NEW POSITIONS FOR ALL PLANETS FIRST, BEFORE RECALCULATING FORCES!
       }
 
-         //Now that have found new positions for all planets, recalculate the forces
+      //Now that have found new positions for all planets, recalculate the forces
       for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
          planet &current = all_planets[current_index];                      //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
 
@@ -333,7 +329,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
          next_accel[1] = next_Fy/current.mass;
          next_accel[2] = next_Fz/current.mass;
 
-         // Calculate new velocity for current planet
+         // Calculate new velocity componentsfor current planet
          for(int j=0; j<3; j++) current.velocity[j] += 0.5*TimeStep*(ith_accel[current_index][j] + next_accel[j]);
 
      }
@@ -341,25 +337,26 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
       //print the current values to output file
       print_position(output_file,time,total_planets);
       print_energy(output_energy,time);
-
   }
 
-   //Angular Momentum conservation check
-       double *ang_mom_change = new double[total_planets];
-        for(int n=1;n<total_planets;n++){       //planet n=0 is center of mass of system
-              planet current = all_planets[n];
-              std::cout<<"Final ang momentum = " << current.mass*current.Velocity_scalar()*current.distance(all_planets[0])<<std::endl;
-              ang_mom_change[n] = (current.mass)*(current.Velocity_scalar())*(current.distance(all_planets[0]))-initial_ang_mom[n];    //THIS ASSUMES planet 0 is the center of mass of system about which all others rotate!
-              std::cout << "Angular momentum change = " <<100.0*ang_mom_change[n]/initial_ang_mom[n] << " %" << std::endl;
-        }
+  //Angular Momentum conservation check
+  double *ang_mom_change = new double[total_planets];
+  for(int n=0;n<total_planets;n++){       //planet n=0 is center of mass of system
+        planet current = all_planets[n];
+        //std::cout<<"Final ang momentum = " << current.mass*current.Velocity_scalar()*current.radius()<<std::endl;
+        ang_mom_change[n] = current.mass*current.Velocity_scalar()*current.radius()-initial_ang_mom[n];
+        if(initial_ang_mom[n]!=0.0){
+        std::cout << current.name << "'s Relative angular momentum change = " <<100.0*ang_mom_change[n]/initial_ang_mom[n] << " %" << std::endl;
+        }else std::cout << current.name <<"'s Initial angular momentum was 0, Angular momentum change = " << ang_mom_change[n] << std::endl;
+  }//SHOULD WE CALCULATE ANG MOMENTUM FOR ALL PLANETS TOTAL?
 
   //Energy conservation checks
   //std::cout<< "Initial Energies = " <<Initial_kinetic << "\t" << Initial_potential <<std::endl;
   double KE_change = totalKinetic - Initial_kinetic;
   double PE_change = totalPotential -Initial_potential;
 
-  std::cout << "Kinetic energy change = " << 100.0*KE_change/Initial_kinetic << " %" <<std::endl;
-  std::cout <<"Potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;
+  std::cout << "Relative kinetic energy change = " << 100.0*KE_change/Initial_kinetic << " %" <<std::endl;
+  std::cout <<"Relative potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;
   std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl;
 
   // Close files
@@ -372,8 +369,6 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
   // Clear memory
   delete_matrix(ith_accel);
   delete_matrix(initial);
-
-
 }
 
 double ODEsolver::KineticEnergySystem()
