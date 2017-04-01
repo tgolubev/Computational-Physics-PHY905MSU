@@ -73,7 +73,7 @@ double planet::X_GravitationalForce(planet otherPlanet,double Gconst)   //NOTE: 
 {
     double r = this->distance(otherPlanet);
     double relative_x = otherPlanet.position[0]-this->position[0];
-    if(r!=0) return Gconst*this->mass*otherPlanet.mass*relative_x/(r*r*r);   //F = Gm1m2/r^2
+    if(r!=0) return Gconst*this->mass*otherPlanet.mass*relative_x/(r*r*r);   //F = Gm1m2x/r^3
     else return 0;
 }
 
@@ -91,6 +91,23 @@ double planet::Z_GravitationalForce(planet otherPlanet,double Gconst)
     double relative_z = otherPlanet.position[2]-this->position[2];
     if(r!=0) return Gconst*this->mass*otherPlanet.mass*relative_z/(r*r*r);
     else return 0;
+}
+double planet::AngularMomentum()
+{  //Calculates angular momentum using L = radius cross velocity, where radius is with respect to system COM
+    double ang_mom_x = this->position[1]*this->velocity[2]-this->position[2]*this->velocity[1];
+    double ang_mom_y = this->position[0]*this->velocity[2]-this->position[2]*this->velocity[0];
+    double ang_mom_z = this->position[0]*this->velocity[1]-this->position[1]*this->velocity[0];
+    double ang_mom = sqrt(ang_mom_x*ang_mom_x + ang_mom_y*ang_mom_y + ang_mom_z*ang_mom_z);
+    return ang_mom;
+}
+
+double planet::Relativistic_correction(planet otherPlanet)
+{
+    double const c = 63197.8;  //speed of light in: Au/year
+    double AngMom = AngularMomentum();
+    double Distance = distance(otherPlanet);
+    double correction = (3*AngMom*AngMom)/(Distance*Distance*c*c);
+    return correction;
 }
 
 double planet::Acceleration(planet otherPlanet, double Gconst)
