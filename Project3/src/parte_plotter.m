@@ -1,5 +1,4 @@
-%This plots the results for Project 3 part_b, the object oriented solar
-%system
+%This plots the results for Project 3 part e.
 
 clear 
 [File,Path]=uigetfile('*.txt','MultiSelect','off');

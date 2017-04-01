@@ -1,6 +1,5 @@
-%This plots the results for Project 3 part_b, the object oriented solar
-%system
-
+%This plots the results for Project 3 for any number of planets that are in
+%the output file. It creates both a 3D and 2D plot.
 clear 
 [File,Path]=uigetfile('*.txt','MultiSelect','off');
  
@@ -20,33 +19,6 @@ clear
      z(:,i)=data(planet_indices(:,i),6);
  end
      
-     
- 
-%  planet1_indices = find(planet_index==1);   %returns a column vector of the indices (locations) of where the values in the vector planet_index==1
-%  planet2_indices = find(planet_index==2);
-%  planet3_indices = find(planet_index==3);
-%  
-%  x1 = data(planet1_indices,4);    %import into x1 the values from data which have row #'s = planet1_indices, and are in column 4 (easy!)
-%  x2 = data(planet2_indices,4);
-%  x3 = data(planet3_indices,4);
-%  
-%  y1 = data(planet1_indices,5);
-%  y2 = data(planet2_indices,5);
-%  y3 = data(planet3_indices,5);
-%  
-%  z1 = data(planet1_indices,6);
-%  z2 = data(planet2_indices,6);
-%  z3 = data(planet3_indices,6);
- 
- 
-%   h = plot(x1,y1);  
-%  set(h,'LineWidth',1.5);                              
-%  hold on     
-%  xlabel({'x'});
-%  ylabel({'y'});
-%  plot(x2,y2);
-%  plot(x3,y3);
- 
 for i=1:(total_planets)
  h = plot3(x(:,i),y(:,i),z(:,i));   %3D plot is called by plot3
  set(h,'LineWidth',1.5);                              
@@ -54,3 +26,15 @@ for i=1:(total_planets)
  xlabel({'x'});
  ylabel({'y'});
 end
+
+ figure                    %create a seperate figure window for the 2D plot
+for i=1:(total_planets)
+ g = plot(x(:,i),y(:,i));  
+ set(g,'LineWidth',1.5);                              
+ hold on     
+ xlabel({'x'});
+ ylabel({'y'});
+end
+hold off;
+     
+
