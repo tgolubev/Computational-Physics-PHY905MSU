@@ -21,6 +21,7 @@ int main()
     // Numerical setup
     int integration_points = 10000;  // No. of integration points (10,000 takes a few seconds, 100,000 takes ~30sec)
     double final_time = 50.;       // End time of calculation
+    bool corrections = false;      //No relativistic corrections applied to forces
 
     //Set-up planets, Using April 1st, positions and velocities in Au/year. Using Sun as origin.
     //NOTE: The Sun is at origin of coordinate system.
@@ -53,7 +54,7 @@ int main()
     //start clock timer
     high_resolution_clock::time_point start1 = high_resolution_clock::now();
 
-    three_body.Euler(integration_points, final_time);  //Run Euler's method ODEsolver
+    three_body.Euler(integration_points, final_time, corrections);  //Run Euler's method ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish1 = high_resolution_clock::now();
@@ -64,7 +65,7 @@ int main()
     //start clock timer
     high_resolution_clock::time_point start2 = high_resolution_clock::now();
 
-    three_body.VelocityVerlet(integration_points, final_time); //Run VVerlet ODEsolver
+    three_body.VelocityVerlet(integration_points, final_time, corrections); //Run VVerlet ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();

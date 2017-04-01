@@ -17,6 +17,7 @@ int main()
     // Numerical setup
     int integration_points = 10000;  // No. of integration points
     double final_time = 50.;       // End time of calculation
+    bool corrections = false;     //No relativistic corrections applied
 
     //Set-up planets
     //NOTE: right now the Sun is at origin of coordinate system, later will set the true COM of solar system to be the origin.
@@ -45,7 +46,7 @@ int main()
     //start clock timer
     high_resolution_clock::time_point start1 = high_resolution_clock::now();
 
-    binary.Euler(integration_points, final_time);  //Run Euler's method ODEsolver
+    binary.Euler(integration_points, final_time, corrections);  //Run Euler's method ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish1 = high_resolution_clock::now();
@@ -59,7 +60,7 @@ int main()
     //start clock timer
     high_resolution_clock::time_point start2 = high_resolution_clock::now();
 
-    binary.VelocityVerlet(integration_points, final_time); //Run VVerlet ODEsolver
+    binary.VelocityVerlet(integration_points, final_time, corrections); //Run VVerlet ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();

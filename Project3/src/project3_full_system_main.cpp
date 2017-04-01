@@ -19,6 +19,7 @@ int main()
     // Numerical setup
     int integration_points = 50000;  // No. of integration points
     double final_time = 300.;       // End time of calculation (150  is not long enough to complete 1 orbit of all planets)
+    bool corrections = false;       //No relativistic corrections applied
 
     //Set-up planets, Using April 1st, 2017 positions and velocities (in Au and Au/year), use 1yr = 365.25days
     //These numbers are based on origin of coordinate system at center of mass of solar system.
@@ -68,7 +69,7 @@ int main()
     //start clock timer
     high_resolution_clock::time_point start1 = high_resolution_clock::now();
 
-    solar_system.Euler(integration_points, final_time);  //Run Euler's method ODEsolver
+    solar_system.Euler(integration_points, final_time, corrections);  //Run Euler's method ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish1 = high_resolution_clock::now();
@@ -81,7 +82,7 @@ int main()
     //start clock timer
     high_resolution_clock::time_point start2 = high_resolution_clock::now();
 
-    solar_system.VelocityVerlet(integration_points, final_time); //Run VVerlet ODEsolver
+    solar_system.VelocityVerlet(integration_points, final_time, corrections); //Run VVerlet ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();

@@ -62,36 +62,37 @@ double planet::distance(planet otherPlanet)   //CAREFUL!: this passes "otherPlan
     return sqrt(xx*xx + yy*yy + zz*zz);
  }
 
-double planet::GravitationalForce(planet otherPlanet,double Gconst)
+double planet::GravitationalForce(planet otherPlanet,double Gconst, bool relativistic)
 {
     double r = this->distance(otherPlanet);
     if(r!=0) return Gconst*this->mass*otherPlanet.mass/(r*r);   //F = Gm1m2/r^2
     else return 0;
 }
 
-double planet::X_GravitationalForce(planet otherPlanet,double Gconst)   //NOTE: these gravforces already have the proper sign!!
+double planet::X_GravitationalForce(planet otherPlanet,double Gconst, bool relativistic)   //NOTE: these gravforces already have the proper sign!!
 {
     double r = this->distance(otherPlanet);
     double relative_x = otherPlanet.position[0]-this->position[0];
-    if(r!=0) return Gconst*this->mass*otherPlanet.mass*relative_x/(r*r*r);   //F = Gm1m2x/r^3
-    else return 0;
+    if(r!=0 && relativistic == false) return Gconst*this->mass*otherPlanet.mass*relative_x/(r*r*r);   //F = Gm1m2x/r^3
+    else return Gconst*this->mass*otherPlanet.mass*relative_x*(1+Relativistic_correction(otherPlanet))/(r*r*r);
 }
 
-double planet::Y_GravitationalForce(planet otherPlanet,double Gconst)
+double planet::Y_GravitationalForce(planet otherPlanet,double Gconst, bool relativistic)
 {
     double r = this->distance(otherPlanet);
     double relative_y = otherPlanet.position[1]-this->position[1];
-    if(r!=0) return Gconst*this->mass*otherPlanet.mass*relative_y/(r*r*r);
-    else return 0;
+    if(r!=0 && relativistic == false) return Gconst*this->mass*otherPlanet.mass*relative_y/(r*r*r);   //F = Gm1m2y/r^3
+    else return Gconst*this->mass*otherPlanet.mass*relative_y*(1+Relativistic_correction(otherPlanet))/(r*r*r);
 }
 
-double planet::Z_GravitationalForce(planet otherPlanet,double Gconst)
+double planet::Z_GravitationalForce(planet otherPlanet,double Gconst, bool relativistic)
 {
     double r = this->distance(otherPlanet);
     double relative_z = otherPlanet.position[2]-this->position[2];
-    if(r!=0) return Gconst*this->mass*otherPlanet.mass*relative_z/(r*r*r);
-    else return 0;
+    if(r!=0 && relativistic == false) return Gconst*this->mass*otherPlanet.mass*relative_z/(r*r*r);   //F = Gm1m2x/r^3
+    else return Gconst*this->mass*otherPlanet.mass*relative_z*(1+Relativistic_correction(otherPlanet))/(r*r*r);
 }
+
 double planet::AngularMomentum()
 {  //Calculates angular momentum using L = radius cross velocity, where radius is with respect to system COM
     double ang_mom_x = this->position[1]*this->velocity[2]-this->position[2]*this->velocity[1];
@@ -110,12 +111,11 @@ double planet::Relativistic_correction(planet otherPlanet)
     return correction;
 }
 
-double planet::Acceleration(planet otherPlanet, double Gconst)
+double planet::Acceleration(planet otherPlanet, double Gconst, bool relativistic)
 {
     double r = this->distance(otherPlanet);
-    if(r!=0) return this->GravitationalForce(otherPlanet,Gconst)/(this->mass*r);  // a = F/m1  "return this->GravitationalForce" means it will
+    if(r!=0) return this->GravitationalForce(otherPlanet,Gconst,relativistic )/(this->mass*r);  // a = F/m1  "return this->GravitationalForce" means it will
                                                                                   //find and return gravitationalforce on the current object due to the "otherPlanet"
-
     else return 0;
 }
 

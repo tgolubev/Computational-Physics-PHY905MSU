@@ -122,7 +122,7 @@ void ODEsolver::delete_matrix(double **matrix)         //accepts a double_pointe
     delete [] matrix;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------
-void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
+void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections)
 { 
   double **initial = save_initial_values();              //initial contains the ADDRESS of the array of initial values
                                                         //**initial = the value of the first element of the array
@@ -177,9 +177,9 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
        for(int n=0; n<total_planets; n++){                 //Calculate pairwise grav. force
            if(n==current_index)continue;                   //skip this case
            planet &other = all_planets[n];                 //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
-           Fx += current.X_GravitationalForce(other, Gconst);
-           Fy += current.Y_GravitationalForce(other, Gconst);
-           Fz += current.Z_GravitationalForce(other, Gconst);
+           Fx += current.X_GravitationalForce(other, Gconst,corrections);  //correction is a bool value (true or false). True if want to apply a relativistic correction.
+           Fy += current.Y_GravitationalForce(other, Gconst,corrections);
+           Fz += current.Z_GravitationalForce(other, Gconst,corrections);
        }
 
        //std::cout << "Fx = " << Fx <<std::endl;
@@ -234,7 +234,7 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime)
   std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl;
   }
 
-void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
+void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool corrections)
 {   /*  Velocity-Verlet solver for two coupeled ODEs in a given number of dimensions.
     The algorithm is, exemplified in 1D for position x(t), velocity v(t) and acceleration a(t):
     x(t+dt) = x(t) + v(t)*dt + 0.5*dt*dt*a(t);
@@ -292,9 +292,9 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
          for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
              if(n==current_index)continue;       //skip this case
              planet &other = all_planets[n];    //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
-             ith_Fx += current.X_GravitationalForce(other, Gconst);
-             ith_Fy += current.Y_GravitationalForce(other, Gconst);
-             ith_Fz += current.Z_GravitationalForce(other, Gconst);
+             ith_Fx += current.X_GravitationalForce(other, Gconst, corrections);
+             ith_Fy += current.Y_GravitationalForce(other, Gconst, corrections);
+             ith_Fz += current.Z_GravitationalForce(other, Gconst, corrections);
          }
          //Note: the forces already have the proper sign!
          ith_accel[current_index][0] = ith_Fx/current.mass;
@@ -319,9 +319,9 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime)
          for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
              if(n==current_index)continue;       //skip this case
              planet &other = all_planets[n];    //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
-             next_Fx += current.X_GravitationalForce(other, Gconst);
-             next_Fy += current.Y_GravitationalForce(other, Gconst);
-             next_Fz += current.Z_GravitationalForce(other, Gconst);
+             next_Fx += current.X_GravitationalForce(other, Gconst, corrections);
+             next_Fy += current.Y_GravitationalForce(other, Gconst, corrections);
+             next_Fz += current.Z_GravitationalForce(other, Gconst, corrections);
          }
 
          next_accel[0] = next_Fx/current.mass;
