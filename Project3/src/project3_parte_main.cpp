@@ -23,9 +23,10 @@ using namespace chrono;
 int main()
 {
     // Numerical setup
-    int integration_points = 10000;  // No. of integration points (10,000 takes a few seconds, 100,000 takes ~30sec)
-    double final_time = 50.;       // End time of calculation
+    int integration_points = 100000;  // No. of integration points (10,000 takes a few seconds, 100,000 takes ~30sec)
+    double final_time = 50.;       // End time of calculation, end time affects energy conservation
     bool corrections = false;      //No relativistic corrections applied to forces
+    bool sun_fixed =true;
 
     //Set-up planets, Using April 1st, positions and velocities in Au/year. Using Sun as origin.
     //NOTE: The Sun is at origin of coordinate system.
@@ -71,7 +72,10 @@ int main()
     //start clock timer
     high_resolution_clock::time_point start2 = high_resolution_clock::now();
 
-    three_body.VelocityVerlet(integration_points, final_time, corrections); //Run VVerlet ODEsolver
+    three_body.VelocityVerlet(integration_points, final_time, corrections, sun_fixed); //Run VVerlet ODEsolver
+    //check if sun fixed
+    cout<<"Final sun position" << three_body.all_planets[0].position[0];
+    cout<<three_body.all_planets[0].position[1]<<three_body.all_planets[0].position[2]<<endl;
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();

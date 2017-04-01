@@ -120,11 +120,12 @@ double planet::Relativistic_correction(planet otherPlanet)
 {
     double const c = 63197.8;  //speed of light in: Au/year
     double AngMom_perM = this->AngularMomentum()/this->mass;
-    std::cout<<"AngMom_perM = " << AngMom_perM<<std::endl;   //WHEN THESE ARE TINY, GIVES TINY  CORRECTION
+    //std::cout<<"mass = " << this->mass <<std::endl;   //we verified that using correct mass
+    //std::cout<<"AngMom_perM = " << AngMom_perM<<std::endl;   //WHEN THESE ARE TINY, GIVES TINY  CORRECTION
     double Distance = this->distance(otherPlanet);
-    std::cout<<"Distance = " <<Distance <<std::endl;
+    //std::cout<<"Distance = " <<Distance <<std::endl;
     double correction = (3*AngMom_perM*AngMom_perM)/(Distance*Distance*c*c);
-    std::cout<<"correction = " <<correction << std::endl;
+    //std::cout<<"correction = " <<correction << std::endl;
     return correction;
 }
 

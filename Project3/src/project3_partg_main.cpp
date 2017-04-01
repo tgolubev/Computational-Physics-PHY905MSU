@@ -25,6 +25,7 @@ int main()
     int integration_points = 100000;  // No. of integration points (10,000 takes a few seconds, 100,000 takes ~30sec). Mercury requires 500k if simulate 100 earth years for more consistent thin orbit.
     double final_time = 100.;       // End time of calculation. (Mercury takes 88days for 1 orbit)
     bool corrections = true;      //Relativistic corrections to forces
+    bool sun_fixed = true;
 
     //Set-up planets, Using April 1st, positions and velocities in Au/year. Using Sun as origin.
     //NOTE: The Sun is at origin of coordinate system.
@@ -68,12 +69,15 @@ int main()
     //start clock timer
     high_resolution_clock::time_point start2 = high_resolution_clock::now();
 
-    precession.VelocityVerlet(integration_points, final_time, corrections); //Run VVerlet ODEsolver
+    precession.VelocityVerlet(integration_points, final_time, corrections, sun_fixed); //Run VVerlet ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();
     duration<double> time2 = duration_cast<duration<double>>(finish2-start2);
     cout << "Velocity Verlet Solver CPU time = " << time2.count() << endl;
+
+    //output positions of mercury for last orbit (88days period): DO THIS IN MATLAB
+    //int steps = 0.241/(final_time/integration_pts);
 
     return 0;
 }
