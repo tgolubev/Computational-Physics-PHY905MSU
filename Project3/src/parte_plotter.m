@@ -29,6 +29,15 @@ clear
  z2 = data(planet2_indices,6);
  z3 = data(planet3_indices,6);
  
+ 
+%   h = plot(x1,y1);   %3D plot is called by plot3
+%  set(h,'LineWidth',1.5);                              
+%  hold on     
+%  xlabel({'x'});
+%  ylabel({'y'});
+%  plot(x2,y2);
+%  plot(x3,y3);
+ 
  h = plot3(x1,y1,z1);   %3D plot is called by plot3
  set(h,'LineWidth',1.5);                              
  hold on     
@@ -36,4 +45,4 @@ clear
  ylabel({'y'});
  plot3(x2,y2,z2);
  plot3(x3,y3,z3);
- 
+%  

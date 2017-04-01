@@ -31,7 +31,7 @@ void ODEsolver::add(planet newplanet)        //calling add, pass a planet object
 double **ODEsolver::save_initial_values()        //** here means it returns a pointer
 {
     //Save initial values into a (total_planets, 6) size array for reset later. Columns 1-3 are initial positions, 4-6 are initial velocities
-    std::cout<<"Initial Values save test: " << std::endl;
+    //std::cout<<"Initial Values save test: " << std::endl;
     double **initial_values;
     initial_values = new double*[total_planets];          //each row is each planet
     for(int i=0;i<total_planets;i++){
@@ -40,10 +40,10 @@ double **ODEsolver::save_initial_values()        //** here means it returns a po
        for(int j=0;j<6;j++){
            if(j<3){
             initial_values[i][j] = current.position[j];
-            std::cout<<initial_values[i][j]<<std::endl;
+            //std::cout<<initial_values[i][j]<<std::endl;
            }else{
             initial_values[i][j] = current.velocity[j-3];  //velocities are stored in elements 0-2 of velocity[]
-            std::cout<<initial_values[i][j]<<std::endl;
+            //std::cout<<initial_values[i][j]<<std::endl;
            }
        }
     }
@@ -53,16 +53,16 @@ double **ODEsolver::save_initial_values()        //** here means it returns a po
 
 void ODEsolver::reset_initial_values(double** initial_values)   //double** means are passing a pointer
 {   //Reset initial values to what they were before running a solver algo
-    std::cout<<"Reset Initial values test: " <<std::endl;
+    //std::cout<<"Reset Initial values test: " <<std::endl;
     for(int i=0;i<total_planets;i++){
        planet &current = all_planets[i];      //select each planet out of vector of planet objects
        for(int j=0;j<6;j++){
            if(j<3){
             current.position[j]=initial_values[i][j];
-            std::cout<< current.position[j]<<std::endl;
+            //std::cout<< current.position[j]<<std::endl;
            }else{
             current.velocity[j-3]=initial_values[i][j];  //velocities are stored in elements 0-2 of velocity[]
-            std::cout<< current.velocity[j-3]<<std::endl;
+            //std::cout<< current.velocity[j-3]<<std::endl;
            }
        }
     }
