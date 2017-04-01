@@ -160,7 +160,8 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections)
   Initial_potential = totalPotential;
   for(int n=0;n<total_planets;n++){
         planet current = all_planets[n];
-        initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
+        //initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
+        initial_ang_mom[n] = current.AngularMomentum();
         std::cout << all_planets[n].name << "'s Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
   }    //SHOULD WE BE CHECKING CONSERVATIONS OF TOTAL ANG MOMENTUM OF ALL PLANETS, NOT EACH ONE SEPERATELY?
 
@@ -219,11 +220,13 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections)
   for(int n=0;n<total_planets;n++){       //planet n=0 is center of mass of system
         planet current = all_planets[n];
         //std::cout<<"Final ang momentum = " << current.mass*current.Velocity_scalar()*current.radius()<<std::endl;
-        ang_mom_change[n] = current.mass*current.Velocity_scalar()*current.radius()-initial_ang_mom[n];
+        //ang_mom_change[n] = current.mass*current.Velocity_scalar()*current.radius()-initial_ang_mom[n];
+        ang_mom_change[n] = current.AngularMomentum()-initial_ang_mom[n];
         if(initial_ang_mom[n]!=0.0){
         std::cout << current.name << "'s Relative angular momentum change = " <<100.0*ang_mom_change[n]/initial_ang_mom[n] << " %" << std::endl;
         }else std::cout << current.name <<"'s Initial angular momentum was 0, Angular momentum change = " << ang_mom_change[n] << std::endl;
   }
+  std::cout<<std::endl;
 
   //Energy conservation checks
   //std::cout<< "Initial Energies = " <<Initial_kinetic << "\t" << Initial_potential <<std::endl;
@@ -231,7 +234,7 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections)
   double PE_change = totalPotential -Initial_potential;
   std::cout << "Relative kinetic energy change = " << 100.0*KE_change/Initial_kinetic <<" %" << std::endl;
   std::cout <<"Relative potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;    //use abs b/c PE<0
-  std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl;
+  std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl<<std::endl;
   }
 
 void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool corrections)
@@ -273,7 +276,8 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
     Initial_potential = totalPotential;
     for(int n=0;n<total_planets;n++){       //planet n=0 is center of mass of system
           planet current = all_planets[n];
-          initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
+          initial_ang_mom[n] = current.AngularMomentum();
+          //initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
           std::cout << all_planets[n].name << "'s Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
     }//SHOULD WE BE CALCULATING TOTAL ANG MOMENTUM FOR ALL PLANETS INSTEAD?
 
@@ -342,12 +346,14 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
   double *ang_mom_change = new double[total_planets];
   for(int n=0;n<total_planets;n++){       //planet n=0 is center of mass of system
         planet current = all_planets[n];
+        ang_mom_change[n] = current.AngularMomentum()-initial_ang_mom[n];
         //std::cout<<"Final ang momentum = " << current.mass*current.Velocity_scalar()*current.radius()<<std::endl;
-        ang_mom_change[n] = current.mass*current.Velocity_scalar()*current.radius()-initial_ang_mom[n];
+        //ang_mom_change[n] = current.mass*current.Velocity_scalar()*current.radius()-initial_ang_mom[n];
         if(initial_ang_mom[n]!=0.0){
         std::cout << current.name << "'s Relative angular momentum change = " <<100.0*ang_mom_change[n]/initial_ang_mom[n] << " %" << std::endl;
         }else std::cout << current.name <<"'s Initial angular momentum was 0, Angular momentum change = " << ang_mom_change[n] << std::endl;
   }//SHOULD WE CALCULATE ANG MOMENTUM FOR ALL PLANETS TOTAL?
+  std::cout<<std::endl;
 
   //Energy conservation checks
   //std::cout<< "Initial Energies = " <<Initial_kinetic << "\t" << Initial_potential <<std::endl;
@@ -356,7 +362,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
 
   std::cout << "Relative kinetic energy change = " << 100.0*KE_change/Initial_kinetic << " %" <<std::endl;
   std::cout <<"Relative potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;
-  std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl;
+  std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl <<std::endl;
 
   // Close files
   output_file.close();
@@ -383,6 +389,7 @@ double ODEsolver::KineticEnergySystem()
 
 }
 
+//NEED TO  VERIFY THAT THIS IS CORRECT!
 double ODEsolver::PotentialEnergySystem()
 {
     totalPotential = 0;

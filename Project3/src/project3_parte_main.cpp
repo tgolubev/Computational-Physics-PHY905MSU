@@ -40,11 +40,11 @@ int main()
     {
       cout << three_body.all_planets[i].name << "'s Mass = " <<three_body.all_planets[i].mass<< endl;
       cout << three_body.all_planets[i].name <<"'s Initial Position = " << three_body.all_planets[i].position[0] << ","
-           << three_body.all_planets[i].position[1]<<","<< three_body.all_planets[i].position[2]<< endl;
+           << three_body.all_planets[i].position[1]<<","<< three_body.all_planets[i].position[2]<< endl<<endl;
     }
     //Tests of the setup
-    cout << "Gconst = " <<three_body.Gconst << endl;
-    cout << "Number of Planets = " <<three_body.total_planets<<endl;
+    //cout << "Gconst = " <<three_body.Gconst << endl;
+    //cout << "Number of Planets = " <<three_body.total_planets<<endl;
     /*test planet_names (vector of strings)
     //for(int i=0; i<binary.total_planets;i++){
     //cout << "Planet" << i+1 << "'s name is " << binary.planet_names[i] <<endl;
