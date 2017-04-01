@@ -1,3 +1,8 @@
+//This is a class of ordinary differential equation numerical solver algorithms for the solar system model.
+//(The solver algorithms are universal, just the naming of variables is specific to the solar system problem.)
+
+//Coded by: Tim Golubev, Hao Lin, Xingze Mao
+
 #include "planet.h"
 #include "odesolver.h"
 #include <iostream>
@@ -124,11 +129,9 @@ void ODEsolver::delete_matrix(double **matrix)         //accepts a double_pointe
 //--------------------------------------------------------------------------------------------------------------------------------------------
 void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections)
 { 
-  double **initial = save_initial_values();              //initial contains the ADDRESS of the array of initial values
-                                                        //**initial = the value of the first element of the array
-
   double TimeStep = FinalTime/((double) IntegrationPoints);
-
+  double **initial = save_initial_values();              //initial contains the ADDRESS of the array of initial values
+                                                         //**initial = the value of the first element of the array
   // Create files for data storage
   char *filename = new char[1000];   //set up dynamiccally alocated character string w/ pointer pointing to memory adress of "filename"
   char *filenameE = new char[1000];
@@ -172,7 +175,6 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections)
     int current_index;    //Declare outside of for loop over indices because want to use in more than 1 loop
     for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
        planet &current = all_planets[current_index];  //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
-
        Fx = Fy = Fz = 0.0; // Reset forces before each run
 
        for(int n=0; n<total_planets; n++){                 //Calculate pairwise grav. force
@@ -182,38 +184,27 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections)
            Fy += current.Y_GravitationalForce(other, Gconst,corrections);
            Fz += current.Z_GravitationalForce(other, Gconst,corrections);
        }
-
-       //std::cout << "Fx = " << Fx <<std::endl;
-
        //update positions by 1 time step
        current.position[0]+=TimeStep*current.velocity[0];
        current.position[1]+=TimeStep*current.velocity[1];
        current.position[2]+=TimeStep*current.velocity[2];
 
        //update velocities by 1 time step (NOTE: the forces already have the proper sign)
-
        current.velocity[0]+=(Fx/current.mass)*TimeStep;
        current.velocity[1]+=(Fy/current.mass)*TimeStep;
        current.velocity[2]+=(Fz/current.mass)*TimeStep;
        //std::cout<<"velocity = " << current.velocity[0] <<std::endl;
     }
-
     //print the current values to output file
     print_position(output_file,time,total_planets);
     print_energy(output_energy,time);
-
-    //std::cout<<"position = " << current.position[0]<<std::endl;
  }
 
-  // Close files
+  // Close files, reset initial values, clear memory
   output_file.close();
   output_energy.close();
-
   reset_initial_values(initial);
-
-  //Clear memory
-  delete_matrix(initial);
-
+  delete_matrix(initial);  //clear memory
 
   //Angular Momentum conservation check
   double *ang_mom_change = new double[total_planets];
@@ -290,8 +281,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
       int current_index;    //Declare outside of for loop because want to use in more than 1 loop
       for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
          planet &current = all_planets[current_index];                      //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
-
-         ith_Fx = ith_Fy = ith_Fz = next_Fx = next_Fy = next_Fz = 0.0; // Reset forces for each time iteration and planet
+         ith_Fx = ith_Fy = ith_Fz = next_Fx = next_Fy = next_Fz = 0.0;      // Reset forces for each time iteration and planet
 
          for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
              if(n==current_index)continue;       //skip this case
@@ -316,9 +306,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
       //Now that have found new positions for all planets, recalculate the forces
       for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
          planet &current = all_planets[current_index];                      //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
-
          next_Fx = next_Fy = next_Fz = 0.0; // Reset forces for each time iteration and planet
-
 
          for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
              if(n==current_index)continue;       //skip this case
@@ -327,16 +315,13 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
              next_Fy += current.Y_GravitationalForce(other, Gconst, corrections);
              next_Fz += current.Z_GravitationalForce(other, Gconst, corrections);
          }
-
          next_accel[0] = next_Fx/current.mass;
          next_accel[1] = next_Fy/current.mass;
          next_accel[2] = next_Fz/current.mass;
 
          // Calculate new velocity componentsfor current planet
          for(int j=0; j<3; j++) current.velocity[j] += 0.5*TimeStep*(ith_accel[current_index][j] + next_accel[j]);
-
      }
-
       //print the current values to output file
       print_position(output_file,time,total_planets);
       print_energy(output_energy,time);
@@ -364,14 +349,10 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
   std::cout <<"Relative potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;
   std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl <<std::endl;
 
-  // Close files
+  // Close files, reset initial values, clear memory
   output_file.close();
   output_energy.close();
-
-  //Reset initial values
   reset_initial_values(initial);
-
-  // Clear memory
   delete_matrix(ith_accel);
   delete_matrix(initial);
 }
@@ -409,10 +390,3 @@ double ODEsolver::PotentialEnergySystem()
     }
     return totalPotential;
 }
-
-/*
-bool solver::Bound(planet OnePlanet)
-{//checks if planets are bound
-    return ((OnePlanet.kinetic + OnePlanet.potential) < 0.0);   //returns true if planet is bound (total E <0).
-}
-*/

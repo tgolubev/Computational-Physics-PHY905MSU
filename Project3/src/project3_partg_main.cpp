@@ -1,5 +1,9 @@
 //This studies the perihelion precession of Mercury around the Sun with no other planets present. The Sun is taken to be the COM of the system.
+//This makes use of the planet and ODEsolver classes.
 
+//No input from the command line is required.
+
+//Coded by: Tim Golubev, Hao Lin, Xingze Mao
 
 #define _USE_MATH_DEFINES
 #include <iostream>
@@ -27,11 +31,10 @@ int main()
     planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);              // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
     planet planet2("Mercury",1.66012e-7,0.3075,0.,0.,0.,12.44,0.);  //using #'s given in part g
 
-    //Setup the three body system
+    //Setup the system
     ODEsolver precession;         //create object of class ODEsolver with default constructor ODEsolver(). If put the () in declaration here, it doesn't work!
     precession.add(planet1);      //add planets to the solver
     precession.add(planet2);
-
 
     //Output the properties of the planets
     for(int i=0;i<precession.total_planets;i++)
@@ -71,18 +74,6 @@ int main()
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();
     duration<double> time2 = duration_cast<duration<double>>(finish2-start2);
     cout << "Velocity Verlet Solver CPU time = " << time2.count() << endl;
-
-
-    /*  // RK4
-        solver binary_rk(5.0);
-        binary_rk.add(planet1);
-        binary_rk.add(planet2);
-
-        for(int j=0;j<dimension;j++){
-             x[j] = planet1.position[j];
-             v[j] = planet1.velocity[j];
-         }
-     */
 
     return 0;
 }

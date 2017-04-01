@@ -1,3 +1,10 @@
+//This is the model for the Earth-Sun system. The Sun is used as the origin. The orbit of the earth is modeled using both Euler and Velocity verlet method.
+//This makes use of the planet and ODEsolver classes.
+
+//No input from the command line is required.
+
+//Coded by: Tim Golubev, Hao Lin, Xingze Mao
+
 #define _USE_MATH_DEFINES
 #include <iostream>
 #include <cmath>
@@ -66,18 +73,6 @@ int main()
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();
     duration<double> time2 = duration_cast<duration<double>>(finish2-start2);
     cout << "Velocity Verlet Solver CPU time = " << time2.count() << endl;
-
-
-    /*  // RK4
-        solver binary_rk(5.0);
-        binary_rk.add(planet1);
-        binary_rk.add(planet2);
-
-        for(int j=0;j<dimension;j++){
-             x[j] = planet1.position[j];
-             v[j] = planet1.velocity[j];
-         }
-     */
 
     return 0;
 }

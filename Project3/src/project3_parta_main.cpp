@@ -1,3 +1,10 @@
+//This is the non-object oriented version of the Earth-Sun system. Both Verlocity Verlet and Euler methods can be used by commenting/uncommenting
+//the corresponding section. Only 1 method can be used at a time.
+
+//Input: filename Integration_points
+
+//Coded by: Tim Golubev, Hao Lin, Xingze Mao
+
 //Include statements for header files
 #include <iostream>
 #include <fstream>

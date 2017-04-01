@@ -1,6 +1,10 @@
 //This is the three-body problem of the Sun, Earth, and Jupiter. The Sun is still kept fixed as the center of mass of system (and at the origin of our
-//coordinate system).
+//coordinate system). The Velocity Verlet method is used. (Euler method can also be used by uncommenting the Euler section).
+//This makes use of the planet and ODEsolver classes.
 
+//No input from the command line is required.
+
+//Coded by: Tim Golubev, Hao Lin, Xingze Mao
 
 #define _USE_MATH_DEFINES
 #include <iostream>
@@ -50,6 +54,7 @@ int main()
     //cout << "Planet" << i+1 << "'s name is " << binary.planet_names[i] <<endl;
     }*/
 
+    /*
     //Euler method
     //start clock timer
     high_resolution_clock::time_point start1 = high_resolution_clock::now();
@@ -60,6 +65,7 @@ int main()
     high_resolution_clock::time_point finish1 = high_resolution_clock::now();
     duration<double> time1 = duration_cast<duration<double>>(finish1-start1);
     cout << "Euler Solver CPU time = " << time1.count() << endl;
+    */
 
     // Velocity Verlet
     //start clock timer
@@ -71,18 +77,6 @@ int main()
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();
     duration<double> time2 = duration_cast<duration<double>>(finish2-start2);
     cout << "Velocity Verlet Solver CPU time = " << time2.count() << endl;
-
-
-    /*  // RK4
-        solver binary_rk(5.0);
-        binary_rk.add(planet1);
-        binary_rk.add(planet2);
-
-        for(int j=0;j<dimension;j++){
-             x[j] = planet1.position[j];
-             v[j] = planet1.velocity[j];
-         }
-     */
 
     return 0;
 }

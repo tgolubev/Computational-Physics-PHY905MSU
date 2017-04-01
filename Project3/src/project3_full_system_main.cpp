@@ -1,4 +1,9 @@
-//This is for the full solar system,  including all planets.
+//This is for the full solar system,  including all planets. The Velocity Verlet method is used.
+//(Euler method may also be used by uncommenting that section).
+
+//No input from command line is required.
+
+//Coded by: Tim Golubev, Hao Lin, Xingze Mao
 
 #define _USE_MATH_DEFINES
 #include <iostream>
@@ -48,7 +53,6 @@ int main()
     solar_system.add(planet9);
     solar_system.add(planet10);
 
-
     //Output the properties of the planets
     for(int i=0;i<solar_system.total_planets;i++)
     {
@@ -75,12 +79,10 @@ int main()
     high_resolution_clock::time_point finish1 = high_resolution_clock::now();
     duration<double> time1 = duration_cast<duration<double>>(finish1-start1);
     cout << "Euler Solver CPU time = " << time1.count() << endl;
-
     */
 
     // Velocity Verlet
-    //start clock timer
-    high_resolution_clock::time_point start2 = high_resolution_clock::now();
+    high_resolution_clock::time_point start2 = high_resolution_clock::now();  //start clock timer
 
     solar_system.VelocityVerlet(integration_points, final_time, corrections); //Run VVerlet ODEsolver
 
@@ -88,18 +90,6 @@ int main()
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();
     duration<double> time2 = duration_cast<duration<double>>(finish2-start2);
     cout << "Velocity Verlet Solver CPU time = " << time2.count() << endl;
-
-
-    /*  // RK4
-        solver binary_rk(5.0);
-        binary_rk.add(planet1);
-        binary_rk.add(planet2);
-
-        for(int j=0;j<dimension;j++){
-             x[j] = planet1.position[j];
-             v[j] = planet1.velocity[j];
-         }
-     */
 
     return 0;
 }

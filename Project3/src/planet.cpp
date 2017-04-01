@@ -1,3 +1,12 @@
+//This is the planet class for the solar system model. It allows to create planet objects and allows to calculate the necessary
+//quantities needed for modeling orbiting planets.
+//The gravitational force functions include a relativistic correction which can be turned on and off by
+//the bool value which is passed to the function.
+
+//Adapted by Tim Golubev, Hao Lin, Xingze Mao from Morten Hjorth-Jensen's planet class
+//found at https://github.com/CompPhysics/ComputationalPhysicsMSU
+
+
 //#include <iostream>
 #include "planet.h"
 #include <cstring>
@@ -118,8 +127,8 @@ double planet::Relativistic_correction(planet otherPlanet)
 double planet::Acceleration(planet otherPlanet, double Gconst, bool relativistic)
 {
     double r = this->distance(otherPlanet);
-    if(r!=0) return this->GravitationalForce(otherPlanet,Gconst,relativistic )/(this->mass*r);  // a = F/m1  "return this->GravitationalForce" means it will
-                                                                                  //find and return gravitationalforce on the current object due to the "otherPlanet"
+    if(r!=0) return this->GravitationalForce(otherPlanet,Gconst,relativistic )/(this->mass*r);
+    // a = F/m1  "return this->GravitationalForce" means it will find and return gravitationalforce on the current object due to the "otherPlanet"
     else return 0;
 }
 
@@ -138,6 +147,4 @@ double planet::KineticEnergy()
 double planet::PotentialEnergy(planet &otherPlanet, double Gconst)
 {
     return -Gconst*this->mass*otherPlanet.mass/this->distance(otherPlanet);      //U = -Gm1m2/r
-    //if(epsilon==0.0) return -Gconst*this->mass*otherPlanet.mass/this->distance(otherPlanet);      //U = -Gm1m2/r
-    //else return (Gconst*this->mass*otherPlanet.mass/epsilon)*(atan(this->distance(otherPlanet)/epsilon) - (0.5*M_PI));  //WHAT IS THIS FORMULA??
 }
