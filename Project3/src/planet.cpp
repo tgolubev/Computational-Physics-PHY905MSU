@@ -10,6 +10,7 @@
 //#include <iostream>
 #include "planet.h"
 #include <cstring>
+#include <iostream>
 
 planet::planet()
 {
@@ -75,7 +76,7 @@ double planet::GravitationalForce(planet otherPlanet,double Gconst, bool relativ
 {
     double r = this->distance(otherPlanet);
     if(r!=0 && relativistic==false) return Gconst*this->mass*otherPlanet.mass/(r*r);   //F = Gm1m2/r^2
-    else if(r!=0) return (Gconst*this->mass*otherPlanet.mass*(1+Relativistic_correction(otherPlanet)))/(r*r);
+    else if(r!=0) return (Gconst*this->mass*otherPlanet.mass*(1+this->Relativistic_correction(otherPlanet)))/(r*r);
     else return 0;
 }
 
@@ -84,7 +85,7 @@ double planet::X_GravitationalForce(planet otherPlanet,double Gconst, bool relat
     double r = this->distance(otherPlanet);
     double relative_x = otherPlanet.position[0]-this->position[0];
     if(r!=0 && relativistic == false) return Gconst*this->mass*otherPlanet.mass*relative_x/(r*r*r);   //F = Gm1m2x/r^3
-    else if(r!=0) return (Gconst*this->mass*otherPlanet.mass*relative_x*(1+Relativistic_correction(otherPlanet)))/(r*r*r);
+    else if(r!=0) return (Gconst*this->mass*otherPlanet.mass*relative_x*(1+this->Relativistic_correction(otherPlanet)))/(r*r*r);
     else return 0;
 }
 
@@ -93,7 +94,7 @@ double planet::Y_GravitationalForce(planet otherPlanet,double Gconst, bool relat
     double r = this->distance(otherPlanet);
     double relative_y = otherPlanet.position[1]-this->position[1];
     if(r!=0 && relativistic == false) return Gconst*this->mass*otherPlanet.mass*relative_y/(r*r*r);   //F = Gm1m2y/r^3
-    else if(r!=0) return (Gconst*this->mass*otherPlanet.mass*relative_y*(1+Relativistic_correction(otherPlanet)))/(r*r*r);
+    else if(r!=0) return (Gconst*this->mass*otherPlanet.mass*relative_y*(1+this->Relativistic_correction(otherPlanet)))/(r*r*r);
     else return 0;
 }
 
@@ -102,25 +103,28 @@ double planet::Z_GravitationalForce(planet otherPlanet,double Gconst, bool relat
     double r = this->distance(otherPlanet);
     double relative_z = otherPlanet.position[2]-this->position[2];
     if(r!=0 && relativistic == false) return Gconst*this->mass*otherPlanet.mass*relative_z/(r*r*r);   //F = Gm1m2x/r^3
-    else if (r!=0) return (Gconst*this->mass*otherPlanet.mass*relative_z*(1+Relativistic_correction(otherPlanet)))/(r*r*r);
+    else if (r!=0) return (Gconst*this->mass*otherPlanet.mass*relative_z*(1+this->Relativistic_correction(otherPlanet)))/(r*r*r);
     else return 0;
 }
 
 double planet::AngularMomentum()
-{  //Calculates angular momentum using L = radius cross velocity, where radius is with respect to system COM
-    double ang_mom_x = this->position[1]*this->velocity[2]-this->position[2]*this->velocity[1];
-    double ang_mom_y = this->position[0]*this->velocity[2]-this->position[2]*this->velocity[0];
-    double ang_mom_z = this->position[0]*this->velocity[1]-this->position[1]*this->velocity[0];
-    double ang_mom = sqrt(ang_mom_x*ang_mom_x + ang_mom_y*ang_mom_y + ang_mom_z*ang_mom_z);
+{  //Calculates angular momentum using L/m = radius cross velocity, where radius is with respect to system COM
+    double RcrossV_x = this->position[1]*this->velocity[2]-this->position[2]*this->velocity[1];
+    double RcrossV_y = this->position[0]*this->velocity[2]-this->position[2]*this->velocity[0];
+    double RcrossV_z = this->position[0]*this->velocity[1]-this->position[1]*this->velocity[0];
+    double ang_mom = this->mass*sqrt(RcrossV_x*RcrossV_x + RcrossV_y*RcrossV_y + RcrossV_z*RcrossV_z);
     return ang_mom;
 }
 
 double planet::Relativistic_correction(planet otherPlanet)
 {
     double const c = 63197.8;  //speed of light in: Au/year
-    double AngMom = AngularMomentum();
-    double Distance = distance(otherPlanet);
-    double correction = (3*AngMom*AngMom)/(Distance*Distance*c*c);
+    double AngMom_perM = this->AngularMomentum()/this->mass;
+    std::cout<<"AngMom_perM = " << AngMom_perM<<std::endl;   //WHEN THESE ARE TINY, GIVES TINY  CORRECTION
+    double Distance = this->distance(otherPlanet);
+    std::cout<<"Distance = " <<Distance <<std::endl;
+    double correction = (3*AngMom_perM*AngMom_perM)/(Distance*Distance*c*c);
+    std::cout<<"correction = " <<correction << std::endl;
     return correction;
 }
 

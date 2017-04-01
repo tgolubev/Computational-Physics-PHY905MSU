@@ -289,6 +289,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
              ith_Fx += current.X_GravitationalForce(other, Gconst, corrections);
              ith_Fy += current.Y_GravitationalForce(other, Gconst, corrections);
              ith_Fz += current.Z_GravitationalForce(other, Gconst, corrections);
+             //std::cout<<"ith_Fx = " <<ith_Fx << std::endl;
          }
          //Note: the forces already have the proper sign!
          ith_accel[current_index][0] = ith_Fx/current.mass;

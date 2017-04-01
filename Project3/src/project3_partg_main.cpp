@@ -24,7 +24,7 @@ int main()
     // Numerical setup
     int integration_points = 100000;  // No. of integration points (10,000 takes a few seconds, 100,000 takes ~30sec). Mercury requires 500k if simulate 100 earth years for more consistent thin orbit.
     double final_time = 100.;       // End time of calculation. (Mercury takes 88days for 1 orbit)
-    bool corrections = false;      //Relativistic corrections to forces
+    bool corrections = true;      //Relativistic corrections to forces
 
     //Set-up planets, Using April 1st, positions and velocities in Au/year. Using Sun as origin.
     //NOTE: The Sun is at origin of coordinate system.
