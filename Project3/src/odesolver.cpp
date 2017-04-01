@@ -28,6 +28,7 @@ void ODEsolver::add(planet newplanet)        //calling add, pass a planet object
     total_planets += 1;                      // "+=" means total_planets = total_planets +1
     all_planets.push_back(newplanet);
     planet_names.push_back(newplanet.name);
+    totalKinetic += newplanet.KineticEnergy();
     /*push_back() is fnc. of the C++ vector class which adds a new element to the end of a vector
     We wrote: #include <vector>  and using std::vector;  in planet.h so can immediately use push_back w/o ::vector
     all_planets is defined as vector property of the objects of our solver class.*/
@@ -91,12 +92,7 @@ void ODEsolver::print_energy(std::ofstream &output, double time)
 
     this->KineticEnergySystem();        //run fnc which computes KE
     this->PotentialEnergySystem();
-    for(int nr=0;nr<total_planets;nr++){
-        planet &Current = all_planets[nr];
-        output << time << "\t" << nr+1 << "\t";
-        output << Current.kinetic << "\t" << Current.potential << "\t" << "Total_system_KE=" << totalKinetic
-               << "\t" << "Total_system_PE=" << totalPotential << std::endl;   //outputs total system kinetic energy also
-    }
+    output << time << "\t"<<  totalKinetic << "\t" << totalPotential << "\t"<< totalKinetic+totalPotential<<std::endl;   //outputs total system energies
 }
 
 double **ODEsolver::setup_matrix(int height,int width)  //returns a double_pointer
@@ -160,7 +156,9 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections)
   double Initial_kinetic, Initial_potential;
   double *initial_ang_mom = new double[total_planets];
   Initial_kinetic = totalKinetic;
-  Initial_potential = totalPotential;
+  std::cout<< "Initial_kinetic = " << Initial_kinetic <<std::endl;
+  Initial_potential = PotentialEnergySystem();
+  std::cout<< "Initial_potential = " << Initial_potential <<std::endl;
   for(int n=0;n<total_planets;n++){
         planet current = all_planets[n];
         //initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
@@ -228,7 +226,7 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections)
   std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl<<std::endl;
   }
 
-void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool corrections)
+void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool corrections, bool sun_fixed)
 {   /*  Velocity-Verlet solver for two coupeled ODEs in a given number of dimensions.
     The algorithm is, exemplified in 1D for position x(t), velocity v(t) and acceleration a(t):
     x(t+dt) = x(t) + v(t)*dt + 0.5*dt*dt*a(t);
@@ -263,14 +261,19 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
     //Save the initial total system energies and angular momentums
     double Initial_kinetic, Initial_potential;
     double *initial_ang_mom = new double[total_planets];
-    Initial_kinetic = totalKinetic;
-    Initial_potential = totalPotential;
+    Initial_kinetic = totalKinetic;   //was calculated when add planets
+    std::cout<< "Initial_kinetic = " << Initial_kinetic <<std::endl;
+    Initial_potential = PotentialEnergySystem();
+    std::cout<< "Initial_potential = " << Initial_potential <<std::endl;
     for(int n=0;n<total_planets;n++){       //planet n=0 is center of mass of system
           planet current = all_planets[n];
           initial_ang_mom[n] = current.AngularMomentum();
           //initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
           std::cout << all_planets[n].name << "'s Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
     }//SHOULD WE BE CALCULATING TOTAL ANG MOMENTUM FOR ALL PLANETS INSTEAD?
+
+    int current_start = 0;
+    if(sun_fixed) current_start = 1;    //if sun fixed, don't time evolve the sun's position
 
     for(int i=0; i<IntegrationPoints; i++)   //loop for time steps
     { //will use the previous time step values to compute next time step values and output values
@@ -279,7 +282,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
       //std::cout<<time<<std::endl;
 
       int current_index;    //Declare outside of for loop because want to use in more than 1 loop
-      for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
+      for(current_index=current_start; current_index<total_planets; current_index++){   //loop over planets
          planet &current = all_planets[current_index];                      //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
          ith_Fx = ith_Fy = ith_Fz = next_Fx = next_Fy = next_Fz = 0.0;      // Reset forces for each time iteration and planet
 
@@ -305,7 +308,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
       }
 
       //Now that have found new positions for all planets, recalculate the forces
-      for(current_index=0; current_index<total_planets; current_index++){   //loop over planets
+      for(current_index=current_start; current_index<total_planets; current_index++){   //loop over planets
          planet &current = all_planets[current_index];                      //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
          next_Fx = next_Fy = next_Fz = 0.0; // Reset forces for each time iteration and planet
 
@@ -348,7 +351,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
 
   std::cout << "Relative kinetic energy change = " << 100.0*KE_change/Initial_kinetic << " %" <<std::endl;
   std::cout <<"Relative potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;
-  std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl <<std::endl;
+  std::cout <<"Total energy change = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl <<std::endl;
 
   // Close files, reset initial values, clear memory
   output_file.close();
