@@ -39,6 +39,8 @@ public:
     double planet::X_GravitationalForce(planet otherPlanet,double Gconst);
     double planet::Y_GravitationalForce(planet otherPlanet,double Gconst);
     double planet::Z_GravitationalForce(planet otherPlanet,double Gconst);
+    double planet::AngularMomentum();
+    double planet::Relativistic_correction(planet otherPlanet);
     double Acceleration(planet otherPlanet, double Gconst);
     double KineticEnergy();
     double planet::PotentialEnergy(planet &otherPlanet, double Gconst);

@@ -22,11 +22,11 @@ int main()
     int integration_points = 10000;  // No. of integration points (10,000 takes a few seconds, 100,000 takes ~30sec)
     double final_time = 50.;       // End time of calculation
 
-    //Set-up planets
-    //NOTE: right now the Sun is at origin of coordinate system, later will set the true COM of solar system to be the origin.
+    //Set-up planets, Using April 1st, positions and velocities in Au/year. Using Sun as origin.
+    //NOTE: The Sun is at origin of coordinate system.
     planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);              // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
-    planet planet2("Earth",0.000003,1.,0.,0.,0.,6.3,0.);
-    planet planet3("Jupiter",0.00095,5.2,0.,0,0.,-6.3,0.);  //VELOCITY NEEDs TO BE CHANGED TO REFLECT REAL JUPITER!
+    planet planet2("Earth",0.000003,-9.801419762323537e-01, -1.944453400829474e-01,  1.558598318609842e-05,1.12289, -6.18859, 0.000240828);
+    planet planet3("Jupiter",0.00095,-5.202455845386353, -1.639519984377934,  0.1232197498880794, 0.795862, -2.50117, -0.00743178);
 
     //Setup the three body system
     ODEsolver three_body;         //create object of class ODEsolver with default constructor ODEsolver(). If put the () in declaration here, it doesn't work!
@@ -44,11 +44,10 @@ int main()
     //Tests of the setup
     cout << "Gconst = " <<three_body.Gconst << endl;
     cout << "Number of Planets = " <<three_body.total_planets<<endl;
-
-    //test planet_names (vector of strings)
+    /*test planet_names (vector of strings)
     //for(int i=0; i<binary.total_planets;i++){
     //cout << "Planet" << i+1 << "'s name is " << binary.planet_names[i] <<endl;
-    //}
+    }*/
 
     //Euler method
     //start clock timer
@@ -60,8 +59,6 @@ int main()
     high_resolution_clock::time_point finish1 = high_resolution_clock::now();
     duration<double> time1 = duration_cast<duration<double>>(finish1-start1);
     cout << "Euler Solver CPU time = " << time1.count() << endl;
-
-    //NOTE: CURRENTLY THE SUN MOVES. When add jupiter, it moves in a line, quite significantly.
 
     // Velocity Verlet
     //start clock timer
