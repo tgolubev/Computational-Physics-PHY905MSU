@@ -364,7 +364,6 @@ double ODEsolver::KineticEnergySystem()
         totalKinetic += Current.kinetic;             //adds KE of current planet to total system KE
     }
     return totalKinetic;
-
 }
 
 double ODEsolver::PotentialEnergySystem()

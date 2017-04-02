@@ -1,7 +1,7 @@
 %Plotter for PHY905 program2 eigenvector results.
 %This is for input files which contain only  1 eigenvector each.
 %This can be easily modified for plotting any data from .txt file which has
-%2 columns (x and y values) by simply changing the NHEADERLINES in
+%2 columns (x and y values) along with header lines by simply changing the NHEADERLINES in
 %importdata() function and the plot properties.
 %Can select multiple result files at once. 
 

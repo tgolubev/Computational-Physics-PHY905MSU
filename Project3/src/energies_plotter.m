@@ -30,8 +30,16 @@ clear
  h = plot(time, total_kinetic);   
  set(h,'LineWidth',1.5);                              
  hold on     
- xlabel({'t (years)'});
- ylabel({'Energy (arb. units'});
+ title('System Energies vs. Time', 'FontSize', 24, 'FontName', 'Times');
+ xlabel({'Time (years)'},'FontSize', 22, 'FontName','Times');
+ ylabel({'Energy (arb. units)'},'FontSize', 22, 'FontName','Times');
  plot(time, total_potential);
  plot(time, total_energy);
+ 
+ set(gcf, 'PaperPositionMode', 'manual');              %Makes sure that when resize figure box while viewing, the actual figure size doesn't change
+                                                         %Ensures that all saved figures have consistent size
+ set(gca,'fontsize',20, 'fontname', 'Times');
+ Legend = legend('Kinetic Energy', 'Potential Energy', 'Total Energy');                         %define Legend as an object
+ legend boxoff                                         %remove the box around legend
+ set(Legend, 'FontSize', 20, 'FontName', 'Times');     %set properties of legend
  hold off
