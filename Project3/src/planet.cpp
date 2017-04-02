@@ -107,6 +107,33 @@ double planet::Z_GravitationalForce(planet otherPlanet,double Gconst, bool relat
     else return 0;
 }
 
+double planet::X_Acceleration(planet otherPlanet,double Gconst, bool relativistic)   //NOTE: these gravforces already have the proper sign!!
+{
+    double r = this->distance(otherPlanet);
+    double relative_x = otherPlanet.position[0]-this->position[0];
+    if(r!=0 && relativistic == false) return Gconst*otherPlanet.mass*relative_x/(r*r*r);   //F = Gm1m2x/r^3
+    else if(r!=0) return (Gconst*otherPlanet.mass*relative_x*(1+this->Relativistic_correction(otherPlanet)))/(r*r*r);
+    else return 0;
+}
+
+double planet::Y_Acceleration(planet otherPlanet,double Gconst, bool relativistic)
+{
+    double r = this->distance(otherPlanet);
+    double relative_y = otherPlanet.position[1]-this->position[1];
+    if(r!=0 && relativistic == false) return Gconst*otherPlanet.mass*relative_y/(r*r*r);   //F = Gm1m2y/r^3
+    else if(r!=0) return (Gconst*otherPlanet.mass*relative_y*(1+this->Relativistic_correction(otherPlanet)))/(r*r*r);
+    else return 0;
+}
+
+double planet::Z_Acceleration(planet otherPlanet,double Gconst, bool relativistic)
+{
+    double r = this->distance(otherPlanet);
+    double relative_z = otherPlanet.position[2]-this->position[2];
+    if(r!=0 && relativistic == false) return Gconst*otherPlanet.mass*relative_z/(r*r*r);   //F = Gm1m2x/r^3
+    else if (r!=0) return (Gconst*otherPlanet.mass*relative_z*(1+this->Relativistic_correction(otherPlanet)))/(r*r*r);
+    else return 0;
+}
+
 double planet::AngularMomentum()
 {  //Calculates angular momentum using L/m = radius cross velocity, where radius is with respect to system COM
     double RcrossV_x = this->position[1]*this->velocity[2]-this->position[2]*this->velocity[1];

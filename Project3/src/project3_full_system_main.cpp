@@ -22,8 +22,8 @@ using namespace chrono;
 int main()
 {
     // Numerical setup
-    int integration_points = 100000;  // No. of integration points (50k seems enough)
-    double final_time = 300.;       // End time of calculation (150  is not long enough to complete 1 orbit of all planets)
+    int integration_points = 500000;  // No. of integration points (100k seems enough(gives 0.02% energy change), 0.004% if use 500k)
+    double final_time = 300.;       // End time of calculation (150 is not long enough to complete 1 orbit of all planets)
     bool corrections = false;       //No relativistic corrections applied
     bool sun_fixed = false;
 
@@ -62,6 +62,7 @@ int main()
            << solar_system.all_planets[i].position[1]<<","<< solar_system.all_planets[i].position[2]<< endl;
     }
     //Tests of the setup
+    /*
     cout << "Gconst = " <<solar_system.Gconst << endl;
     cout << "Number of Planets = " <<solar_system.total_planets<<endl;
     /*test planet_names (vector of strings)

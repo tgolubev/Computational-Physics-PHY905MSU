@@ -150,7 +150,7 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections,
   print_energy(output_energy,time);
 
   // Initialize force components
-  double Fx,Fy,Fz;
+  double Accel_x,Accel_y,Accel_z;
 
   //Save the initial total system energies and angular momentums
   double Initial_kinetic, Initial_potential;
@@ -176,14 +176,14 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections,
     int current_index;    //Declare outside of for loop over indices because want to use in more than 1 loop
     for(current_index=current_start; current_index<total_planets; current_index++){
        planet &current = all_planets[current_index];  //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
-       Fx = Fy = Fz = 0.0; // Reset forces before each run
+       Accel_x = Accel_y = Accel_z = 0.0; // Reset accelerations before each run
 
        for(int n=0; n<total_planets; n++){                 //Calculate pairwise grav. force
            if(n==current_index)continue;                   //skip this case
            planet &other = all_planets[n];
-           Fx += current.X_GravitationalForce(other, Gconst,corrections);  //correction is a bool value (true or false).
-           Fy += current.Y_GravitationalForce(other, Gconst,corrections);
-           Fz += current.Z_GravitationalForce(other, Gconst,corrections);
+           Accel_x += current.X_Acceleration(other, Gconst,corrections);  //correction is a bool value (true or false).
+           Accel_y += current.Y_Acceleration(other, Gconst,corrections);
+           Accel_z += current.Z_Acceleration(other, Gconst,corrections);
        }
        //update positions by 1 time step
        current.position[0]+=TimeStep*current.velocity[0];
@@ -191,9 +191,9 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections,
        current.position[2]+=TimeStep*current.velocity[2];
 
        //update velocities by 1 time step (NOTE: the forces already have the proper sign)
-       current.velocity[0]+=(Fx/current.mass)*TimeStep;
-       current.velocity[1]+=(Fy/current.mass)*TimeStep;
-       current.velocity[2]+=(Fz/current.mass)*TimeStep;
+       current.velocity[0]+=Accel_x*TimeStep;
+       current.velocity[1]+=Accel_y*TimeStep;
+       current.velocity[2]+=Accel_z*TimeStep;
     }
     //print the current values to output file
     print_position(output_file,time,total_planets);
@@ -248,7 +248,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
     std::ofstream output_energy(filenameE);
 
     // Initialize forces and acceleration
-    double ith_Fx,ith_Fy,ith_Fz, next_Fx, next_Fy, next_Fz;
+    //double ith_Fx,ith_Fy,ith_Fz, next_Fx, next_Fy, next_Fz;
     double **ith_accel = setup_matrix(total_planets,3);
     //double ith_accel[3],
     double next_accel[3];
@@ -278,23 +278,21 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
     { //will use the previous time step values to compute next time step values and output values
       //to file in each time step.
       time +=TimeStep;
-      int current_index;    //Declare outside of for loop because want to use in more than 1 loop
+      int current_index;    //Declare outside of for loop over current_index because want to use in more than 1 loop
 
       for(current_index=current_start; current_index<total_planets; current_index++){
          planet &current = all_planets[current_index];                      //the & IS NECESSARY TO BE ABLE TO CHANGE THE VALUES of the object!
-         ith_Fx = ith_Fy = ith_Fz = next_Fx = next_Fy = next_Fz = 0.0;      // Reset forces for each time iteration and planet
+         //ith_Fx = ith_Fy = ith_Fz = next_Fx = next_Fy = next_Fz = 0.0;      // Reset forces for each time iteration and planet
+         ith_accel[current_index][0]=ith_accel[current_index][1]=ith_accel[current_index][2] = 0.0;  //Reset accelerations for each time iteration and planet
 
          for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
              if(n==current_index)continue;       //skip this case
              planet &other = all_planets[n];
-             ith_Fx += current.X_GravitationalForce(other, Gconst, corrections);
-             ith_Fy += current.Y_GravitationalForce(other, Gconst, corrections);
-             ith_Fz += current.Z_GravitationalForce(other, Gconst, corrections);
+             ith_accel[current_index][0] += current.X_Acceleration(other, Gconst, corrections);
+             ith_accel[current_index][1] += current.Y_Acceleration(other, Gconst, corrections);
+             ith_accel[current_index][2] += current.Z_Acceleration(other, Gconst, corrections);
          }
-         //Note: the forces already have the proper sign!
-         ith_accel[current_index][0] = ith_Fx/current.mass;
-         ith_accel[current_index][1] = ith_Fy/current.mass;
-         ith_accel[current_index][2] = ith_Fz/current.mass;
+         //Note: the accelerations already have the proper sign!
 
          // Calculate new position components for current planet
          for(int j=0; j<3; j++) {
@@ -305,18 +303,16 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
       //Now that have found new positions for all planets, recalculate the forces
       for(current_index=current_start; current_index<total_planets; current_index++){
          planet &current = all_planets[current_index];
-         next_Fx = next_Fy = next_Fz = 0.0;      // Reset forces for each time iteration and planet
+         //next_Fx = next_Fy = next_Fz = 0.0;      // Reset forces for each time iteration and planet
+         next_accel[0] = next_accel[1] = next_accel[2] = 0.0;   //Reset accelerations for each time iteration and planet
 
          for(int n=0; n<total_planets; n++){     //Calculate pairwise grav. force
              if(n==current_index)continue;       //skip this case
              planet &other = all_planets[n];
-             next_Fx += current.X_GravitationalForce(other, Gconst, corrections);
-             next_Fy += current.Y_GravitationalForce(other, Gconst, corrections);
-             next_Fz += current.Z_GravitationalForce(other, Gconst, corrections);
+             next_accel[0] += current.X_Acceleration(other, Gconst, corrections);
+             next_accel[1] += current.Y_Acceleration(other, Gconst, corrections);
+             next_accel[2] += current.Z_Acceleration(other, Gconst, corrections);
          }
-         next_accel[0] = next_Fx/current.mass;
-         next_accel[1] = next_Fy/current.mass;
-         next_accel[2] = next_Fz/current.mass;
 
          // Calculate new velocity componentsfor current planet
          for(int j=0; j<3; j++) current.velocity[j] += 0.5*TimeStep*(ith_accel[current_index][j] + next_accel[j]);

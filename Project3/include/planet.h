@@ -39,6 +39,9 @@ public:
     double planet::X_GravitationalForce(planet otherPlanet,double Gconst, bool relativistic);
     double planet::Y_GravitationalForce(planet otherPlanet,double Gconst, bool relativistic);
     double planet::Z_GravitationalForce(planet otherPlanet,double Gconst, bool relativistic);
+    double planet::X_Acceleration(planet otherPlanet,double Gconst, bool relativistic);
+    double planet::Y_Acceleration(planet otherPlanet,double Gconst, bool relativistic);
+    double planet::Z_Acceleration(planet otherPlanet,double Gconst, bool relativistic);
     double planet::AngularMomentum();
     double planet::Relativistic_correction(planet otherPlanet);
     double Acceleration(planet otherPlanet, double Gconst,bool relativistic);
