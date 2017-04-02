@@ -23,9 +23,9 @@ using namespace chrono;
 int main()
 {
     // Numerical setup
-    int integration_points = 100000;  // No. of integration points (10,000 takes a few seconds, 100,000 takes ~30sec)
-    double final_time = 50.;       // End time of calculation, end time affects energy conservation
-    bool corrections = false;      //No relativistic corrections applied to forces
+    int integration_points = 100000;  // # of integration points (10,000 takes a few seconds, 100,000 takes ~30sec)
+    double final_time = 50.;          // End time of calculation, end time affects energy conservation
+    bool corrections = false;         //Apply relativistic corrections?
     bool sun_fixed =true;
 
     //Set-up planets, Using April 1st, positions and velocities in Au/year. Using Sun as origin.

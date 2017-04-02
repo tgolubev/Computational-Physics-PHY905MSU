@@ -22,14 +22,14 @@ using namespace chrono;
 int main()
 {
     // Numerical setup
-    int integration_points = 100000;  // No. of integration points (10,000 takes a few seconds, 100,000 takes ~30sec). Mercury requires 500k if simulate 100 earth years for more consistent thin orbit.
-    double final_time = 100.;       // End time of calculation. (Mercury takes 88days for 1 orbit)
-    bool corrections = true;      //Relativistic corrections to forces
+    int integration_points = 100000;  // # of integration points (10,000 takes a few seconds, 100,000 takes ~30sec). Mercury requires 500k if simulate 100 earth years for more consistent thin orbit.
+    double final_time = 100.;         // End time of calculation. (Mercury takes 88days for 1 orbit)
+    bool corrections = true;          //Apply relativistic corrections to forces?
     bool sun_fixed = true;
 
     //Set-up planets, Using April 1st, positions and velocities in Au/year. Using Sun as origin.
     //NOTE: The Sun is at origin of coordinate system.
-    planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);              // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
+    planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);                     // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
     planet planet2("Mercury",1.66012e-7,0.3075,0.,0.,0.,12.44,0.);  //using #'s given in part g
 
     //Setup the system

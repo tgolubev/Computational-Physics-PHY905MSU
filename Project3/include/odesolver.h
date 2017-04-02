@@ -32,7 +32,7 @@ public:
     void ODEsolver::delete_matrix(double **matrix);
     void print_position(std::ofstream &output, double time, int number);
     void print_energy(std::ofstream &output, double time);
-    void Euler(int IntegrationPoints, double FinalTime, bool corrections);
+    void Euler(int IntegrationPoints, double FinalTime, bool corrections, bool sun_fixed);
     void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool corrections, bool sun_fixed);
     void GravitationalForce(planet &current, planet &other, double &Fx, double &Fy, double &Fz, double epsilon);
     double KineticEnergySystem();

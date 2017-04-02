@@ -22,9 +22,10 @@ using namespace chrono;
 int main()
 {    
     // Numerical setup
-    int integration_points = 10000;  // No. of integration points
+    int integration_points = 100000;  // No. of integration points
     double final_time = 50.;       // End time of calculation
     bool corrections = false;     //No relativistic corrections applied
+    bool sun_fixed = true;
 
     //Set-up planets
     //NOTE: right now the Sun is at origin of coordinate system, later will set the true COM of solar system to be the origin.
@@ -42,32 +43,31 @@ int main()
     binary.add(planet1);      //add planets to the solver
     binary.add(planet2);
     //Tests of the setup
+    /*
     cout << "Gconst = " <<binary.Gconst << endl;
     cout << "Number of Planets = " <<binary.total_planets<<endl;
     //test planet_names (vector of strings)
     for(int i=0; i<binary.total_planets;i++){
     cout << "Planet" << i+1 << "'s name is " << binary.planet_names[i] <<endl;
     }
+    */
 
     //Euler method
     //start clock timer
     high_resolution_clock::time_point start1 = high_resolution_clock::now();
 
-    binary.Euler(integration_points, final_time, corrections);  //Run Euler's method ODEsolver
+    binary.Euler(integration_points, final_time, corrections, sun_fixed);  //Run Euler's method ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish1 = high_resolution_clock::now();
     duration<double> time1 = duration_cast<duration<double>>(finish1-start1);
     cout << "Euler Solver CPU time = " << time1.count() << endl;
 
-    //NOTE: CURRENTLY THE SUN MOVES WIERDLY. VERY SMALL, OSCILLATORY MOTIONS. Can plot seperately
-    //from earth to see this
-
     // Velocity Verlet
     //start clock timer
     high_resolution_clock::time_point start2 = high_resolution_clock::now();
 
-    binary.VelocityVerlet(integration_points, final_time, corrections); //Run VVerlet ODEsolver
+    binary.VelocityVerlet(integration_points, final_time, corrections, sun_fixed); //Run VVerlet ODEsolver
 
     //stop clock timer and output time duration
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();
