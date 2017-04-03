@@ -32,7 +32,7 @@ int main()
     //NOTE: The Sun is at origin of coordinate system.
     planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);              // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
     planet planet2("Earth",0.000003,-9.801419762323537e-01, -1.944453400829474e-01,  1.558598318609842e-05,1.12289, -6.18859, 0.000240828);
-    planet planet3("Jupiter",0.00095,-5.202455845386353, -1.639519984377934,  0.1232197498880794, 0.795862, -2.50117, -0.00743178);
+    planet planet3("Jupiter",1000*0.00095,-5.202455845386353, -1.639519984377934,  0.1232197498880794, 0.795862, -2.50117, -0.00743178);
 
     //Setup the three body system
     ODEsolver three_body;         //create object of class ODEsolver with default constructor ODEsolver(). If put the () in declaration here, it doesn't work!

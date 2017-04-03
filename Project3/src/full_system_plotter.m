@@ -20,21 +20,29 @@ clear
  end
      
 for i=1:(total_planets)
- h = plot3(x(:,i),y(:,i),z(:,i));   %3D plot is called by plot3
- set(h,'LineWidth',1.5);                              
+ h = plot3(x(:,i),y(:,i),z(:,i));   %3D plot is called by plot3                          
  hold on     
- xlabel({'x'});
- ylabel({'y'});
 end
+set(h,'LineWidth',1.5);   
+title('Solar System Orbits', 'FontSize', 24, 'FontName', 'Times');
+xlabel({'x (AU)'},'FontSize', 22, 'FontName','Times');
+ylabel({'y (AU)'},'FontSize', 22, 'FontName','Times');
+zlabel({'z (AU)'},'FontSize', 22, 'FontName','Times');
+set(gcf, 'PaperPositionMode', 'manual');              %Makes sure that when resize figure box while viewing, the actual figure size doesn't change
+                                                         %Ensures that all saved figures have consistent size
+set(gca,'fontsize',20, 'fontname', 'Times');
 
  figure                    %create a seperate figure window for the 2D plot
 for i=1:(total_planets)
- g = plot(x(:,i),y(:,i));  
- set(g,'LineWidth',1.5);                              
+ g = plot(x(:,i),y(:,i));                               
  hold on     
- xlabel({'x'});
- ylabel({'y'});
 end
+set(g,'LineWidth',1.5); xlabel({'x (AU)'},'FontSize', 22, 'FontName','Times');
+title('Solar System Orbits', 'FontSize', 24, 'FontName', 'Times');
+ylabel({'y (AU)'},'FontSize', 22, 'FontName','Times');
+set(gcf, 'PaperPositionMode', 'manual');              %Makes sure that when resize figure box while viewing, the actual figure size doesn't change
+                                                         %Ensures that all saved figures have consistent size
+set(gca,'fontsize',20, 'fontname', 'Times');
 hold off;
      
 

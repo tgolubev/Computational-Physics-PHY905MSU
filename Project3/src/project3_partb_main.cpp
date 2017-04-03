@@ -22,7 +22,7 @@ using namespace chrono;
 int main()
 {    
     // Numerical setup
-    int integration_points = 100000;  // No. of integration points
+    int integration_points = 1000000;  // No. of integration points
     double final_time = 50.;       // End time of calculation
     bool corrections = false;     //No relativistic corrections applied
     bool sun_fixed = true;

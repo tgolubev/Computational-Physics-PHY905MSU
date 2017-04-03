@@ -22,7 +22,7 @@ using namespace chrono;
 int main()
 {
     // Numerical setup
-    int integration_points = 500000;  // No. of integration points (100k seems enough(gives 0.02% energy change), 0.004% if use 500k)
+    int integration_points = 50000;  // No. of integration points (50k enough  for figure, 100k seems enough(gives 0.02% energy change), 0.004% if use 500k)
     double final_time = 300.;       // End time of calculation (150 is not long enough to complete 1 orbit of all planets)
     bool corrections = false;       //No relativistic corrections applied
     bool sun_fixed = false;

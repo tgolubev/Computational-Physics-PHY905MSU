@@ -1,5 +1,6 @@
-//This studies the perihelion precession of Mercury around the Sun with no other planets present. The Sun is taken to be the COM of the system.
+//This studies the orbit of Mercury around the Sun with no other planets present. The Sun is taken to be the COM of the system.
 //This makes use of the planet and ODEsolver classes.
+//The perihelion precession is studied by the matlab script "mercury_precession.m" which uses the output of this code.
 
 //No input from the command line is required.
 
@@ -22,7 +23,8 @@ using namespace chrono;
 int main()
 {
     // Numerical setup
-    int integration_points = 100000;  // # of integration points (10,000 takes a few seconds, 100,000 takes ~30sec). Mercury requires 500k if simulate 100 earth years for more consistent thin orbit.
+    int integration_points = 100000000;  // # of integration points (Mercury requires 500k if simulate 100 earth years for more consistent thin orbit
+                                       //and even higher for finding relativistic perihelion precession)
     double final_time = 100.;         // End time of calculation. (Mercury takes 88days for 1 orbit)
     bool corrections = true;          //Apply relativistic corrections to forces?
     bool sun_fixed = true;
@@ -30,7 +32,7 @@ int main()
     //Set-up planets, Using April 1st, positions and velocities in Au/year. Using Sun as origin.
     //NOTE: The Sun is at origin of coordinate system.
     planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);                     // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
-    planet planet2("Mercury",1.66012e-7,0.3075,0.,0.,0.,12.44,0.);  //using #'s given in part g
+    planet planet2("Mercury",1.65967823e-7,0.307499,0.,0.,0.,12.433287,0.);  //using #'s given in part g
 
     //Setup the system
     ODEsolver precession;         //create object of class ODEsolver with default constructor ODEsolver(). If put the () in declaration here, it doesn't work!
@@ -75,9 +77,6 @@ int main()
     high_resolution_clock::time_point finish2 = high_resolution_clock::now();
     duration<double> time2 = duration_cast<duration<double>>(finish2-start2);
     cout << "Velocity Verlet Solver CPU time = " << time2.count() << endl;
-
-    //output positions of mercury for last orbit (88days period): DO THIS IN MATLAB
-    //int steps = 0.241/(final_time/integration_pts);
 
     return 0;
 }
