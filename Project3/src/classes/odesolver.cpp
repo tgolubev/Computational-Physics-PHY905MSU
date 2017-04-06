@@ -164,7 +164,7 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections,
         //initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
         initial_ang_mom[n] = current.AngularMomentum();
         std::cout << all_planets[n].name << "'s Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
-  }    //SHOULD WE BE CHECKING CONSERVATIONS OF TOTAL ANG MOMENTUM OF ALL PLANETS, NOT EACH ONE SEPERATELY?
+  }
 
   int current_start = 0;
   if(sun_fixed) current_start = 1;    //if sun fixed, don't time evolve the sun's position
@@ -200,18 +200,13 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections,
     print_energy(output_energy,time);
  }
 
-  // Close files, reset initial values, clear memory
-  output_file.close();
-  output_energy.close();
-  reset_initial_values(initial);
-  delete_matrix(initial);  //clear memory
-
   //Angular Momentum conservation check
   double *ang_mom_change = new double[total_planets];
   for(int n=0;n<total_planets;n++){       //planet n=0 is center of mass of system
         planet current = all_planets[n];
         ang_mom_change[n] = current.AngularMomentum()-initial_ang_mom[n];
         if(initial_ang_mom[n]!=0.0){
+        std::cout<<current.AngularMomentum()<<std::endl;
         std::cout << current.name << "'s Relative angular momentum change = " <<100.0*ang_mom_change[n]/initial_ang_mom[n] << " %" << std::endl;
         }else std::cout << current.name <<"'s Initial angular momentum was 0, Angular momentum change = " << ang_mom_change[n] << std::endl;
   }
@@ -224,7 +219,15 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections,
   std::cout << "Relative kinetic energy change = " << 100.0*KE_change/Initial_kinetic <<" %" << std::endl;
   std::cout <<"Relative potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;    //use abs b/c PE<0
   std::cout <<"Total energy loss = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl<<std::endl;
+
+  // Close files, reset initial values, clear memory
+  output_file.close();
+  output_energy.close();
+  reset_initial_values(initial);
+  delete_matrix(initial);  //clear memory
   }
+
+
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool corrections, bool sun_fixed)
@@ -269,7 +272,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
           initial_ang_mom[n] = current.AngularMomentum();
           //initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
           std::cout << all_planets[n].name << "'s Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
-    }//SHOULD WE BE CALCULATING TOTAL ANG MOMENTUM FOR ALL PLANETS INSTEAD?
+    }
 
     int current_start = 0;
     if(sun_fixed) current_start = 1;    //if sun fixed, don't time evolve the sun's position

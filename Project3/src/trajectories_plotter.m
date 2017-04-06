@@ -19,7 +19,7 @@ clear
      z(:,i)=data(planet_indices(:,i),6);
  end
      
-for i=1:(total_planets)
+for i=2:(total_planets)
  h = plot3(x(:,i),y(:,i),z(:,i));   %3D plot is called by plot3                          
  hold on     
 end
@@ -33,7 +33,7 @@ set(gcf, 'PaperPositionMode', 'manual');              %Makes sure that when resi
 set(gca,'fontsize',20, 'fontname', 'Times');
 
  figure                    %create a seperate figure window for the 2D plot
-for i=1:(total_planets)
+for i=2fu:(total_planets)
  g = plot(x(:,i),y(:,i));                               
  hold on     
 end
@@ -43,6 +43,6 @@ ylabel({'y (AU)'},'FontSize', 22, 'FontName','Times');
 set(gcf, 'PaperPositionMode', 'manual');              %Makes sure that when resize figure box while viewing, the actual figure size doesn't change
                                                          %Ensures that all saved figures have consistent size
 set(gca,'fontsize',20, 'fontname', 'Times');
-hold off;
+%hold off;
      
 

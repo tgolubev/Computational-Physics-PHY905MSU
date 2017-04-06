@@ -30,7 +30,10 @@ int main()
     //Set-up planets
     //NOTE: right now the Sun is at origin of coordinate system, later will set the true COM of solar system to be the origin.
     planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);              // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
-    planet planet2("Earth",0.000003,1.,0.,0.,0.,6.3,0.);
+    planet planet2("Earth",0.000003,1.,0.,0.,0.,6.3,0.);  //for circular trajectory
+    //planet planet2("Earth",0.000003,1.,0.,0.,0.,8.8858,0.);  //for escape
+
+
 
     //Output the properties of the planets
     cout << planet1.name << "'s Mass = " <<planet1.mass<< endl;

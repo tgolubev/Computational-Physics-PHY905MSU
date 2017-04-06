@@ -1,5 +1,7 @@
 //This studies the orbit of Mercury around the Sun with no other planets present. The Sun is taken to be the COM of the system.
-//This makes use of the planet and ODEsolver classes.
+//This makes use of the planet and ODEsolver classes. For high resolution time steps, use the "odesolver_reduced_output.cpp" class file
+//which reduces the output to file to only the last orbit of Mercury in order to make the file size manageable.
+
 //The perihelion precession is studied by the matlab script "mercury_precession.m" which uses the output of this code.
 
 //No input from the command line is required.
@@ -23,7 +25,8 @@ using namespace chrono;
 int main()
 {
     // Numerical setup
-    int integration_points = 100000000;  // # of integration points (Mercury requires 500k if simulate 100 earth years for more consistent thin orbit
+                    //int can hold only digits btw. ~2.1billion and -2.1billion if want full precision. Can use higher numbers if write as ie 5e9
+    int integration_points = 100e9;  // # of integration points (Mercury requires 500k if simulate 100 earth years for more consistent thin orbit
                                        //and even higher for finding relativistic perihelion precession)
     double final_time = 100.;         // End time of calculation. (Mercury takes 88days for 1 orbit)
     bool corrections = true;          //Apply relativistic corrections to forces?
@@ -32,7 +35,9 @@ int main()
     //Set-up planets, Using April 1st, positions and velocities in Au/year. Using Sun as origin.
     //NOTE: The Sun is at origin of coordinate system.
     planet planet1("Sun",1.,0.,0.,0.,0.,0.,0.);                     // planet1 (name,mass,x,y,z,vx,vy,vz), name must be in " " marks
-    planet planet2("Mercury",1.65967823e-7,0.307499,0.,0.,0.,12.433287,0.);  //using #'s given in part g
+    planet planet2("Mercury",1.65967823e-7,0.30749951,0.,0.,0.,12.433287,0.);  //using #'s given in part g
+    //constants from http://www.newworldencyclopedia.org/entry/Mercury_(planet)
+    //planet planet2("Mercury",1.65967823e-7,0.30749951,0.,0.,0.,12.44,0.);  //using #'s given in part g
 
     //Setup the system
     ODEsolver precession;         //create object of class ODEsolver with default constructor ODEsolver(). If put the () in declaration here, it doesn't work!

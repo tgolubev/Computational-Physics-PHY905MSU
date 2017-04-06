@@ -77,12 +77,12 @@ void ODEsolver::reset_initial_values(double** initial_values)   //double** means
 
 void ODEsolver::print_position(std::ofstream &output, double time,int number)
 {   // Writes mass, position and velocity to a file "output"
-        for(int i=0;i<number;i++){
+        for(int i=1;i<number;i++){       //Only print out the 1st planet (ie Mercury). Don't need all values for sun, which stays fixed.
             planet &current = all_planets[i];
             output << std::setiosflags(std::ios::showpoint | std::ios::uppercase);     //sets to write i.e. 10^6 as E6
-            output << time << "\t" << i+1 << "\t" << current.mass;         //"\t" is a tab. i.e. "Hello\tWorld" will output "Hello     World"
-            for(int j=0;j<3;j++) output << "\t" << std::setprecision(8) << current.position[j];    //for 3D
-            for(int j=0;j<3;j++) output << "\t" << std::setprecision(8) << current.velocity[j];
+            output << std::setprecision(11) << time << "\t" << i+1; //<< "\t" << current.mass;        Skip outputing mass also //"\t" is a tab. i.e. "Hello\tWorld" will output "Hello     World"
+            for(int j=0;j<2;j++) output << "\t" << std::setprecision(10) << current.position[j];    //just print 2d positions, b/c z=0 for precession study
+            //for(int j=0;j<3;j++) output << "\t" << std::setprecision(8) << current.velocity[j]; %To save memory, Don't print velocities since not neccesary
             output << std::endl;
         }
 }
@@ -318,13 +318,15 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
          for(int j=0; j<3; j++) current.velocity[j] += 0.5*TimeStep*(ith_accel[current_index][j] + next_accel[j]);
      }
 
-      if(i>0.98*IntegrationPoints){          //output last 5% of positions
+      if(i>0.997500000*IntegrationPoints){          //output last 0.5% of positions
       //print the current values to output file
       print_position(output_file,time,total_planets);
       //print_energy(output_energy,time);
       }
   }
 
+  //Don't do these checks to save CPU
+  /*
   //Angular Momentum conservation check
   double *ang_mom_change = new double[total_planets];
   for(int n=0;n<total_planets;n++){
@@ -344,6 +346,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
   std::cout << "Relative kinetic energy change = " << 100.0*KE_change/Initial_kinetic << " %" <<std::endl;
   std::cout <<"Relative potential energy change (Recall PE is <0) = " << 100.0*PE_change/abs(Initial_potential) << " %" <<std::endl;
   std::cout <<"Total energy change = " << 100.0*(KE_change + PE_change)/(Initial_kinetic+Initial_potential) << " %" << std::endl <<std::endl;
+  */
 
   // Close files, reset initial values, clear memory
   output_file.close();
