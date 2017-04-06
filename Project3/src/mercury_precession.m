@@ -32,7 +32,8 @@ steps_per_orbit = round((87.969/365.25)/time_step)   %1 orbit of mercury is 88 d
 %      z=data(mercury_indices(i),6);
 %      initial_radii(i) =  sqrt(x^2+y^2+z^2);
 %  end
-%  [initial_perihelion, index] = min(initial_radii)           %This is being calculated correctly, can verify that these equals the value put into C++ code for initial mercury position
+%  [initial_perihelion, index] = min(initial_radii)    
+% %This is being calculated correctly, can verify that these equals the value put into C++ code for initial mercury position
 %  x_initial_perihelion = data(mercury_indices(index),4)
 %  y_initial_perihelion = data(mercury_indices(index),5)
 %  z_initial_perihelion = data(mercury_indices(index),6)

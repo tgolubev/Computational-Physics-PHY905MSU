@@ -164,7 +164,7 @@ void ODEsolver::Euler(int IntegrationPoints, double FinalTime, bool corrections,
         //initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
         initial_ang_mom[n] = current.AngularMomentum();
         std::cout << all_planets[n].name << "'s Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
-  }    //SHOULD WE BE CHECKING CONSERVATIONS OF TOTAL ANG MOMENTUM OF ALL PLANETS, NOT EACH ONE SEPERATELY?
+  }
 
   int current_start = 0;
   if(sun_fixed) current_start = 1;    //if sun fixed, don't time evolve the sun's position
@@ -269,7 +269,7 @@ void ODEsolver::VelocityVerlet(int IntegrationPoints, double FinalTime, bool cor
           initial_ang_mom[n] = current.AngularMomentum();
           //initial_ang_mom[n] = current.mass*current.Velocity_scalar()*current.radius();
           std::cout << all_planets[n].name << "'s Initial angular_momentum = " <<initial_ang_mom[n] << std::endl;
-    }//SHOULD WE BE CALCULATING TOTAL ANG MOMENTUM FOR ALL PLANETS INSTEAD?
+    }
 
     int current_start = 0;
     if(sun_fixed) current_start = 1;    //if sun fixed, don't time evolve the sun's position
