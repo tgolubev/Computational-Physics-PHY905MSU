@@ -1,8 +1,7 @@
 odesolver.cpp contains the Euler and velocity Verlet differential equation solver algorithms.
 planet.cpp defines planet objects and their various properties
 
-odesolver_reduced_output outputs only the last 0.5% (this can be changed easily) of the x,y positions. This was used for Mercury precession
-to allow for high time resolution simulation.
+odesolver_reduced_output outputs only the last 0.5% (this can be changed easily) of the x,y positions. This was used for Mercury precession to allow for high time resolution simulation.
 
 odesolver_for_timing does not output anything and is simply for timing the core of the two algorithms.
 
