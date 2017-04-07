@@ -1,0 +1,12 @@
+Benchmark outputs for various systems studied are included here. 
+The file naming scheme used is: [method]_[# of planets]_Planets_[time step in year]_[energies or positions]
+
+The column organization for positions files is as follows:
+time    planet_index    mass(w/respect to sun's mass)    x_position   y_position   z_position  x_velocity   y_velocity   z_velocity
+
+The column organization for energies files is:
+time  system_kinetic_energy   system_potential_energy   system_total_energy(kinetic+potential)
+
+We were unable to upload to here a benchmark of the Mercury precession due to space limitations. The benchmark result when using 
+10 billion integration points for century of Mercuries orbit is available at: https://drive.google.com/file/d/0B11aRXgy0zsCYThvbVJCTnN5REU/view?usp=sharing
+Note that the file only  contains the last 0.5% of the simulation (~last orbit).
