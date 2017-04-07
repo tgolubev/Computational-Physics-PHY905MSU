@@ -1,10 +1,6 @@
-This project simulates the motion of planets in the solar system using the Euler and Velocity Verlet methods. 
-Most of the code (everything except parta) is object oriented, making use of two classes: planet and ODEsolver we have written.
+All files ending with _main are object oriented and depend on the two classes (planet and odesolver) located in the classes folder.
+Sun-Earth_parta is not object oriented has no dependencies.
 
-File organization:
-src contains the C++ code with the codes for the classes in the "classes" folder. 
-It also contains matlab code for plotting results from the c++ code output files and for finding perihelion of Mercury.
+trajectories_plotter.m and energies_plotter.m plot the results from the positions and energies txt files respectively.
 
-Benchmarks contains sample output files. 
-
-Report contains the report.
+mercury_precession.m uses the positions file output from mercury_precession_main.cpp to calculate perihelion precession.
