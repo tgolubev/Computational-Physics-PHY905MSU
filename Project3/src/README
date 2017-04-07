@@ -1,4 +1,4 @@
-This project uses simulates the motion of planets in the solar system using the Euler and Velocity Verlet methods. 
+This project simulates the motion of planets in the solar system using the Euler and Velocity Verlet methods. 
 Most of the code (everything except parta) is object oriented, making use of two classes: planet and ODEsolver we have written.
 
 File organization:
