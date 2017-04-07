@@ -1,5 +1,6 @@
 All files ending with _main are object oriented and depend on the two classes (planet and odesolver) located in the classes folder.
-Sun-Earth_parta is not object oriented has no dependencies.
+
+Sun-Earth_parta is not object oriented and has no dependencies.
 
 trajectories_plotter.m and energies_plotter.m plot the results from the positions and energies txt files respectively.
 
