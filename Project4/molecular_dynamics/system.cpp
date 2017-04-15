@@ -52,12 +52,25 @@ void System::applyPeriodicBoundaryConditions() {
 }
 
 void System::removeTotalMomentum() {
+    //temporarily insert numAtoms here: LATER PASS IT TO THE FUNCTION OR FIND IT SOMEHOW FROM SYSTEM PROP.'S
+    int numAtoms = 100;
     // Find the total momentum and remove momentum equally on each atom so the total momentum becomes zero.
+    vec3 total_momentum;
     for(Atom *atom : atoms()) {
-        vec3 total_momentum += atom->mass*atom->velocity;
+        total_momentum += atom->mass()*atom->velocity;  //mass() returns value of m_mass (atom's mass)
     }
-
+    vec3 Mom_per_atom;   //3D momentum components
+    Mom_per_atom = total_momentum/numAtoms; //this is amount of abs(momentum) per atom that need to remove to get total to 0
+    for(Atom *atom : atoms()) {
+        for(int j=0;j<3;j++){
+            //evenly modify components of velocity of each atom to yield total system momentum of 0
+            if(atom->velocity[j] >0) atom->velocity[j] -= Mom_per_atom[j]/atom->mass();
+            if(atom->velocity[j] <0)  atom->velocity[j] += Mom_per_atom[j]/atom->mass();
+        }
+    }
 }
+
+
 
 void System::createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature) {
     // You should implement this function properly. Right now, 100 atoms are created uniformly placed in the system of size (10, 10, 10).
