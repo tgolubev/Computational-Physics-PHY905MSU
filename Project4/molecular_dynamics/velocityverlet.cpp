@@ -10,6 +10,7 @@ void VelocityVerlet::integrate(System &system, double dt)
     }
 
     for(Atom *atom : system.atoms()) {
+        //this operates on the vectors directly using vec3 class
         atom->velocity += atom->force*0.5*dt/atom->mass();
         atom->position += atom->velocity*dt/atom->mass();
     }

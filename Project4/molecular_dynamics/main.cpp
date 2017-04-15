@@ -24,7 +24,7 @@ int main(int numberOfArguments, char **argumentList)
     // If a third argument is provided, it is the lattice constant determining the density (measured in angstroms)
     if(numberOfArguments > 3) latticeConstant = UnitConverter::lengthFromAngstroms(atof(argumentList[3]));
 
-    double dt = UnitConverter::timeFromSI(1e-15); // Measured in seconds.
+    double dt = UnitConverter::timeFromSI(1e-15); // Measured in seconds (1fs is common)
 
     cout << "One unit of length is " << UnitConverter::lengthToSI(1.0) << " meters" << endl;
     cout << "One unit of velocity is " << UnitConverter::velocityToSI(1.0) << " meters/second" << endl;
@@ -34,13 +34,14 @@ int main(int numberOfArguments, char **argumentList)
 
     System system;
     system.createFCCLattice(numberOfUnitCells, latticeConstant, initialTemperature);
-    system.potential().setEpsilon(1.0);
-    system.potential().setSigma(1.0);
+    //set the potential parameters
+    system.potential().setEpsilon(1.0);    //i.e. LJ depth
+    system.potential().setSigma(1.0);      //i.e. LJ atom diameter
 
     system.removeTotalMomentum();
 
     StatisticsSampler statisticsSampler;
-    IO movie("movie.xyz"); // To write the state to file
+    IO movie("movie.xyz"); // To write the state to file, create IO object called "movie"
 
     cout << setw(20) << "Timestep" <<
             setw(20) << "Time" <<
@@ -48,11 +49,11 @@ int main(int numberOfArguments, char **argumentList)
             setw(20) << "KineticEnergy" <<
             setw(20) << "PotentialEnergy" <<
             setw(20) << "TotalEnergy" << endl;
-    for(int timestep=0; timestep<1000; timestep++) {
-        system.step(dt);
-        statisticsSampler.sample(system);
+    for(int timestep=0; timestep<1000; timestep++) {  //chose # of timesteps here
+        system.step(dt);   //advance system by 1 step
+        statisticsSampler.sample(system);   //use sampler to calculate system parameters and write to .xyz file at every timestep
         if( timestep % 100 == 0 ) {
-            // Print the timestep every 100 timesteps
+            // Print the timestep and system properties every 100 timesteps
             cout << setw(20) << system.steps() <<
                     setw(20) << system.time() <<
                     setw(20) << statisticsSampler.temperature() <<
@@ -60,7 +61,7 @@ int main(int numberOfArguments, char **argumentList)
                     setw(20) << statisticsSampler.potentialEnergy() <<
                     setw(20) << statisticsSampler.totalEnergy() << endl;
         }
-        movie.saveState(system);
+        movie.saveState(system);  //calls saveState fnc in io.cpp which saves the state to the movie.xyz file
     }
 
     movie.close();
