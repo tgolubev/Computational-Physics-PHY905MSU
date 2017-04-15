@@ -20,28 +20,43 @@ System::~System()  //desctructor: remove all the atoms
 
 void System::applyPeriodicBoundaryConditions() {
     // Read here: http://en.wikipedia.org/wiki/Periodic_boundary_conditions#Practical_implementation:_continuity_and_the_minimum_image_convention
-    //use version A: where fold the atoms back into the simulation cell. The cell is centered about the origin.
-    //applies PBC in all directions
+    //use version A: where fold the atoms back into the simulation cell. The cell is centered about the origin and PBCs are applied in 3D.
+
+    //I THINK NEED TO FOLD BACK ATOMS 1ST BEFORE CHECK MIN. IMAGE CONVENTION. BUT IN THAT CASE ARE CONFINING ALL ATOMS TO THE BOX,
+    //SO HOW DO I FIND THE IMAGES!!
 
     for(Atom *atom : atoms()) {
         for(int j=0;j<3;j++){
             //fold atoms back into the box if they escape the box
-            if (atom->position[j] <  -m_systemSize[j] * 0.5) atom->position[j] += m_systemSize[j];
+            if (atom->position[j] <  -m_systemSize[j] * 0.5) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
             if (atom->position[j] >=  m_systemSize[j] * 0.5) atom->position[j] -= m_systemSize[j];
         }
     }
-
-
-
-    //distance and vector btw objects dx should obey min. image convention
-    //dx = x(j) - x(i)
-    //if (dx >  x_size * 0.5) dx = dx - x_size;
-    //if (dx <= -x_size * 0.5) dx = dx + x_size;
+    /*
+    //distance and vector btw objects dx should obey min. image convention: only closest distance to particle or its image is considered
+    for(Atom *atom:atoms()){
+        Atom *current_atom = m_atoms[0]; //use pointer to current_atom
+        for(Atom *atom: atoms()){ //THIS MUST BE CHANGED TO NOT DOUBLE COUNT: GO TO 1/2 OF ATOMS
+            Atom *other_atom = m_atoms[0];
+            vec3 distance;
+            for(int j=0;j<3;j++){
+                distance[j] = other_atom->position[j] - current_atom->position[j];  //WHEN USE POINTERS FOR ATOMS MUST USE -> TO ACCESS THEIR PROP.'S!
+                //for cases where the folded back particle will be closer than its image to a given particle
+                if (distance[j] >  m_systemSize[j] * 0.5) distance[j] -= m_systemSize[j];
+                if (distance[j] <= -m_systemSize[j] * 0.5) distance[j] += m_systemSize[j];
+            }
+         }
+    }
+    */
 
 }
 
 void System::removeTotalMomentum() {
     // Find the total momentum and remove momentum equally on each atom so the total momentum becomes zero.
+    for(Atom *atom : atoms()) {
+        vec3 total_momentum += atom->mass*atom->velocity;
+    }
+
 }
 
 void System::createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature) {

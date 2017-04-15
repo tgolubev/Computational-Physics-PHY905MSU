@@ -11,7 +11,7 @@ class System
 private:
     vec3 m_systemSize;
     VelocityVerlet m_integrator;
-    std::vector<Atom*> m_atoms;
+    std::vector<Atom*> m_atoms;  //vector of atom pointers
     LennardJones m_potential;
     double m_time = 0;
     int m_steps = 0;

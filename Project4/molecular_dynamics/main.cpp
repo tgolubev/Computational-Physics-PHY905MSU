@@ -38,6 +38,9 @@ int main(int numberOfArguments, char **argumentList)
     system.potential().setEpsilon(1.0);    //i.e. LJ depth
     system.potential().setSigma(1.0);      //i.e. LJ atom diameter
 
+    //test PBCs application: LATER WILL BE APPLIED WITHIN VELOCITYVERLET fnc. call in velocityverlet.cpp
+    system.applyPeriodicBoundaryConditions();
+
     system.removeTotalMomentum();
 
     StatisticsSampler statisticsSampler;
