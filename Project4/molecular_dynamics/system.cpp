@@ -72,9 +72,67 @@ void System::removeTotalMomentum() {
 
 
 
-void System::createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature) {
-    // You should implement this function properly. Right now, 100 atoms are created uniformly placed in the system of size (10, 10, 10).
+void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double latticeConstant, double temperature) {
+    vec3 LatticeVector;  //vector which points to the origin of each unit cell
+    //Note: 1st unit cell starts at 0,0,0
 
+    double x1,y1,z1,x2,y2,z2,x3,y3,z3,x4,y4,z4;
+    double halfLatticeConstant=0.5*latticeConstant;
+
+    for(int i=0;i<numberOfUnitCellsEachDimension[0];i++){
+        //i.e. i = 0,1...N_x-1
+        for(int j=0;j<numberOfUnitCellsEachDimension[1];j++){
+            for(int k=0;k<numberOfUnitCellsEachDimension[2];k++){
+                LatticeVector.set(latticeConstant*i,latticeConstant*j,latticeConstant*k);
+
+                //Place the 4 atoms of each fcc cell into coordinates
+                Atom *atom1 = new Atom(UnitConverter::massFromSI(6.63352088e-26)); //uses mass in kg
+                x1 = LatticeVector[0];
+                y1 = LatticeVector[1];
+                z1 = LatticeVector[2];
+                std::cout<<"Atom1 position = " <<x1 << y1<< z1 << std::endl;
+                atom1->position.set(x1,y1,z1);
+                atom1->resetVelocityMaxwellian(temperature);
+                m_atoms.push_back(atom1);     //add element to vector m_atoms 1 element (atom object)
+
+                Atom *atom2 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
+                x2 = halfLatticeConstant + LatticeVector[0];
+                y2 = halfLatticeConstant + LatticeVector[1];
+                z2 = LatticeVector[2];
+                std::cout<<"Atom2 position = " <<x2 << y2<< z2 << std::endl;
+                atom2->position.set(x2,y2,z2);
+                atom2->resetVelocityMaxwellian(temperature);
+                m_atoms.push_back(atom2);
+                std::cout<<"Atom2 position = " <<atom2->position[0] <<atom2->position[1]<<atom2->position[2] << std::endl;
+
+                //THERE IS SOME PROBLEM HERE! ATOMS2 POSITION COUTS AS +, BUT IN XYZ FILE THE Y POSITION IS NEGATIVE. WHY???
+
+                Atom *atom3 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
+                x3 = LatticeVector[0];
+                y3 = halfLatticeConstant + LatticeVector[1];
+                z3 = halfLatticeConstant + LatticeVector[2];
+                std::cout<<"Atom3 position = " <<x3 << y3<< z3 << std::endl;
+                atom3->position.set(x3,y3,z3);
+                atom3->resetVelocityMaxwellian(temperature);
+                m_atoms.push_back(atom3);
+
+                Atom *atom4 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
+                x4 = halfLatticeConstant + LatticeVector[0];
+                y4 = LatticeVector[1];
+                z4 = halfLatticeConstant + LatticeVector[2];
+                std::cout<<"Atom4 position = " <<x4 << y4<< z4 << std::endl;
+                atom4->position.set(x4,y4,z4);
+                atom4->resetVelocityMaxwellian(temperature);
+                m_atoms.push_back(atom4);
+            }
+        }
+    }
+    setSystemSize(latticeConstant*numberOfUnitCellsEachDimension); //system size set by multiply vec3 # of unit cells by latticeConstant
+    //each unit cell is cubic with side length = latticeConstant
+
+
+    /*
+    //Places 100 atoms randomly into a cube
     for(int i=0; i<100; i++) {      //for all atoms (100 right now)
         Atom *atom = new Atom(UnitConverter::massFromSI(6.63352088e-26)); //uses mass in kg
         //Choose random x,y,z positions
@@ -85,8 +143,10 @@ void System::createFCCLattice(int numberOfUnitCellsEachDimension, double lattice
         atom->resetVelocityMaxwellian(temperature);
         m_atoms.push_back(atom);     //add element to vector m_atoms 1 element (atom object)
     }
-    setSystemSize(vec3(10, 10, 10)); // Remember to set the correct system size! Dimensions of simulation cell. This fnc. sets m_systemSize=this vec3 that's passed
+    */
+
 }
+
 
 void System::calculateForces() {
     for(Atom *atom : m_atoms) {

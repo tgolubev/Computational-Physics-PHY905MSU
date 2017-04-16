@@ -13,12 +13,12 @@ using namespace std;
 
 int main(int numberOfArguments, char **argumentList)
 {
-    int numberOfUnitCells = 5;
+    vec3 numberOfUnitCellsEachDimension(1,1,1);
     double initialTemperature = UnitConverter::temperatureFromSI(300.0); // measured in Kelvin
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
 
-    // If a first argument is provided, it is the number of unit cells
-    if(numberOfArguments > 1) numberOfUnitCells = atoi(argumentList[1]);
+    // If a first argument is provided, it is the number of unit cells and use same # of unit cells for all dimensions
+    if(numberOfArguments > 1) numberOfUnitCellsEachDimension[0] = numberOfUnitCellsEachDimension[1] = numberOfUnitCellsEachDimension[2]= atoi(argumentList[1]);
     // If a second argument is provided, it is the initial temperature (measured in kelvin)
     if(numberOfArguments > 2) initialTemperature = UnitConverter::temperatureFromSI(atof(argumentList[2]));
     // If a third argument is provided, it is the lattice constant determining the density (measured in angstroms)
@@ -33,13 +33,13 @@ int main(int numberOfArguments, char **argumentList)
     cout << "One unit of temperature is " << UnitConverter::temperatureToSI(1.0) << " K" << endl;
 
     System system;
-    system.createFCCLattice(numberOfUnitCells, latticeConstant, initialTemperature);
+    system.createFCCLattice(numberOfUnitCellsEachDimension, latticeConstant, initialTemperature);
     //set the potential parameters
     system.potential().setEpsilon(1.0);    //i.e. LJ depth
     system.potential().setSigma(1.0);      //i.e. LJ atom diameter
 
     //test PBCs application: LATER WILL BE APPLIED WITHIN VELOCITYVERLET fnc. call in velocityverlet.cpp
-    system.applyPeriodicBoundaryConditions();
+    //system.applyPeriodicBoundaryConditions();
 
     system.removeTotalMomentum();
 

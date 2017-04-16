@@ -19,7 +19,7 @@ private:
 public:
     System();
     ~System();
-    void createFCCLattice(int numberOfUnitCellsEachDimension, double latticeConstant, double temperature);
+    void createFCCLattice(vec3 numberOfUnitCellsEachDimension, double latticeConstant, double temperature);
     void applyPeriodicBoundaryConditions();
     void removeTotalMomentum();
     void calculateForces();

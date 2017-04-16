@@ -92,6 +92,14 @@ vec3 &vec3::operator*=(double rhs)
     return *this;
 }
 
+vec3 &vec3::operator*=(int rhs)   //add definition  for multiply by int
+{
+    components[0] *= rhs;
+    components[1] *= rhs;
+    components[2] *= rhs;
+    return *this;
+}
+
 vec3 &vec3::operator*=(vec3 rhs)
 {
     components[0] *= rhs[0];
