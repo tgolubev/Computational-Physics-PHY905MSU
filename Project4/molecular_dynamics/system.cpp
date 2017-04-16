@@ -20,16 +20,23 @@ System::~System()  //desctructor: remove all the atoms
 
 void System::applyPeriodicBoundaryConditions() {
     // Read here: http://en.wikipedia.org/wiki/Periodic_boundary_conditions#Practical_implementation:_continuity_and_the_minimum_image_convention
-    //use version A: where fold the atoms back into the simulation cell. The cell is centered about the origin and PBCs are applied in 3D.
+    //use version A: where fold the atoms back into the simulation cell. The cell has its lower left corner at origin of coord. system.
 
     //I THINK NEED TO FOLD BACK ATOMS 1ST BEFORE CHECK MIN. IMAGE CONVENTION. BUT IN THAT CASE ARE CONFINING ALL ATOMS TO THE BOX,
     //SO HOW DO I FIND THE IMAGES!!
 
+    //THESE PBCS ARE BASED ON USING THE CENTER AS ORIGIN: THIS IS NOT CONVENIENT: REDO TO USE LEFT CORNER!
+
     for(Atom *atom : atoms()) {
         for(int j=0;j<3;j++){
             //fold atoms back into the box if they escape the box
+            if (atom->position[j] <  0.) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
+            if (atom->position[j] >  m_systemSize[j]) atom->position[j] -= m_systemSize[j];
+            /*
+            //for using center of system as origin. This is  not convinient when building a lattice
             if (atom->position[j] <  -m_systemSize[j] * 0.5) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
             if (atom->position[j] >=  m_systemSize[j] * 0.5) atom->position[j] -= m_systemSize[j];
+            */
         }
     }
     /*
@@ -56,7 +63,7 @@ void System::removeTotalMomentum() {
     int numAtoms = 100;
     // Find the total momentum and remove momentum equally on each atom so the total momentum becomes zero.
     vec3 total_momentum;
-    for(Atom *atom : atoms()) {
+    for(Atom *atom : atoms()) { //c++11 way of iterating through  entire vector or array
         total_momentum += atom->mass()*atom->velocity;  //mass() returns value of m_mass (atom's mass)
     }
     vec3 Mom_per_atom;   //3D momentum components
@@ -76,58 +83,66 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
     vec3 LatticeVector;  //vector which points to the origin of each unit cell
     //Note: 1st unit cell starts at 0,0,0
 
-    double x1,y1,z1,x2,y2,z2,x3,y3,z3,x4,y4,z4;
+    double x,y,z;
     double halfLatticeConstant=0.5*latticeConstant;
+    //std::cout<<"halflatticeconsts" << halfLatticeConstant << std::endl;
 
-    for(int i=0;i<numberOfUnitCellsEachDimension[0];i++){
+    for(int i=0;i<=numberOfUnitCellsEachDimension[0];i++){
         //i.e. i = 0,1...N_x-1
-        for(int j=0;j<numberOfUnitCellsEachDimension[1];j++){
-            for(int k=0;k<numberOfUnitCellsEachDimension[2];k++){
+        for(int j=0;j<=numberOfUnitCellsEachDimension[1];j++){
+            for(int k=0;k<=numberOfUnitCellsEachDimension[2];k++){
                 LatticeVector.set(latticeConstant*i,latticeConstant*j,latticeConstant*k);
+                //NOTE: the resetVelocityMaxwellian currently causes the numbers to differ from set numbers, i.e. 0's become e-5
+                //haven't yet figured out exactly what this is doing
 
                 //Place the 4 atoms of each fcc cell into coordinates
+                //NOTE: The PBCs will prevent from adding atoms which are beyond the system dimensions when approach the boundaries.
                 Atom *atom1 = new Atom(UnitConverter::massFromSI(6.63352088e-26)); //uses mass in kg
-                x1 = LatticeVector[0];
-                y1 = LatticeVector[1];
-                z1 = LatticeVector[2];
-                std::cout<<"Atom1 position = " <<x1 << y1<< z1 << std::endl;
-                atom1->position.set(x1,y1,z1);
-                atom1->resetVelocityMaxwellian(temperature);
+                x = LatticeVector[0];
+                y = LatticeVector[1];
+                z = LatticeVector[2];
+                std::cout<<"Atom1 position = " <<x << y<< z << std::endl;
+                atom1->position.set(x,y,z);
+                //atom1->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom1);     //add element to vector m_atoms 1 element (atom object)
 
                 Atom *atom2 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-                x2 = halfLatticeConstant + LatticeVector[0];
-                y2 = halfLatticeConstant + LatticeVector[1];
-                z2 = LatticeVector[2];
-                std::cout<<"Atom2 position = " <<x2 << y2<< z2 << std::endl;
-                atom2->position.set(x2,y2,z2);
-                atom2->resetVelocityMaxwellian(temperature);
+                x = halfLatticeConstant + LatticeVector[0];
+                y = halfLatticeConstant + LatticeVector[1];
+                z = LatticeVector[2];
+                std::cout<<"Atom2 position = " <<x << y<< z << std::endl;
+                atom2->position.set(x,y,z);
+                //atom2->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom2);
                 std::cout<<"Atom2 position = " <<atom2->position[0] <<atom2->position[1]<<atom2->position[2] << std::endl;
 
-                //THERE IS SOME PROBLEM HERE! ATOMS2 POSITION COUTS AS +, BUT IN XYZ FILE THE Y POSITION IS NEGATIVE. WHY???
-
                 Atom *atom3 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-                x3 = LatticeVector[0];
-                y3 = halfLatticeConstant + LatticeVector[1];
-                z3 = halfLatticeConstant + LatticeVector[2];
-                std::cout<<"Atom3 position = " <<x3 << y3<< z3 << std::endl;
-                atom3->position.set(x3,y3,z3);
-                atom3->resetVelocityMaxwellian(temperature);
+                x = LatticeVector[0];
+                y = halfLatticeConstant + LatticeVector[1];
+                z = halfLatticeConstant + LatticeVector[2];
+                std::cout<<"Atom3 position = " <<x << y<< z << std::endl;
+                atom3->position.set(x,y,z);
+                //atom3->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom3);
 
                 Atom *atom4 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-                x4 = halfLatticeConstant + LatticeVector[0];
-                y4 = LatticeVector[1];
-                z4 = halfLatticeConstant + LatticeVector[2];
-                std::cout<<"Atom4 position = " <<x4 << y4<< z4 << std::endl;
-                atom4->position.set(x4,y4,z4);
-                atom4->resetVelocityMaxwellian(temperature);
+                x = halfLatticeConstant + LatticeVector[0];
+                y = LatticeVector[1];
+                z = halfLatticeConstant + LatticeVector[2];
+                std::cout<<"Atom4 position = " <<x << y<< z << std::endl;
+                atom4->position.set(x,y,z);
+               // atom4->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom4);
+
+
             }
         }
+
     }
+
+
     setSystemSize(latticeConstant*numberOfUnitCellsEachDimension); //system size set by multiply vec3 # of unit cells by latticeConstant
+    std::cout<<"system size = " << m_systemSize <<std::endl;
     //each unit cell is cubic with side length = latticeConstant
 
 
@@ -156,7 +171,7 @@ void System::calculateForces() {
 }
 
 void System::step(double dt) {
-    m_integrator.integrate(*this, dt);
+    m_integrator.integrate(*this, dt);  //this calls velocityverlet.cpp
     m_steps++;
     m_time += dt;
 }

@@ -78,6 +78,7 @@ double UnitConverter::lengthFromSI(double L) {UnitConverter::makeSureInitialized
 double UnitConverter::lengthToAngstroms(double L) {UnitConverter::makeSureInitialized(); return UnitConverter::a0*L*1e10; }
 double UnitConverter::lengthFromAngstroms(double L) {UnitConverter::makeSureInitialized(); return L/(UnitConverter::a0*1e10); }
 
+
 vec3 UnitConverter::lengthToSI(vec3 position)
 {
     return vec3(UnitConverter::lengthToSI(position.x()), UnitConverter::lengthToSI(position.y()), UnitConverter::lengthToSI(position.z()));

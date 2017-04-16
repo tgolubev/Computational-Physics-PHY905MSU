@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int numberOfArguments, char **argumentList)
 {
-    vec3 numberOfUnitCellsEachDimension(1,1,1);
+    vec3 numberOfUnitCellsEachDimension(2,2,2);
     double initialTemperature = UnitConverter::temperatureFromSI(300.0); // measured in Kelvin
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
 
@@ -38,8 +38,7 @@ int main(int numberOfArguments, char **argumentList)
     system.potential().setEpsilon(1.0);    //i.e. LJ depth
     system.potential().setSigma(1.0);      //i.e. LJ atom diameter
 
-    //test PBCs application: LATER WILL BE APPLIED WITHIN VELOCITYVERLET fnc. call in velocityverlet.cpp
-    //system.applyPeriodicBoundaryConditions();
+
 
     system.removeTotalMomentum();
 
@@ -53,7 +52,7 @@ int main(int numberOfArguments, char **argumentList)
             setw(20) << "PotentialEnergy" <<
             setw(20) << "TotalEnergy" << endl;
     for(int timestep=0; timestep<1000; timestep++) {  //chose # of timesteps here
-        system.step(dt);   //advance system by 1 step
+        system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
         statisticsSampler.sample(system);   //use sampler to calculate system parameters and write to .xyz file at every timestep
         if( timestep % 100 == 0 ) {
             // Print the timestep and system properties every 100 timesteps

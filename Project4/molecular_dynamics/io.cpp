@@ -40,10 +40,15 @@ void IO::saveState(System &system)
         file << system.atoms().size() << endl;
         file << "The is an optional comment line that can be empty. The reason we use H is so particles get smaller in Ovito" << endl;
         for(Atom *atom : system.atoms()) {
-            file << "H " <<
+            file << "H " <<         
                     UnitConverter::lengthToAngstroms(atom->position.x()) << " " <<
                     UnitConverter::lengthToAngstroms(atom->position.y()) << " " <<
                     UnitConverter::lengthToAngstroms(atom->position.z()) << "\n";
+
+            /* atom->position.x() << " " <<          //in vec3 class  calling a vec3 object ie. position.x() will return to 1st component: position[0]
+                    atom->position.y() << " " <<
+                    atom->position.z() << "\n";
+                    */
         }
     }
 }
