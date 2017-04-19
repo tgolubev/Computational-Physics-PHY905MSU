@@ -15,6 +15,7 @@ public:
     double sigma() const;
     void setSigma(double sigma);
     double epsilon() const;
+    double twntyfour_epsilon() const;
     void setEpsilon(double epsilon);
 };
 #endif

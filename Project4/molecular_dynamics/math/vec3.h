@@ -9,11 +9,9 @@ class vec3
 {
 public:
     double components[3];
-
     vec3();
     vec3(vec3 const&copy);
     vec3(double x, double y, double z);
-
     void print();
     void print(string name);
     vec3 cross(vec3 aVector);

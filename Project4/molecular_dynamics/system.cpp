@@ -103,7 +103,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 z = LatticeVector[2];
                 //std::cout<<"Atom1 position = " <<x << y<< z << std::endl;
                 atom1->position.set(x,y,z);
-                //atom1->resetVelocityMaxwellian(temperature);
+                atom1->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom1);     //add element to vector m_atoms 1 element (atom object)
 
                 if(i!=numberOfUnitCellsEachDimension[0] && j!=numberOfUnitCellsEachDimension[1]){
@@ -116,7 +116,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                     z = LatticeVector[2];
                     //std::cout<<"Atom2 position = " <<x << y<< z << std::endl;
                     atom2->position.set(x,y,z);
-                    //atom2->resetVelocityMaxwellian(temperature);
+                    atom2->resetVelocityMaxwellian(temperature);
                     m_atoms.push_back(atom2);
                     //std::cout<<"Atom2 position = " <<atom2->position[0] <<atom2->position[1]<<atom2->position[2] << std::endl;
                     }
@@ -128,7 +128,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                     z = halfLatticeConstant + LatticeVector[2];
                     //std::cout<<"Atom3 position = " <<x << y<< z << std::endl;
                     atom3->position.set(x,y,z);
-                    //atom3->resetVelocityMaxwellian(temperature);
+                    atom3->resetVelocityMaxwellian(temperature);
                     m_atoms.push_back(atom3);
                 }
 
@@ -139,7 +139,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                     z = halfLatticeConstant + LatticeVector[2];
                     //std::cout<<"Atom4 position = " <<x << y<< z << std::endl;
                     atom4->position.set(x,y,z);
-                    // atom4->resetVelocityMaxwellian(temperature);
+                    atom4->resetVelocityMaxwellian(temperature);
                     m_atoms.push_back(atom4);
                 }
 
