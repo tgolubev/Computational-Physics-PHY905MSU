@@ -140,6 +140,13 @@ vec3 &vec3::operator/=(vec3 rhs)
     return *this;
 }
 
+bool vec3::operator==(vec3 rhs)
+{
+    if(components[0]==rhs[0] && components[1]==rhs[1] && components[2]==rhs[2]){
+    return true;
+    }else return false;
+}
+
 std::ostream &operator<<(std::ostream &os, const vec3 &myVector) // Allows cout << myVector << endl;
 {
     os << "[" << myVector.x() << ", " << myVector.y() << ", " << myVector.z() << "];";

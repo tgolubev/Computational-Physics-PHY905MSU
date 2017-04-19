@@ -9,12 +9,14 @@
 class System
 {
 private:
+    //m_ stands for member
     vec3 m_systemSize;
     VelocityVerlet m_integrator;
     std::vector<Atom*> m_atoms;  //vector of atom pointers
     LennardJones m_potential;
     double m_time = 0;
     int m_steps = 0;
+    int m_num_atoms = size(m_atoms);
 
 public:
     System();
@@ -36,5 +38,6 @@ public:
     VelocityVerlet &integrator() { return m_integrator; }
     int steps() { return m_steps; }
     void setSteps(int steps) { m_steps = steps; }
+    int num_atoms() {return m_num_atoms;}
 };
 #endif

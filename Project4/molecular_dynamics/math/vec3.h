@@ -34,11 +34,12 @@ public:
     vec3 &operator+=(vec3 rhs);   // Componentwise addition with vector
     vec3 &operator*=(double rhs); // Componentwise multiplication with scalar
     vec3 &operator*=(vec3 rhs);   // Componentwise multiplicationwith vector
-    vec3 &vec3::operator*=(int rhs);//Componentwise multiplication with int scalar
+    vec3 &operator*=(int rhs);//Componentwise multiplication with int scalar
     vec3 &operator-=(double rhs); // Componentwise subtraction with scalar
     vec3 &operator-=(vec3 rhs);   // Componentwise subtraction with vector
     vec3 &operator/=(double rhs); // Componentwise division with scalar
     vec3 &operator/=(vec3 rhs);   // Componentwise division with vector
+    bool operator==(vec3 rhs);  //Check if two vectors are equal componentwise
     friend std::ostream& operator<<(std::ostream& os, const vec3& myVector); // Allows cout << myVector << endl;
 };
 
