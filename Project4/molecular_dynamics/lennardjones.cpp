@@ -62,6 +62,7 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
         current_atom->force[2] += force_magnitude*relative_z/radius; //Fz = F*z/r
     }
 
+    //NEED TO IMPLEMENT MIN IMAGE CONVENTION: MUST CONSIDER IMAGES FOR THE ATOMS NEAR THE BOUNDARIES
  }
     m_potentialEnergy = 0; // Remember to compute this in the loop
 }

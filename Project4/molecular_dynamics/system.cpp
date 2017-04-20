@@ -60,7 +60,7 @@ void System::applyPeriodicBoundaryConditions() {
 
 void System::removeTotalMomentum() {
     //temporarily insert numAtoms here: LATER PASS IT TO THE FUNCTION OR FIND IT SOMEHOW FROM SYSTEM PROP.'S
-    int numAtoms = 100;
+    int numAtoms = 500;
     // Find the total momentum and remove momentum equally on each atom so the total momentum becomes zero.
     vec3 total_momentum;
     for(Atom *atom : atoms()) { //c++11 way of iterating through  entire vector or array
@@ -71,10 +71,18 @@ void System::removeTotalMomentum() {
     for(Atom *atom : atoms()) {
         for(int j=0;j<3;j++){
             //evenly modify components of velocity of each atom to yield total system momentum of 0
-            if(atom->velocity[j] >0) atom->velocity[j] -= Mom_per_atom[j]/atom->mass();
-            if(atom->velocity[j] <0)  atom->velocity[j] += Mom_per_atom[j]/atom->mass();
+            atom->velocity[j] -= Mom_per_atom[j]/atom->mass();
+            //if(atom->velocity[j] >0) atom->velocity[j] -= Mom_per_atom[j]/atom->mass();
+            //if(atom->velocity[j] <0)  atom->velocity[j] += Mom_per_atom[j]/atom->mass();
         }
     }
+    //test if total_momentum was rezeroed 0: (a unit test)
+    total_momentum.print("Total Momentum before removeMomentum");
+    total_momentum.set(0,0,0);  //reset total momentum to 0
+    for(Atom *atom : atoms()) { //c++11 way of iterating through  entire vector or array
+          total_momentum += atom->mass()*atom->velocity;  //mass() returns value of m_mass (atom's mass)
+     }
+    total_momentum.print("Total Momentum after removeMomentum");   //print() is fnc in vec3 class, takes in a string input
 }
 
 
@@ -87,13 +95,11 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
     double halfLatticeConstant=0.5*latticeConstant;
     //std::cout<<"halflatticeconsts" << halfLatticeConstant << std::endl;
 
-    for(int i=0;i<=numberOfUnitCellsEachDimension[0];i++){
+    for(int i=0;i<numberOfUnitCellsEachDimension[0];i++){
         //i.e. i = 0,1...N_x-1
-        for(int j=0;j<=numberOfUnitCellsEachDimension[1];j++){
-            for(int k=0;k<=numberOfUnitCellsEachDimension[2];k++){
+        for(int j=0;j<numberOfUnitCellsEachDimension[1];j++){
+            for(int k=0;k<numberOfUnitCellsEachDimension[2];k++){
                 LatticeVector.set(latticeConstant*i,latticeConstant*j,latticeConstant*k);
-                //NOTE: the resetVelocityMaxwellian currently causes the numbers to differ from set numbers, i.e. 0's become e-5
-                //haven't yet figured out exactly what this is doing
 
                 //Place the 4 atoms of each fcc cell into coordinates
                 //NOTE: The PBCs will prevent from adding atoms which are beyond the system dimensions when approach the boundaries.
@@ -106,10 +112,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 atom1->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom1);     //add element to vector m_atoms 1 element (atom object)
 
-                if(i!=numberOfUnitCellsEachDimension[0] && j!=numberOfUnitCellsEachDimension[1]){
-                    //These if statements are to not add atoms past the system boundaries.
-                    //Note: If were to just use PBCs to loop this added atoms around, this results in
-                    //having 2 atoms at 1 position at the left/bottom system boundaries.
+
                     Atom *atom2 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
                     x = halfLatticeConstant + LatticeVector[0];
                     y = halfLatticeConstant + LatticeVector[1];
@@ -118,10 +121,11 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                     atom2->position.set(x,y,z);
                     atom2->resetVelocityMaxwellian(temperature);
                     m_atoms.push_back(atom2);
+                    //std::cout<<"Atom mass = " << atom2->mass() <<std::endl;
                     //std::cout<<"Atom2 position = " <<atom2->position[0] <<atom2->position[1]<<atom2->position[2] << std::endl;
-                    }
 
-                if(j!=numberOfUnitCellsEachDimension[1] && k!=numberOfUnitCellsEachDimension[2]){
+
+
                     Atom *atom3 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
                     x = LatticeVector[0];
                     y = halfLatticeConstant + LatticeVector[1];
@@ -130,9 +134,9 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                     atom3->position.set(x,y,z);
                     atom3->resetVelocityMaxwellian(temperature);
                     m_atoms.push_back(atom3);
-                }
 
-                if(i!=numberOfUnitCellsEachDimension[0] && k!=numberOfUnitCellsEachDimension[2]){
+
+
                     Atom *atom4 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
                     x = halfLatticeConstant + LatticeVector[0];
                     y = LatticeVector[1];
@@ -141,9 +145,6 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                     atom4->position.set(x,y,z);
                     atom4->resetVelocityMaxwellian(temperature);
                     m_atoms.push_back(atom4);
-                }
-
-
             }
         }
 

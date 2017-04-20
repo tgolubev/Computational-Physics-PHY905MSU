@@ -4,7 +4,7 @@
 class LennardJones
 {
 private:
-    double m_sigma = 1.0;
+    double m_sigma = 3.405;  //use Angstroms. 3.405A is for Ar
     double m_epsilon = 1.0;
     double m_potentialEnergy = 0;
 
