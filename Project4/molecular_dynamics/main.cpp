@@ -8,8 +8,11 @@
 #include "unitconverter.h"
 #include <iostream>
 #include <iomanip>
+#include <chrono>
+#include <time.h>
 
 using namespace std;
+using namespace chrono;
 
 int main(int numberOfArguments, char **argumentList)
 {
@@ -36,7 +39,7 @@ int main(int numberOfArguments, char **argumentList)
     system.createFCCLattice(numberOfUnitCellsEachDimension, latticeConstant, initialTemperature);
     //set the potential parameters
     system.potential().setEpsilon(1.0);    //i.e. LJ depth
-    system.potential().setSigma(1.0);      //i.e. LJ atom diameter
+    system.potential().setSigma(3.405);      //i.e. LJ atom diameter. Ar = 3.405 Angstroms
 
 
 
@@ -51,10 +54,13 @@ int main(int numberOfArguments, char **argumentList)
             setw(20) << "KineticEnergy" <<
             setw(20) << "PotentialEnergy" <<
             setw(20) << "TotalEnergy" << endl;
-    for(int timestep=0; timestep<1000; timestep++) {  //chose # of timesteps here
+
+    high_resolution_clock::time_point start2 = high_resolution_clock::now();  //start clock timer
+
+    for(int timestep=0; timestep<2000; timestep++) {  //chose # of timesteps here
         system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
         statisticsSampler.sample(system);   //use sampler to calculate system parameters and write to .xyz file at every timestep
-        if( timestep % 100 == 0 ) {
+        if( timestep % 1000 == 0 ) {
             // Print the timestep and system properties every 100 timesteps
             cout << setw(20) << system.steps() <<
                     setw(20) << system.time() <<
@@ -65,6 +71,11 @@ int main(int numberOfArguments, char **argumentList)
         }
         movie.saveState(system);  //calls saveState fnc in io.cpp which saves the state to the movie.xyz file
     }
+
+    //stop clock timer and output time duration
+    high_resolution_clock::time_point finish2 = high_resolution_clock::now();
+    duration<double> time2 = duration_cast<duration<double>>(finish2-start2);
+    cout << "CPU time = " << time2.count() << endl;
 
     movie.close();
 

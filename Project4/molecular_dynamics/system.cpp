@@ -22,16 +22,17 @@ void System::applyPeriodicBoundaryConditions() {
     // Read here: http://en.wikipedia.org/wiki/Periodic_boundary_conditions#Practical_implementation:_continuity_and_the_minimum_image_convention
     //use version A: where fold the atoms back into the simulation cell. The cell has its lower left corner at origin of coord. system.
 
-    //I THINK NEED TO FOLD BACK ATOMS 1ST BEFORE CHECK MIN. IMAGE CONVENTION. BUT IN THAT CASE ARE CONFINING ALL ATOMS TO THE BOX,
-    //SO HOW DO I FIND THE IMAGES!!
-
-    //THESE PBCS ARE BASED ON USING THE CENTER AS ORIGIN: THIS IS NOT CONVENIENT: REDO TO USE LEFT CORNER!
-
     for(Atom *atom : atoms()) {
         for(int j=0;j<3;j++){
             //fold atoms back into the box if they escape the box
-            if (atom->position[j] <  0.) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
-            if (atom->position[j] >  m_systemSize[j]) atom->position[j] -= m_systemSize[j];
+
+            while (atom->position[j] <  0.) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
+            while (atom->position[j] >  m_systemSize[j]) atom->position[j] -= m_systemSize[j];
+
+            //while position is outside of the main simulation cell, keep moving the particle by 1 system size lenght
+            //until position is back within simulation cell. This is necessary b/c sometimes particles with high KE fly
+            //out of the system way past the neighboring image cells.
+
             /*
             //for using center of system as origin. This is  not convinient when building a lattice
             if (atom->position[j] <  -m_systemSize[j] * 0.5) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
@@ -39,12 +40,10 @@ void System::applyPeriodicBoundaryConditions() {
             */
         }
     }
-    /*
+
     //distance and vector btw objects dx should obey min. image convention: only closest distance to particle or its image is considered
-    for(Atom *atom:atoms()){
-        Atom *current_atom = m_atoms[0]; //use pointer to current_atom
-        for(Atom *atom: atoms()){ //THIS MUST BE CHANGED TO NOT DOUBLE COUNT: GO TO 1/2 OF ATOMS
-            Atom *other_atom = m_atoms[0];
+    for(Atom *current_atom:atoms()){
+        for(Atom *other_atom: atoms()){
             vec3 distance;
             for(int j=0;j<3;j++){
                 distance[j] = other_atom->position[j] - current_atom->position[j];  //WHEN USE POINTERS FOR ATOMS MUST USE -> TO ACCESS THEIR PROP.'S!
@@ -54,8 +53,6 @@ void System::applyPeriodicBoundaryConditions() {
             }
          }
     }
-    */
-
 }
 
 void System::removeTotalMomentum() {
