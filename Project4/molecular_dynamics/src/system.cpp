@@ -25,10 +25,24 @@ void System::applyPeriodicBoundaryConditions() {
     for(Atom *atom : atoms()) {
         for(int j=0;j<3;j++){
             //fold atoms back into the box if they escape the box
+            //old PBCs: don't take into account that atom in 1 step can fly out >1 systemsize away from current position
+            if (atom->position[j] <  0.) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
+            if (atom->position[j] >  m_systemSize[j]) atom->position[j] -= m_systemSize[j];
 
-            while (atom->position[j] <  0.) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
-            while (atom->position[j] >  m_systemSize[j]) atom->position[j] -= m_systemSize[j];
+            //NOTE: WHEN I FIX THE ISSUE OF ATOMS FLYING OUT OF THE SYSTEM, I GET THE ISSUE OF VELOCITY EXPLODING!! PERHAPS THERE IS TOO MUCH ENERGY
+            //SOMEHOW WHEN HAVE MORE ATOMS: TOO MANY COLLISIONS ETC...
+            //I THINK NEED TO PERIODICALLY COUPLE THE SYSTEM TO THE MAXWELL BOLTZMANN DISTRIBUTION: GIVE PARTICLES NEW VELOCITIES: OTHERWISE BECAUSE OF
+            //ARTIFICIALLY CONFINING THEM TO 1 SIMULATION CELL, ARE INCREASING THE ENERGY TOO MUCH!!!
 
+            //OR JUST DON'T CONFINE THEM TO THE CELL: LET THEM EXCAPE IF GO BEYON 1 CELL AWAY WITHIN A TIME STEP!!!!
+
+            //New PBCs: try to work for any position of atoms: NOTE SURE IF WORKING PROPERLY
+            //if(atom->position[j] <  0.) atom->position[j] += m_systemSize[j]*floor(abs(atom->position[j])/m_systemSize[j]);
+            //if(atom->position[j] > m_systemSize[j]) atom->position[j] -= m_systemSize[j]*floor(atom->position[j]/m_systemSize[j]);
+
+            //ANOTHER VERSION which is probably less efficient
+            //while (atom->position[j] <  0.) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
+            //while (atom->position[j] >  m_systemSize[j]) atom->position[j] -= m_systemSize[j];
             //while position is outside of the main simulation cell, keep moving the particle by 1 system size lenght
             //until position is back within simulation cell. This is necessary b/c sometimes particles with high KE fly
             //out of the system way past the neighboring image cells.
@@ -39,19 +53,6 @@ void System::applyPeriodicBoundaryConditions() {
             if (atom->position[j] >=  m_systemSize[j] * 0.5) atom->position[j] -= m_systemSize[j];
             */
         }
-    }
-
-    //distance and vector btw objects dx should obey min. image convention: only closest distance to particle or its image is considered
-    for(Atom *current_atom:atoms()){
-        for(Atom *other_atom: atoms()){
-            vec3 distance;
-            for(int j=0;j<3;j++){
-                distance[j] = other_atom->position[j] - current_atom->position[j];  //WHEN USE POINTERS FOR ATOMS MUST USE -> TO ACCESS THEIR PROP.'S!
-                //for cases where the folded back particle will be closer than its image to a given particle
-                if (distance[j] >  m_systemSize[j] * 0.5) distance[j] -= m_systemSize[j];
-                if (distance[j] <= -m_systemSize[j] * 0.5) distance[j] += m_systemSize[j];
-            }
-         }
     }
 }
 
@@ -104,54 +105,41 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 x = LatticeVector[0];
                 y = LatticeVector[1];
                 z = LatticeVector[2];
-                //std::cout<<"Atom1 position = " <<x << y<< z << std::endl;
                 atom1->position.set(x,y,z);
                 atom1->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom1);     //add element to vector m_atoms 1 element (atom object)
 
+                Atom *atom2 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
+                x = halfLatticeConstant + LatticeVector[0];
+                y = halfLatticeConstant + LatticeVector[1];
+                z = LatticeVector[2];
+                atom2->position.set(x,y,z);
+                atom2->resetVelocityMaxwellian(temperature);
+                m_atoms.push_back(atom2);
 
-                    Atom *atom2 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-                    x = halfLatticeConstant + LatticeVector[0];
-                    y = halfLatticeConstant + LatticeVector[1];
-                    z = LatticeVector[2];
-                    //std::cout<<"Atom2 position = " <<x << y<< z << std::endl;
-                    atom2->position.set(x,y,z);
-                    atom2->resetVelocityMaxwellian(temperature);
-                    m_atoms.push_back(atom2);
-                    //std::cout<<"Atom mass = " << atom2->mass() <<std::endl;
-                    //std::cout<<"Atom2 position = " <<atom2->position[0] <<atom2->position[1]<<atom2->position[2] << std::endl;
+                Atom *atom3 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
+                x = LatticeVector[0];
+                y = halfLatticeConstant + LatticeVector[1];
+                z = halfLatticeConstant + LatticeVector[2];
+                atom3->position.set(x,y,z);
+                atom3->resetVelocityMaxwellian(temperature);
+                m_atoms.push_back(atom3);
 
-
-
-                    Atom *atom3 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-                    x = LatticeVector[0];
-                    y = halfLatticeConstant + LatticeVector[1];
-                    z = halfLatticeConstant + LatticeVector[2];
-                    //std::cout<<"Atom3 position = " <<x << y<< z << std::endl;
-                    atom3->position.set(x,y,z);
-                    atom3->resetVelocityMaxwellian(temperature);
-                    m_atoms.push_back(atom3);
-
-
-
-                    Atom *atom4 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
-                    x = halfLatticeConstant + LatticeVector[0];
-                    y = LatticeVector[1];
-                    z = halfLatticeConstant + LatticeVector[2];
-                    //std::cout<<"Atom4 position = " <<x << y<< z << std::endl;
-                    atom4->position.set(x,y,z);
-                    atom4->resetVelocityMaxwellian(temperature);
-                    m_atoms.push_back(atom4);
+                Atom *atom4 = new Atom(UnitConverter::massFromSI(6.63352088e-26));
+                x = halfLatticeConstant + LatticeVector[0];
+                y = LatticeVector[1];
+                z = halfLatticeConstant + LatticeVector[2];
+                atom4->position.set(x,y,z);
+                atom4->resetVelocityMaxwellian(temperature);
+                m_atoms.push_back(atom4);
             }
         }
-
     }
 
 
     setSystemSize(latticeConstant*numberOfUnitCellsEachDimension); //system size set by multiply vec3 # of unit cells by latticeConstant
     std::cout<<"system size = " << m_systemSize <<std::endl;
     //each unit cell is cubic with side length = latticeConstant
-
 
     /*
     //Places 100 atoms randomly into a cube
@@ -166,7 +154,6 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
         m_atoms.push_back(atom);     //add element to vector m_atoms 1 element (atom object)
     }
     */
-
 }
 
 

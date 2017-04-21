@@ -40,7 +40,7 @@ void StatisticsSampler::sampleKineticEnergy(System &system)
 {
     m_kineticEnergy = 0; // Remember to reset the value from the previous timestep
     for(Atom *atom : system.atoms()) {
-
+        m_kineticEnergy += 0.5*atom->mass()*atom->velocity.lengthSquared();
     }
 }
 
@@ -52,6 +52,8 @@ void StatisticsSampler::samplePotentialEnergy(System &system)
 void StatisticsSampler::sampleTemperature(System &system)
 {
     // Hint: reuse the kinetic energy that we already calculated
+    m_temperature = (2./3.)*m_kineticEnergy/system.num_atoms();   //num_atoms() is not working properly: says its 0!
+    //cout <<"num_atoms= " << system.num_atoms() << endl;
 }
 
 void StatisticsSampler::sampleDensity(System &system)

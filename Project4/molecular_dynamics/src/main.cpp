@@ -17,7 +17,7 @@ using namespace chrono;
 int main(int numberOfArguments, char **argumentList)
 {
     vec3 numberOfUnitCellsEachDimension(5,5,5);
-    double initialTemperature = UnitConverter::temperatureFromSI(3000.0); // measured in Kelvin
+    double initialTemperature = UnitConverter::temperatureFromSI(200.0); // measured in Kelvin
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
 
     // If a first argument is provided, it is the number of unit cells and use same # of unit cells for all dimensions
@@ -57,10 +57,10 @@ int main(int numberOfArguments, char **argumentList)
 
     high_resolution_clock::time_point start2 = high_resolution_clock::now();  //start clock timer
 
-    for(int timestep=0; timestep<2000; timestep++) {  //chose # of timesteps here
+    for(int timestep=0; timestep<5000; timestep++) {  //chose # of timesteps here
         system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
         statisticsSampler.sample(system);   //use sampler to calculate system parameters and write to .xyz file at every timestep
-        if( timestep % 1000 == 0 ) {
+        if( timestep % 100 == 0 ) {
             // Print the timestep and system properties every 100 timesteps
             cout << setw(20) << system.steps() <<
                     setw(20) << system.time() <<

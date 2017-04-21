@@ -5,7 +5,7 @@
 Atom::Atom(double mass) :
     m_mass(mass)
 {
-    
+
 }
 
 void Atom::resetForce()

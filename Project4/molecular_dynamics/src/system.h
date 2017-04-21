@@ -16,7 +16,7 @@ private:
     LennardJones m_potential;
     double m_time = 0;
     int m_steps = 0;
-    int m_num_atoms = size(m_atoms);
+    int m_num_atoms = m_atoms.size();  //figure out why not working!
 
 public:
     System();
@@ -31,6 +31,7 @@ public:
     std::vector<Atom *> &atoms() { return m_atoms; } // Calling atoms(): Returns a reference to the std::vector of atom pointers
     double volume() { return m_systemSize[0]*m_systemSize[1]*m_systemSize[2]; }
     vec3 systemSize() { return m_systemSize; }
+    double systemSize(int j) { return m_systemSize[j]; }
     void setSystemSize(vec3 systemSize) { m_systemSize = systemSize; }
     LennardJones &potential() { return m_potential; }
     double time() { return m_time; }
