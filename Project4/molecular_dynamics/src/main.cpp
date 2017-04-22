@@ -16,7 +16,7 @@ using namespace chrono;
 
 int main(int numberOfArguments, char **argumentList)
 {
-    vec3 numberOfUnitCellsEachDimension(5,5,5);
+    vec3 numberOfUnitCellsEachDimension(3,3,3);
     double initialTemperature = UnitConverter::temperatureFromSI(200.0); // measured in Kelvin
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
 
@@ -42,7 +42,6 @@ int main(int numberOfArguments, char **argumentList)
     system.potential().setSigma(3.405);      //i.e. LJ atom diameter. Ar = 3.405 Angstroms
 
 
-
     system.removeTotalMomentum();
 
     StatisticsSampler statisticsSampler;
@@ -50,17 +49,30 @@ int main(int numberOfArguments, char **argumentList)
 
     cout << setw(20) << "Timestep" <<
             setw(20) << "Time" <<
-            setw(20) << "Temperature" <<
+            setw(20) << "Temperature(not K!)" <<
             setw(20) << "KineticEnergy" <<
             setw(20) << "PotentialEnergy" <<
             setw(20) << "TotalEnergy" << endl;
 
     high_resolution_clock::time_point start2 = high_resolution_clock::now();  //start clock timer
 
-    for(int timestep=0; timestep<5000; timestep++) {  //chose # of timesteps here
+    for(int timestep=0; timestep<10000; timestep++) {  //chose # of timesteps here
         system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
-        statisticsSampler.sample(system);   //use sampler to calculate system parameters and write to .xyz file at every timestep
-        if( timestep % 100 == 0 ) {
+        //statisticsSampler.sample(system);   //use sampler to calculate system parameters
+        if( timestep % 1000 == 0 ) {
+            /*
+            //periodically couple system with heat bath
+            //this causes wierd effect of freezing the gas!! when have a gas
+            //PERHAPS INSTEAD OF RESETTING THE DISTRIBUTION EACH TIME: JUST RESCALE THE VELOCITIES TO GET THE DESIRED
+            //TEMPERATURE PERIODICALLY
+            for(Atom *atom : system.atoms()) {
+                atom->resetVelocityMaxwellian(initialTemperature);
+            }
+            system.removeTotalMomentum();
+            */
+
+            //TEMPORARILY SAMPLE ONLY EVERY 1000 TIMESTEPS
+            statisticsSampler.sample(system);   //use sampler to calculate system parameters
             // Print the timestep and system properties every 100 timesteps
             cout << setw(20) << system.steps() <<
                     setw(20) << system.time() <<

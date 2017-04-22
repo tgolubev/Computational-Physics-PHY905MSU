@@ -24,6 +24,8 @@ void StatisticsSampler::saveToFile(System &system)
     }
 
     // Print out values here
+    m_file << m_kineticEnergy<< m_potentialEnergy <<  m_temperature
+        << endl;
 }
 
 void StatisticsSampler::sample(System &system)
@@ -38,7 +40,7 @@ void StatisticsSampler::sample(System &system)
 
 void StatisticsSampler::sampleKineticEnergy(System &system)
 {
-    m_kineticEnergy = 0; // Remember to reset the value from the previous timestep
+    m_kineticEnergy = 0.; // Remember to reset the value from the previous timestep
     for(Atom *atom : system.atoms()) {
         m_kineticEnergy += 0.5*atom->mass()*atom->velocity.lengthSquared();
     }

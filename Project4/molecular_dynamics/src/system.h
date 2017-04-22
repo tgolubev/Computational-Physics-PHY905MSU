@@ -16,7 +16,6 @@ private:
     LennardJones m_potential;
     double m_time = 0;
     int m_steps = 0;
-    int m_num_atoms = m_atoms.size();  //figure out why not working!
 
 public:
     System();
@@ -24,6 +23,7 @@ public:
     void createFCCLattice(vec3 numberOfUnitCellsEachDimension, double latticeConstant, double temperature);
     void applyPeriodicBoundaryConditions();
     void removeTotalMomentum();
+    //void System::removeEscapedAtoms();
     void calculateForces();
     void step(double dt);
 
@@ -39,6 +39,6 @@ public:
     VelocityVerlet &integrator() { return m_integrator; }
     int steps() { return m_steps; }
     void setSteps(int steps) { m_steps = steps; }
-    int num_atoms() {return m_num_atoms;}
+    int num_atoms() {return m_atoms.size();}
 };
 #endif

@@ -140,9 +140,6 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
     std::cout<<"system size = " << m_systemSize <<std::endl;
     std::cout<<"num_atoms = " << num_atoms() <<std::endl;
 
-
-
-
 /*
     //Places 100 atoms randomly into a cube
     for(int i=0; i<100; i++) {      //for all atoms (100 right now)

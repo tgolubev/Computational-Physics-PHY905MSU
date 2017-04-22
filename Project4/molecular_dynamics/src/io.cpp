@@ -44,11 +44,9 @@ void IO::saveState(System &system)
                     UnitConverter::lengthToAngstroms(atom->position.x()) << " " <<
                     UnitConverter::lengthToAngstroms(atom->position.y()) << " " <<
                     UnitConverter::lengthToAngstroms(atom->position.z()) << "\n";
-
-            /* atom->position.x() << " " <<          //in vec3 class  calling a vec3 object ie. position.x() will return to 1st component: position[0]
-                    atom->position.y() << " " <<
-                    atom->position.z() << "\n";
-                    */
+                    //UnitConverter::velocityToSI(atom->velocity.x())<<" "<<
+                    //UnitConverter::velocityToSI(atom->velocity.y())<<" "<<
+                    //UnitConverter::velocityToSI(atom->velocity.z())<<" "<< "\n";
         }
     }
 }

@@ -63,7 +63,7 @@ void vec3::set(double x, double y, double z)
 
 void vec3::randomGaussian(double mean, double standardDeviation)
 {
-    components[0] = Random::nextGaussian(mean, standardDeviation);
+    components[0] = Random::nextGaussian(mean, standardDeviation);  //nextGaussian is in random.h
     components[1] = Random::nextGaussian(mean, standardDeviation);
     components[2] = Random::nextGaussian(mean, standardDeviation);
 }
