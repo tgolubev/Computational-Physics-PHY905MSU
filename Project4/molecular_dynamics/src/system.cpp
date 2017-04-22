@@ -23,6 +23,7 @@ void System::applyPeriodicBoundaryConditions() {
     //using version A: where fold the atoms back into the simulation cell. The cell has its lower left corner at origin of coord. system.
 
     for(Atom *atom : atoms()) {
+
         for(int j=0;j<3;j++){
             //fold atoms back into the box if they escape the box
             //Note: if atom in 1 step moves further than the neighboring image of the simulation cell, it is not fully brought back.
@@ -98,13 +99,14 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
             for(int k=0;k<numberOfUnitCellsEachDimension[2];k++){
                 LatticeVector.set(latticeConstant*i,latticeConstant*j,latticeConstant*k);
 
-                //Place the 4 atoms of each fcc cell into coordinates
+                //Place the 4 atoms of each fcc cell into coordinates. Use setInitialPosition(): this will both set position and
+                //save the atom's initial position for use later.
                 //NOTE: The PBCs will prevent from adding atoms which are beyond the system dimensions when approach the boundaries.
                 Atom *atom1 = new Atom(UnitConverter::massFromSI(6.63352088e-26)); //uses mass in kg
                 x = LatticeVector[0];
                 y = LatticeVector[1];
                 z = LatticeVector[2];
-                atom1->position.set(x,y,z);
+                atom1->setInitialPosition(x,y,z);
                 atom1->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom1);     //add element to vector m_atoms 1 element (atom object)
 
@@ -112,7 +114,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 x = halfLatticeConstant + LatticeVector[0];
                 y = halfLatticeConstant + LatticeVector[1];
                 z = LatticeVector[2];
-                atom2->position.set(x,y,z);
+                atom2->setInitialPosition(x,y,z);
                 atom2->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom2);
 
@@ -120,7 +122,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 x = LatticeVector[0];
                 y = halfLatticeConstant + LatticeVector[1];
                 z = halfLatticeConstant + LatticeVector[2];
-                atom3->position.set(x,y,z);
+                atom3->setInitialPosition(x,y,z);
                 atom3->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom3);
 
@@ -128,7 +130,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 x = halfLatticeConstant + LatticeVector[0];
                 y = LatticeVector[1];
                 z = halfLatticeConstant + LatticeVector[2];
-                atom4->position.set(x,y,z);
+                atom4->setInitialPosition(x,y,z);
                 atom4->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom4);
             }

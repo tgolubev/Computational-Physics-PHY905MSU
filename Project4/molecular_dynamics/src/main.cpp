@@ -59,7 +59,10 @@ int main(int numberOfArguments, char **argumentList)
     for(int timestep=0; timestep<50000; timestep++) {  //chose # of timesteps here
         system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
         //statisticsSampler.sample(system);   //use sampler to calculate system parameters
-        if( timestep % 1000 == 0 ) {
+        if(timestep % 10 ==0){
+            //to save CPU, don't sample every timestep
+            statisticsSampler.sample(system);   //use sampler to calculate system parameters
+        }
             /*
             //periodically couple system with heat bath
             //this causes wierd effect of freezing the gas!! when have a gas
@@ -71,9 +74,9 @@ int main(int numberOfArguments, char **argumentList)
             system.removeTotalMomentum();
             */
 
-            //TEMPORARILY SAMPLE ONLY EVERY 1000 TIMESTEPS
-            statisticsSampler.sample(system);   //use sampler to calculate system parameters
-            // Print the timestep and system properties every 100 timesteps
+
+         if( timestep % 1000 == 0 ) {
+            // Print the timestep and system properties every 1000 timesteps
             cout << setw(20) << system.steps() <<
                     setw(20) << system.time() <<
                     setw(20) << statisticsSampler.temperature() <<

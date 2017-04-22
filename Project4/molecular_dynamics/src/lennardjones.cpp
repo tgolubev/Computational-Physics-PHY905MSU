@@ -32,11 +32,13 @@ double LennardJones::twntyfour_epsilon() const
 void LennardJones::setEpsilon(double epsilon)
 {
     m_epsilon = epsilon;
+    m_four_epsilon = 4.0*m_epsilon;
     m_twntyfour_epsilon = 24.0*m_epsilon;  //must reset this too
 }
 
 void LennardJones::calculateForces(System &system)  //object system is passed by reference (allows changing)
 {
+ m_potentialEnergy = 0;  //reset potential energy
  for(Atom *current_atom : system.atoms()) {
      //loop over the entire vector m_atoms (atoms() returns m_atoms: vector of pointers to the atoms objects
 
@@ -70,8 +72,22 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
         //find and set force components
         double total_force_over_r = total_force/radius; //precalculate to save 2 FLOPS
         for(int j=0;j<3;j++) current_atom->force[j] += total_force_over_r*displacement[j]; //i.e. Fx = (F/r)*x
+
+        //NOTE: THIS IS CURRENTLY DOUBLE COUNTING: NEED TO REIMPLEMENT FORCE TO SAVE 1/2 OF THE COMPUTATION'S USING NEWTON'S 3RD LAW!!
+        //ALSO MAKE THE 10 THE FREQUENCY THAT THE POTENTIAL IS CALCULATED BE PASSED TO THE FUNCITON FROM MAIN.CPP SO IT CAN BE EASILY  CHANGED.
+        if(system.steps() % 10 ==0){
+            //calculate potential energy every 10 steps
+            m_potentialEnergy += m_four_epsilon*pow(sigma_over_radius,12.)-pow(sigma_over_radius,6);
+        }
+
+
     }
 
  }
-    m_potentialEnergy = 0; // Remember to compute this in the loop
+
+
+
 }
+
+
+

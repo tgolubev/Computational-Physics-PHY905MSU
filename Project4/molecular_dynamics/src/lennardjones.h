@@ -7,6 +7,7 @@ private:
     double m_sigma = 1.0;  //use Angstroms. 3.405A is for Ar
     double m_epsilon = 1.0;
     double m_potentialEnergy = 0;
+    double m_four_epsilon = 4.0*m_epsilon;
     double m_twntyfour_epsilon = 24.0*m_epsilon;
 
 public:

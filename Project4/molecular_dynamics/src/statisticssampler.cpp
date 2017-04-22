@@ -2,6 +2,7 @@
 #include "statisticssampler.h"
 #include "lennardjones.h"
 #include <iostream>
+#include <iomanip>
 
 using std::ofstream; using std::cout; using std::endl;
 
@@ -24,8 +25,10 @@ void StatisticsSampler::saveToFile(System &system)
     }
 
     // Print out values here
-    m_file << m_kineticEnergy<< m_potentialEnergy <<  m_temperature
-        << endl;
+    m_file << std::setw(10) <<system.time() <<
+              std::setw(10) << m_kineticEnergy<<
+              std::setw(10) << m_potentialEnergy <<
+              std::setw(10) << m_temperature<< endl;
 }
 
 void StatisticsSampler::sample(System &system)

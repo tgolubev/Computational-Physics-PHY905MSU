@@ -8,6 +8,12 @@ Atom::Atom(double mass) :
 
 }
 
+void Atom::setInitialPosition(double x, double y, double z)
+{
+    initial_position.set(x,y,z);
+    position.set(x,y,z);
+}
+
 void Atom::resetForce()
 {
     force.zeros();
