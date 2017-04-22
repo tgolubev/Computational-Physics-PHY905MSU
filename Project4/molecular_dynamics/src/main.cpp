@@ -56,7 +56,7 @@ int main(int numberOfArguments, char **argumentList)
 
     high_resolution_clock::time_point start2 = high_resolution_clock::now();  //start clock timer
 
-    for(int timestep=0; timestep<10000; timestep++) {  //chose # of timesteps here
+    for(int timestep=0; timestep<50000; timestep++) {  //chose # of timesteps here
         system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
         //statisticsSampler.sample(system);   //use sampler to calculate system parameters
         if( timestep % 1000 == 0 ) {

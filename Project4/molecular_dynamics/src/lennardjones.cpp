@@ -21,15 +21,18 @@ double LennardJones::epsilon() const
     return m_epsilon;
 }
 
+/*
 double LennardJones::twntyfour_epsilon() const
 {
     return 24.0*m_epsilon;
 }
+*/
 
 
 void LennardJones::setEpsilon(double epsilon)
 {
     m_epsilon = epsilon;
+    m_twntyfour_epsilon = 24.0*m_epsilon;  //must reset this too
 }
 
 void LennardJones::calculateForces(System &system)  //object system is passed by reference (allows changing)
@@ -58,15 +61,15 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
         //declare the variables inside loop since they are only needed within the loop
         double radius = displacement.length();
         double sigma_over_radius = m_sigma/radius;
-        double sigma_over_radius_sqrd = m_sigma/(radius*radius);
-        double total_force = twntyfour_epsilon()*(2.0*pow(sigma_over_radius,11.)-pow(sigma_over_radius,5.))*(sigma_over_radius_sqrd); //for a single pair
+        double sigma_over_radius_sqrd = sigma_over_radius/radius;
+        //double sigma_over_radius_sqrd = m_sigma/(radius*radius);
+        double total_force = m_twntyfour_epsilon*(2.0*pow(sigma_over_radius,11.)-pow(sigma_over_radius,5.))*(sigma_over_radius_sqrd); //for a single pair
 
         //ATTRACTIVE FORCE SHOULD POINT TOWARDS OTHER ATOM. REPULSIVE AWAY FROM OTHER ATOM!!!
 
-        //CAN PRECALCULATE THE SIGMA POWERS: WILL PROBABLY BE MORE EFFICIENT!
-
         //find and set force components
-        for(int j=0;j<3;j++) current_atom->force[j] += total_force*displacement[j]/radius; //i.e. Fx = F*x/r
+        double total_force_over_r = total_force/radius; //precalculate to save 2 FLOPS
+        for(int j=0;j<3;j++) current_atom->force[j] += total_force_over_r*displacement[j]; //i.e. Fx = (F/r)*x
     }
 
  }

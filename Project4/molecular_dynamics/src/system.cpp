@@ -62,7 +62,7 @@ void System::removeTotalMomentum() {
             atom->velocity[j] -= Mom_per_atom[j]/atom->mass();
         }
     }
-    //I VERIFIED THAT THIS IS NOT THE CAUSE OF TEMPERATURE BLOW UUP ISSUE
+
     //test if total_momentum was rezeroed 0: (a unit test)
     total_momentum.print("Total Momentum before removeMomentum");
     total_momentum.set(0,0,0);  //reset total-momentum to 0
@@ -139,9 +139,6 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
     setSystemSize(latticeConstant*numberOfUnitCellsEachDimension); //system size set by multiply vec3 # of unit cells by latticeConstant
     std::cout<<"system size = " << m_systemSize <<std::endl;
     std::cout<<"num_atoms = " << num_atoms() <<std::endl;
-
-
-
 
 /*
     //Places 100 atoms randomly into a cube

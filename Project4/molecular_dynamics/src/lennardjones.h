@@ -7,6 +7,7 @@ private:
     double m_sigma = 1.0;  //use Angstroms. 3.405A is for Ar
     double m_epsilon = 1.0;
     double m_potentialEnergy = 0;
+    double m_twntyfour_epsilon = 24.0*m_epsilon;
 
 public:
     LennardJones() { }
@@ -15,7 +16,7 @@ public:
     double sigma() const;
     void setSigma(double sigma);
     double epsilon() const;
-    double twntyfour_epsilon() const;
+    //double twntyfour_epsilon() const;
     void setEpsilon(double epsilon);
 };
 #endif
