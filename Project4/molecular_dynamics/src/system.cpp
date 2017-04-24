@@ -27,8 +27,16 @@ void System::applyPeriodicBoundaryConditions() {
         for(int j=0;j<3;j++){
             //fold atoms back into the box if they escape the box
             //Note: if atom in 1 step moves further than the neighboring image of the simulation cell, it is not fully brought back.
-            if (atom->position[j] <  0.) atom->position[j] += m_systemSize[j];  //I think use atom->position instead of atom.position b/c atom is a pointer
-            if (atom->position[j] >  m_systemSize[j]) atom->position[j] -= m_systemSize[j];
+            if (atom->position[j] <  0.) {
+                atom->position[j] += m_systemSize[j];  //I think use atom->position instead of atom.position b/c atom is a pointer
+                atom->num_bndry_crossings[j] -= 1;  //crossing left or bottom boundary is counted as -1 crossing.
+            }
+            if (atom->position[j] >  m_systemSize[j]){
+                atom->position[j] -= m_systemSize[j];
+                atom->num_bndry_crossings[j] += 1;    //crossing right or top boundary is counted as +1 crossing
+            }
+
+            //std::cout<<"num crossings = " <<atom->num_bndry_crossings[j];
 
             //PBCs: try to work for any position of atoms: always bring the atom back to the cell even when it escapes far away
             //Is most likely not necessary: since if use reasonable time step and have the correct potential expression, atoms will never jump >m_systemSize
@@ -107,6 +115,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 y = LatticeVector[1];
                 z = LatticeVector[2];
                 atom1->setInitialPosition(x,y,z);
+                atom1->num_bndry_crossings.set(0.,0.,0.);   //make sure initial # of bndry crossings is 0
                 atom1->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom1);     //add element to vector m_atoms 1 element (atom object)
 
@@ -115,6 +124,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 y = halfLatticeConstant + LatticeVector[1];
                 z = LatticeVector[2];
                 atom2->setInitialPosition(x,y,z);
+                atom2->num_bndry_crossings.set(0.,0.,0.);
                 atom2->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom2);
 
@@ -123,6 +133,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 y = halfLatticeConstant + LatticeVector[1];
                 z = halfLatticeConstant + LatticeVector[2];
                 atom3->setInitialPosition(x,y,z);
+                atom3->num_bndry_crossings.set(0.,0.,0.);
                 atom3->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom3);
 
@@ -131,6 +142,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 y = LatticeVector[1];
                 z = halfLatticeConstant + LatticeVector[2];
                 atom4->setInitialPosition(x,y,z);
+                atom4->num_bndry_crossings.set(0.,0.,0.);
                 atom4->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom4);
             }

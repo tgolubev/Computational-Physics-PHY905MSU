@@ -12,6 +12,7 @@ private:
     double m_potentialEnergy = 0;
     double m_temperature = 0;
     double m_density = 0;
+    double m_diffusion_coeff = 0;
 public:
     StatisticsSampler();
     void saveToFile(System &system);
@@ -20,6 +21,7 @@ public:
     void samplePotentialEnergy(System &system);
     void sampleTemperature(System &system);
     void sampleDensity(System &system);
+    void sampleDiffusionCoeff(System &system);
     double kineticEnergy() { return m_kineticEnergy; }
     double potentialEnergy() { return m_potentialEnergy; }
     double totalEnergy() { return m_kineticEnergy+m_potentialEnergy; }

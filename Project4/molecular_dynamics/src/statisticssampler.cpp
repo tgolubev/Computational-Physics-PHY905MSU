@@ -28,7 +28,8 @@ void StatisticsSampler::saveToFile(System &system)
     m_file << std::setw(10) <<system.time() <<
               std::setw(10) << m_kineticEnergy<<
               std::setw(10) << m_potentialEnergy <<
-              std::setw(10) << m_temperature<< endl;
+              std::setw(12) << m_temperature<<
+              std::setw(10)<<m_diffusion_coeff<<endl;
 }
 
 void StatisticsSampler::sample(System &system)
@@ -37,6 +38,7 @@ void StatisticsSampler::sample(System &system)
     sampleKineticEnergy(system);
     samplePotentialEnergy(system);
     sampleTemperature(system);
+    sampleDiffusionCoeff(system);
     sampleDensity(system);
     saveToFile(system);
 }
@@ -65,3 +67,21 @@ void StatisticsSampler::sampleDensity(System &system)
 {
 
 }
+
+void StatisticsSampler::sampleDiffusionCoeff(System &system){
+    double displacements_sqrd_sum = 0.0;  //reset displacements sum
+    for(Atom *atom : system.atoms()) {
+        vec3 total_displacement;
+        for(int j=0;j<3;j++){
+            total_displacement[j] = abs((atom->initial_position(j) - atom->position[j]) + atom->num_bndry_crossings[j]*system.systemSize(j));
+            //total_displacement[j] = (atom->position[j] - atom->initial_position(j)) + abs(atom->num_bndry_crossings[j])*system.systemSize(j);
+            //MAKE SURE THAT THIS IS RIGHT!, CHECK MATHEMATICALLY!
+        }
+        //takes into account displacement within 1 cell plus displacement due to crossing boundaries into neighboring image cells (PBCs)
+        double total_displacement_sqrd = total_displacement.lengthSquared();
+        displacements_sqrd_sum += total_displacement_sqrd;
+        }
+    m_diffusion_coeff = displacements_sqrd_sum/(6*system.time()*system.num_atoms());  //Einstein relation: D = (mean sqr displacement)/6t
+}
+
+
