@@ -83,13 +83,14 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
         }//IF CALCULATE EVERY TIME STEP VS. EVERY 10, CPU TIME IS 60sec INSTEAD OF ~43sec
     }
  }
+
  //Implementing it in the above way, with only 1 calculation  per pair, made CPU time decrease from ~70sec to ~42sec for 108 atoms and 50k steps
  //1fs step size calculation
 
-
+//I'VE CHECKED TO MAKE SURE THAT THE ABOVE IMPLEMENTATION GIVES SAME RESULTS AS THE BELOW OLDER IMPLEMENTATION OF CALCULATING ALL FORCES EXPLICITELY.
  //Below is previous version which loops over all atoms: so uncessesarily counts each pairwise force twice
- /*
 
+/*
  for(Atom *current_atom : system.atoms()) {
      //loop over the entire vector m_atoms (atoms() returns m_atoms: vector of pointers to the atoms objects
 

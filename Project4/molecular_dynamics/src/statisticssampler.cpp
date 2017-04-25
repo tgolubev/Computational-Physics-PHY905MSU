@@ -29,12 +29,13 @@ void StatisticsSampler::saveToFile(System &system)
               std::setw(10) << m_kineticEnergy<<
               std::setw(10) << m_potentialEnergy <<
               std::setw(12) << m_temperature<<
-              std::setw(10)<<m_diffusion_coeff<<endl;
+              std::setw(10) << m_diffusion_coeff<<endl;
 }
 
 void StatisticsSampler::sample(System &system)
 {
     // Here you should measure different kinds of statistical properties and save it to a file.
+    //THINK ABOUT UNITS!
     sampleKineticEnergy(system);
     samplePotentialEnergy(system);
     sampleTemperature(system);
@@ -58,8 +59,8 @@ void StatisticsSampler::samplePotentialEnergy(System &system)
 
 void StatisticsSampler::sampleTemperature(System &system)
 {
-    // Hint: reuse the kinetic energy that we already calculated
-    m_temperature = (2./3.)*m_kineticEnergy/system.num_atoms();   //num_atoms() is not working properly: says its 0!
+    //Reuse the kinetic energy that we already calculated
+    m_temperature = (2./3.)*m_kineticEnergy/system.num_atoms();
     //cout <<"num_atoms= " << system.num_atoms() << endl;
 }
 
@@ -73,10 +74,9 @@ void StatisticsSampler::sampleDiffusionCoeff(System &system){
     for(Atom *atom : system.atoms()) {
         vec3 total_displacement;
         for(int j=0;j<3;j++){
-            //THIS NEEDS TO BE FIXED: THE CALCULATION IS WRONG RIGHT NOW!
+            //takes into account displacement within 1 cell plus displacement due to crossing boundaries into neighboring image cells (PBCs)
             total_displacement[j] = (atom->position[j] - atom->initial_position(j)) + atom->num_bndry_crossings[j]*system.systemSize(j);
         }
-        //takes into account displacement within 1 cell plus displacement due to crossing boundaries into neighboring image cells (PBCs)
         double total_displacement_sqrd = total_displacement.lengthSquared();
         displacements_sqrd_sum += total_displacement_sqrd;
         }
