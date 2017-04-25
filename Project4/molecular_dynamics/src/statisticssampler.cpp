@@ -74,9 +74,7 @@ void StatisticsSampler::sampleDiffusionCoeff(System &system){
         vec3 total_displacement;
         for(int j=0;j<3;j++){
             //THIS NEEDS TO BE FIXED: THE CALCULATION IS WRONG RIGHT NOW!
-            total_displacement[j] = abs((atom->initial_position(j) - atom->position[j]) + atom->num_bndry_crossings[j]*system.systemSize(j));
-            //total_displacement[j] = (atom->position[j] - atom->initial_position(j)) + abs(atom->num_bndry_crossings[j])*system.systemSize(j);
-            //MAKE SURE THAT THIS IS RIGHT!, CHECK MATHEMATICALLY!
+            total_displacement[j] = (atom->position[j] - atom->initial_position(j)) + atom->num_bndry_crossings[j]*system.systemSize(j);
         }
         //takes into account displacement within 1 cell plus displacement due to crossing boundaries into neighboring image cells (PBCs)
         double total_displacement_sqrd = total_displacement.lengthSquared();

@@ -17,7 +17,8 @@ using namespace chrono;
 int main(int numberOfArguments, char **argumentList)
 {
     vec3 numberOfUnitCellsEachDimension(3,3,3);
-    double initialTemperature = UnitConverter::temperatureFromSI(200.0); // measured in Kelvin
+    double initialTemperature = UnitConverter::temperatureFromSI(300.0); // measured in Kelvin
+    //at 3000K argon melts very fast. At 300K initial, it kind of distorts but not completely melts during  a 50k timesteps time frame.
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
 
     // If a first argument is provided, it is the number of unit cells and use same # of unit cells for all dimensions
@@ -27,7 +28,7 @@ int main(int numberOfArguments, char **argumentList)
     // If a third argument is provided, it is the lattice constant determining the density (measured in angstroms)
     if(numberOfArguments > 3) latticeConstant = UnitConverter::lengthFromAngstroms(atof(argumentList[3]));
 
-    double dt = UnitConverter::timeFromSI(1e-15); // Measured in seconds (1fs is common)
+    double dt = UnitConverter::timeFromSI(1e-14); // Measured in seconds (1fs is common)
 
     cout << "One unit of length is " << UnitConverter::lengthToSI(1.0) << " meters" << endl;
     cout << "One unit of velocity is " << UnitConverter::velocityToSI(1.0) << " meters/second" << endl;
@@ -58,7 +59,7 @@ int main(int numberOfArguments, char **argumentList)
 
     high_resolution_clock::time_point start2 = high_resolution_clock::now();  //start clock timer
 
-    for(int timestep=0; timestep<50000; timestep++) {  //chose # of timesteps here
+    for(int timestep=0; timestep<500000; timestep++) {  //chose # of timesteps here
         system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
         //statisticsSampler.sample(system);   //use sampler to calculate system parameters
         if(timestep % system.m_sample_freq ==0){
@@ -77,7 +78,7 @@ int main(int numberOfArguments, char **argumentList)
             */
 
 
-         if( timestep % 1000 == 0 ) {
+         if( timestep % 10000 == 0 ) {
             // Print the timestep and system properties every 1000 timesteps
             cout << setw(20) << system.steps() <<
                     setw(20) << system.time() <<
