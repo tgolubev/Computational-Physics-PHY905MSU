@@ -73,6 +73,7 @@ void StatisticsSampler::sampleDiffusionCoeff(System &system){
     for(Atom *atom : system.atoms()) {
         vec3 total_displacement;
         for(int j=0;j<3;j++){
+            //THIS NEEDS TO BE FIXED: THE CALCULATION IS WRONG RIGHT NOW!
             total_displacement[j] = abs((atom->initial_position(j) - atom->position[j]) + atom->num_bndry_crossings[j]*system.systemSize(j));
             //total_displacement[j] = (atom->position[j] - atom->initial_position(j)) + abs(atom->num_bndry_crossings[j])*system.systemSize(j);
             //MAKE SURE THAT THIS IS RIGHT!, CHECK MATHEMATICALLY!
