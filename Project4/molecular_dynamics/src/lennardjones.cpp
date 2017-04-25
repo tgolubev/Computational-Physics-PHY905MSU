@@ -52,8 +52,11 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
         for(int j=0;j<3;j++){
              displacement[j] = current_atom->position[j] - other_atom->position[j];  //WHEN USE POINTERS FOR ATOMS MUST USE -> TO ACCESS THEIR PROP.'S!
              //for cases where the folded back particle will be closer than its image to a given particle
-             if (displacement[j] >  system.systemSize(j) * 0.5) displacement[j] -= system.systemSize(j);   //systemSize(j) returns m_systemSize[j] from system class
-             if (displacement[j] <= -system.systemSize(j) * 0.5) displacement[j] += system.systemSize(j);
+             if (displacement[j] >  system.halfsystemSize(j)) displacement[j] -= system.systemSize(j);   //systemSize(j) returns m_systemSize[j] from system class
+             if (displacement[j] <= -system.halfsystemSize(j)) displacement[j] += system.systemSize(j);
+
+             //if (displacement[j] >  system.systemSize(j) * 0.5) displacement[j] -= system.systemSize(j);   //systemSize(j) returns m_systemSize[j] from system class
+             //if (displacement[j] <= -system.systemSize(j) * 0.5) displacement[j] += system.systemSize(j);
          }
 
         //precalculate
@@ -70,16 +73,14 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
         double total_force_over_r = total_force/radius; //precalculate to save 2 FLOPS
         for(int j=0;j<3;j++) {
             current_atom->force[j] += total_force_over_r*displacement[j]; //i.e. Fx = (F/r)*x
-            //other_atom->force[j] = -current_atom->force[j]
-            //I'M NOT SURE IF OTHER ATOM FORCE IS BEING CALCULATED CORRECTLY HERE: IN TERMS OF THE LOOPS!
-            other_atom->force[j] += -total_force_over_r*displacement[j];  //using Newton's 3rd law
+            other_atom->force[j] += -current_atom->force[j]; //using Newton's 3rd law
+            //other_atom->force[j] += -total_force_over_r*displacement[j];  //using Newton's 3rd law
         }
 
-        //ALSO MAKE THE 10 THE FREQUENCY THAT THE POTENTIAL IS CALCULATED BE PASSED TO THE FUNCITON FROM MAIN.CPP SO IT CAN BE EASILY  CHANGED.
-        if(system.steps() % 10 ==0){
+        if(system.steps() % system.m_sample_freq ==0){
             //calculate potential energy every 10 steps
             m_potentialEnergy += m_four_epsilon*pow(sigma_over_radius,12.)-pow(sigma_over_radius,6);
-        }
+        }//IF CALCULATE EVERY TIME STEP VS. EVERY 10, CPU TIME IS 60sec INSTEAD OF ~43sec
     }
  }
  //Implementing it in the above way, with only 1 calculation  per pair, made CPU time decrease from ~70sec to ~42sec for 108 atoms and 50k steps

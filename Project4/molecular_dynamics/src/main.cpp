@@ -40,6 +40,8 @@ int main(int numberOfArguments, char **argumentList)
     //set the potential parameters
     system.potential().setEpsilon(1.0);    //i.e. LJ depth
     system.potential().setSigma(3.405);      //i.e. LJ atom diameter. Ar = 3.405 Angstroms
+    system.m_sample_freq=10;
+    //system.setSampleFreq(10);     //set frequency (every # of time steps) for calculating quantities
 
 
     system.removeTotalMomentum();
@@ -59,7 +61,7 @@ int main(int numberOfArguments, char **argumentList)
     for(int timestep=0; timestep<50000; timestep++) {  //chose # of timesteps here
         system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
         //statisticsSampler.sample(system);   //use sampler to calculate system parameters
-        if(timestep % 10 ==0){
+        if(timestep % system.m_sample_freq ==0){
             //to save CPU, don't sample every timestep
             statisticsSampler.sample(system);   //use sampler to calculate system parameters
         }
