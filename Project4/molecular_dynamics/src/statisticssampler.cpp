@@ -29,7 +29,7 @@ void StatisticsSampler::saveToFile(System &system)
               std::setw(10) << m_kineticEnergy<<
               std::setw(10) << m_potentialEnergy <<
               std::setw(12) << m_temperature<<
-              std::setw(10) << m_diffusion_coeff<<endl;
+              std::setw(12) << m_diffusion_coeff<<endl;
 }
 
 void StatisticsSampler::sample(System &system)

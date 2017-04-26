@@ -17,7 +17,7 @@ using namespace chrono;
 int main(int numberOfArguments, char **argumentList)
 {
     vec3 numberOfUnitCellsEachDimension(5,5,5);
-    double initialTemperature = UnitConverter::temperatureFromSI(3000.0); // measured in Kelvin
+    double initialTemperature = UnitConverter::temperatureFromSI(600.0); // measured in Kelvin
     //at 3000K argon melts very fast. At 300K initial, it kind of distorts but not completely melts during  a 50k timesteps time frame.
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
 
@@ -66,16 +66,10 @@ int main(int numberOfArguments, char **argumentList)
             //to save CPU, don't sample every timestep
             statisticsSampler.sample(system);   //use sampler to calculate system parameters
         }
-            /*
-            //periodically couple system with heat bath
-            //this causes wierd effect of freezing the gas!! when have a gas
-            //PERHAPS INSTEAD OF RESETTING THE DISTRIBUTION EACH TIME: JUST RESCALE THE VELOCITIES TO GET THE DESIRED
-            //TEMPERATURE PERIODICALLY
-            for(Atom *atom : system.atoms()) {
-                atom->resetVelocityMaxwellian(initialTemperature);
-            }
-            system.removeTotalMomentum();
-            */
+        //periodically rescale Velocities to keep T constant (NVT ensemble)
+        if(timestep % 1000 == 0){
+          system.rescaleVelocities(statisticsSampler, initialTemperature);
+        }
 
 
          if( timestep % 10000 == 0 ) {

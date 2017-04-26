@@ -57,6 +57,15 @@ void System::applyPeriodicBoundaryConditions() {
     }
 }
 
+void System::rescaleVelocities(StatisticsSampler &statisticsSampler, double desiredTemperature){
+    //rescale velocities using equipartition theorem: v_desired = sqrt(T_desired/T_actual)*v_actual
+    double rescaling_factor = sqrt(desiredTemperature/statisticsSampler.temperature()); //sqrt(T_desired/T_actual)
+    for(Atom *atom : atoms()) {
+        atom->velocity *= rescaling_factor;  //a*=b means a = a*b
+    }
+    removeTotalMomentum();
+}
+
 void System::removeTotalMomentum() {
     // Find the total momentum and remove momentum equally on each atom so the total momentum becomes zero.
     vec3 total_momentum;

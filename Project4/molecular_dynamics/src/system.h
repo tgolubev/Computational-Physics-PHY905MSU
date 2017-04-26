@@ -5,6 +5,7 @@
 #include <vector>
 #include "velocityverlet.h"
 #include "lennardjones.h"
+#include "statisticssampler.h"
 
 class System
 {
@@ -25,6 +26,7 @@ public:
     int m_sample_freq;
     void createFCCLattice(vec3 numberOfUnitCellsEachDimension, double latticeConstant, double temperature);
     void applyPeriodicBoundaryConditions();
+    void System::rescaleVelocities(StatisticsSampler &statisticsSampler, double desiredTemperature);
     void removeTotalMomentum();
     //void System::removeEscapedAtoms();
     void calculateForces();
