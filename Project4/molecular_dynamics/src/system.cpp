@@ -63,7 +63,7 @@ void System::rescaleVelocities(StatisticsSampler &statisticsSampler, double desi
     for(Atom *atom : atoms()) {
         atom->velocity *= rescaling_factor;  //a*=b means a = a*b
     }
-    removeTotalMomentum();
+    removeTotalMomentum();  //NOTE: If don't do this at each rescaling, temp. will overshoot a bit.
 }
 
 void System::removeTotalMomentum() {
@@ -82,12 +82,14 @@ void System::removeTotalMomentum() {
     }
 
     //test if total_momentum was rezeroed 0: (a unit test)
+    /*
     total_momentum.print("Total Momentum before removeMomentum");
     total_momentum.set(0,0,0);  //reset total-momentum to 0
     for(Atom *atom : atoms()) { //c++11 way of iterating through  entire vector or array
           total_momentum += atom->mass()*atom->velocity;  //mass() returns value of m_mass (atom's mass)
      }
     total_momentum.print("Total Momentum after removeMomentum");   //print() is fnc in vec3 class, takes in a string input
+    */
 }
 
 /*

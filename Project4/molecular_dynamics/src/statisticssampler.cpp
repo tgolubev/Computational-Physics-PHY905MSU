@@ -26,6 +26,7 @@ void StatisticsSampler::saveToFile(System &system)
 
     // Print out values here
     m_file << std::setw(10) <<system.time() <<
+              //std::setw(10) << m_totalMomentum <<
               std::setw(10) << m_kineticEnergy<<
               std::setw(10) << m_potentialEnergy <<
               std::setw(12) << m_temperature<<
@@ -36,12 +37,21 @@ void StatisticsSampler::sample(System &system)
 {
     // Here you should measure different kinds of statistical properties and save it to a file.
     //THINK ABOUT UNITS!
+    sampleMomentum(system);
     sampleKineticEnergy(system);
     samplePotentialEnergy(system);
     sampleTemperature(system);
     sampleDiffusionCoeff(system);
     sampleDensity(system);
     saveToFile(system);
+}
+
+void StatisticsSampler::sampleMomentum(System &system)
+{
+    m_totalMomentum.set(0,0,0);  //reset total-momentum to 0
+    for(Atom *atom : system.atoms()) { //c++11 way of iterating through  entire vector or array
+          m_totalMomentum += atom->mass()*atom->velocity;  //mass() returns value of m_mass (atom's mass)
+     }
 }
 
 void StatisticsSampler::sampleKineticEnergy(System &system)
@@ -69,7 +79,8 @@ void StatisticsSampler::sampleDensity(System &system)
 
 }
 
-void StatisticsSampler::sampleDiffusionCoeff(System &system){
+void StatisticsSampler::sampleDiffusionCoeff(System &system)
+{
     double displacements_sqrd_sum = 0.0;  //reset displacements sum
     for(Atom *atom : system.atoms()) {
         vec3 total_displacement;

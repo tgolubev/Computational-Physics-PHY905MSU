@@ -17,7 +17,7 @@ using namespace chrono;
 int main(int numberOfArguments, char **argumentList)
 {
     vec3 numberOfUnitCellsEachDimension(5,5,5);
-    double initialTemperature = UnitConverter::temperatureFromSI(600.0); // measured in Kelvin
+    double initialTemperature = UnitConverter::temperatureFromSI(300.0); // measured in Kelvin
     //at 3000K argon melts very fast. At 300K initial, it kind of distorts but not completely melts during  a 50k timesteps time frame.
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.26); // measured in angstroms
 
@@ -67,6 +67,8 @@ int main(int numberOfArguments, char **argumentList)
             statisticsSampler.sample(system);   //use sampler to calculate system parameters
         }
         //periodically rescale Velocities to keep T constant (NVT ensemble)
+        //PERHAPS TRY TO DO ONLY A FEW VELOCITY RESCALES IN THE BEGINING OF SIMULATION, AND THEN LET IT EVOLVE
+        //NATURALLY (so still NVE ensemble)
         if(timestep % 1000 == 0){
           system.rescaleVelocities(statisticsSampler, initialTemperature);
         }
@@ -80,6 +82,7 @@ int main(int numberOfArguments, char **argumentList)
                     setw(20) << statisticsSampler.kineticEnergy() <<
                     setw(20) << statisticsSampler.potentialEnergy() <<
                     setw(20) << statisticsSampler.totalEnergy() << endl;
+            cout << "Total Momentum = " << statisticsSampler.totalMomentum() <<endl;
         }
         movie.saveState(system);  //calls saveState fnc in io.cpp which saves the state to the movie.xyz file
     }

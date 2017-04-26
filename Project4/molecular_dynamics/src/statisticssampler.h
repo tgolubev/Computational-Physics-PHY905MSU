@@ -1,6 +1,7 @@
 #ifndef STATISTICSSAMPLER_H
 #define STATISTICSSAMPLER_H
 #include <fstream>
+#include "math/vec3.h"
 
 class System; // Promise the compiler that this is a class even though we haven't included system.h here
 
@@ -8,6 +9,7 @@ class StatisticsSampler
 {
 private:
     std::ofstream m_file;
+    vec3 m_totalMomentum;
     double m_kineticEnergy = 0;
     double m_potentialEnergy = 0;
     double m_temperature = 0;
@@ -22,6 +24,8 @@ public:
     void sampleTemperature(System &system);
     void sampleDensity(System &system);
     void sampleDiffusionCoeff(System &system);
+    void StatisticsSampler::sampleMomentum(System &system);
+    vec3 totalMomentum(){return m_totalMomentum;}
     double kineticEnergy() { return m_kineticEnergy; }
     double potentialEnergy() { return m_potentialEnergy; }
     double totalEnergy() { return m_kineticEnergy+m_potentialEnergy; }

@@ -149,6 +149,6 @@ bool vec3::operator==(vec3 rhs)
 
 std::ostream &operator<<(std::ostream &os, const vec3 &myVector) // Allows cout << myVector << endl;
 {
-    os << "[" << myVector.x() << ", " << myVector.y() << ", " << myVector.z() << "];";
+    os << "[" << myVector.x() << ", " << myVector.y() << ", " << myVector.z() << "]";
     return os;
 }
