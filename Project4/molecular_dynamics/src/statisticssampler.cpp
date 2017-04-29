@@ -3,6 +3,7 @@
 #include "lennardjones.h"
 #include <iostream>
 #include <iomanip>
+#include "unitconverter.h"
 
 using std::ofstream; using std::cout; using std::endl;
 
@@ -15,7 +16,9 @@ void StatisticsSampler::saveToFile(System &system)
 {
     // Save the statistical properties for each timestep for plotting etc.
     // First, open the file if it's not open already
-    if(!m_file.good()) {
+
+    //MAKE HERE BE ABLE TO CREATE MANY FILES, 1 FOR EACH TEMPERATURE SO CAN COMPUTE FOR MANY T'S WITH 1 RUN!
+    if(!m_file.good()) {   //m_file is an ofstream
         m_file.open("statistics.txt", ofstream::out);
         // If it's still not open, something bad happened...
         if(!m_file.good()) {
@@ -25,24 +28,34 @@ void StatisticsSampler::saveToFile(System &system)
     }
 
     // Print out values here
+    //Using SI units
+    m_file << std::setw(15) <<UnitConverter::timeToSI(system.time()) << //UnitConverter:: allows to access fncs in that class
+              //std::setw(10) << m_totalMomentum <<
+              std::setw(15) << UnitConverter::energyToSI(m_kineticEnergy)<<
+              std::setw(15) << UnitConverter::energyToSI(m_potentialEnergy) <<
+              std::setw(15) << UnitConverter::temperatureToSI(m_temperature)<<
+              std::setw(15) << UnitConverter::diffusionToSI(m_diffusion_coeff)<<endl;
+    /*
+    //Using MD units
     m_file << std::setw(10) <<system.time() <<
               //std::setw(10) << m_totalMomentum <<
               std::setw(10) << m_kineticEnergy<<
               std::setw(10) << m_potentialEnergy <<
               std::setw(12) << m_temperature<<
               std::setw(12) << m_diffusion_coeff<<endl;
+              */
 }
+
 
 void StatisticsSampler::sample(System &system)
 {
     // Here you should measure different kinds of statistical properties and save it to a file.
-    //THINK ABOUT UNITS!
-    sampleMomentum(system);
-    sampleKineticEnergy(system);
+    //sampleMomentum(system);
+    sampleKineticEnergy(system);  //commented out b/c already sampled every step anyway
     samplePotentialEnergy(system);
     sampleTemperature(system);
     sampleDiffusionCoeff(system);
-    sampleDensity(system);
+    //sampleDensity(system);
     saveToFile(system);
 }
 

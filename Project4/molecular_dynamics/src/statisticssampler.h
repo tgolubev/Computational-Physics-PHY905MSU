@@ -24,7 +24,7 @@ public:
     void sampleTemperature(System &system);
     void sampleDensity(System &system);
     void sampleDiffusionCoeff(System &system);
-    void StatisticsSampler::sampleMomentum(System &system);
+    void sampleMomentum(System &system);
     vec3 totalMomentum(){return m_totalMomentum;}
     double kineticEnergy() { return m_kineticEnergy; }
     double potentialEnergy() { return m_potentialEnergy; }

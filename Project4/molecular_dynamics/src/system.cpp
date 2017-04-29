@@ -36,24 +36,28 @@ void System::applyPeriodicBoundaryConditions() {
                 atom->num_bndry_crossings[j] += 1;    //crossing right or top boundary is counted as +1 crossing
             }
 
-            //std::cout<<"num crossings = " <<atom->num_bndry_crossings[j];
 
-            //PBCs: try to work for any position of atoms: always bring the atom back to the cell even when it escapes far away
-            //Is most likely not necessary: since if use reasonable time step and have the correct potential expression, atoms will never jump >m_systemSize
-            //if(atom->position[j] <  0.) atom->position[j] += m_systemSize[j]*floor(abs(atom->position[j])/m_systemSize[j]);
-            //if(atom->position[j] > m_systemSize[j]) atom->position[j] -= m_systemSize[j]*floor(atom->position[j]/m_systemSize[j]);
-
-            //ANOTHER VERSION which is probably less efficient
-            //while (atom->position[j] <  0.) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
-            //while (atom->position[j] >  m_systemSize[j]) atom->position[j] -= m_systemSize[j];
-            //while position is outside of the main simulation cell, keep moving the particle by 1 system size lenght
 
             /*
             //for using center of system as origin. This is  not convinient when building a lattice
-            if (atom->position[j] <  -m_systemSize[j] * 0.5) atom->position[j] += m_systemSize[j];  //I think use atom-->position instead of atom.position b/c atom is a pointer
+            if (atom->position[j] <  -m_systemSize[j] * 0.5) atom->position[j] += m_systemSize[j];
             if (atom->position[j] >=  m_systemSize[j] * 0.5) atom->position[j] -= m_systemSize[j];
             */
         }
+
+        //Applying mixed BCs
+        /*
+        if(atom->position[2]<0.){
+            atom->position[2] +=m_systemSize[2];
+            atom->num_bndry_crossings[2] -= 1;
+        }
+        //attempt to make an equilibrium between liquid and gas phases in the simulation cell
+        if(atom->position[2]> 10.*m_systemSize[2]){
+            atom->position[2] = m_systemSize[2]  ;        //particles reappears at ceiling/lid
+            atom->velocity[2] = - atom->velocity[2];   //particle gets rebounded in z-direction (i.e. like bouncing off the ceiling/lid of container
+        }
+        //note: in +z direction have no boundary condition: is free.
+        */
     }
 }
 
@@ -63,7 +67,7 @@ void System::rescaleVelocities(StatisticsSampler &statisticsSampler, double desi
     for(Atom *atom : atoms()) {
         atom->velocity *= rescaling_factor;  //a*=b means a = a*b
     }
-    removeTotalMomentum();  //NOTE: If don't do this at each rescaling, temp. will overshoot a bit.
+    removeTotalMomentum();  //If don't do this, eventually will have drifting issue!
 }
 
 void System::removeTotalMomentum() {
@@ -110,7 +114,6 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
 
     double x,y,z;
     double halfLatticeConstant=0.5*latticeConstant;
-    //std::cout<<"halflatticeconsts" << halfLatticeConstant << std::endl;
 
     for(int i=0;i<numberOfUnitCellsEachDimension[0];i++){
         //i.e. i = 0,1...N_x-1
@@ -121,7 +124,7 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 //Place the 4 atoms of each fcc cell into coordinates. Use setInitialPosition(): this will both set position and
                 //save the atom's initial position for use later.
                 //NOTE: The PBCs will prevent from adding atoms which are beyond the system dimensions when approach the boundaries.
-                Atom *atom1 = new Atom(UnitConverter::massFromSI(6.63352088e-26)); //uses mass in kg
+                Atom *atom1 = new Atom(UnitConverter::massFromSI(6.63352088e-26)); //uses mass in kg: mass is correct
                 x = LatticeVector[0];
                 y = LatticeVector[1];
                 z = LatticeVector[2];
@@ -156,6 +159,8 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
                 atom4->num_bndry_crossings.set(0.,0.,0.);
                 atom4->resetVelocityMaxwellian(temperature);
                 m_atoms.push_back(atom4);
+
+                //std::cout << "atom mass = " <<atom1->mass() <<std::endl;
             }
         }
     }
@@ -180,6 +185,13 @@ void System::createFCCLattice(vec3 numberOfUnitCellsEachDimension, double lattic
    */
 }
 
+void System::increaseTemperature(StatisticsSampler &statisticsSampler, double increment){
+    //increases system temperature by factor: meant for use at each MD step to slowly heat system.
+    double velocity_rescaling_factor = sqrt((statisticsSampler.temperature()+increment)/statisticsSampler.temperature()); //sqrt(T_new/T_current)=sqrt(factor)
+    for(Atom *atom : atoms()) {
+        atom->velocity *= velocity_rescaling_factor;  //a*=b means a = a*b
+    }
+}
 
 void System::calculateForces() {
     for(Atom *atom : m_atoms) {

@@ -31,7 +31,7 @@ void UnitConverter::initializeMDUnits() {
 
     // Fundamental units
     double m0 = 1.66053892e-27;         // SI [kg]
-    double L0 = 1e-10;                  // SI [m]
+    double L0 = 3.405e-10;                  // SI [m]
     double kb = 1.3806488e-23;          // SI [J/K]
     double E0eV = 1.0318e-2;            // eV
     double E0 = 1.60217657e-19*E0eV;    // SI [J]

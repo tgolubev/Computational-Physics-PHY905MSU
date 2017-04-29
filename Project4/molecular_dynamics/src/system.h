@@ -29,6 +29,7 @@ public:
     void System::rescaleVelocities(StatisticsSampler &statisticsSampler, double desiredTemperature);
     void removeTotalMomentum();
     //void System::removeEscapedAtoms();
+    void increaseTemperature(StatisticsSampler &statisticsSampler, double increment);
     void calculateForces();
     void step(double dt);
 

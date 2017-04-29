@@ -42,7 +42,7 @@ clear
  set(h,'LineWidth',1.5);                              
  hold on     
  set(gca,'fontsize',20, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
- xlabel({'time (fs)'});
+ xlabel({'Time (s)'});
  ylabel({'Diffusion Coefficient'});
  hold off          %to not add more plot data to this figure window
  
@@ -51,9 +51,24 @@ clear
  hold on
  set(gca,'fontsize',20, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
  plot(time,potential_E);
+ plot(time,total_E);
+ xlim([-0.1e-9 inf]);   %set left axis limit so can see the inital rise in energy at system initialization
  title('System Energies vs. Time', 'FontSize', 24, 'FontName', 'Times');
- xlabel({'Time (fs)'},'FontSize', 22, 'FontName','Times');
- ylabel({'Energy (arb. units)'},'FontSize', 22, 'FontName','Times');
+ xlabel({'Time (s)'},'FontSize', 22, 'FontName','Times');
+ ylabel({'Energy (J)'},'FontSize', 22, 'FontName','Times');
+ Legend = legend('Kinetic Energy', 'Potential Energy', 'Total Energy');                         %define Legend as an object
+ legend boxoff                                         %remove the box around legend
+ set(Legend, 'FontSize', 20, 'FontName', 'Times');     %set properties of legend
  hold off
+ 
+ figure;
+ k = plot(time,temperature);
+ set(h,'LineWidth',1.5);      
+ xlim([-0.1e-9 inf]);
+ hold on     
+ set(gca,'fontsize',20, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
+ xlabel({'Time (s)'});
+ ylabel({'Temperature (K)'});
+ hold off  
  
 %NOTE: KE and PE have sharp change near time=0
