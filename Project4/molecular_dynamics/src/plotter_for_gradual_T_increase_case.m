@@ -51,7 +51,8 @@ clear
   minpts = 500;                                                                     %minimum # of points over which to do a fit (i.e. don't want to fit a line btw. just 2 pts)
   left_start_index = 2;   %skip the 1st data point since could be too low
       
-  for j = left_start_index+minpts:0.5*size(time)      %we know the range before transition will be on  left 1/2 of the graph                                                                               
+  for j = left_start_index+minpts:0.8*size(time)      %we know the range before transition will be on  left 1/2 of the graph    
+      %NOTE: USE 0.8*size(time) for if jump is further to the right
              
       time_data = time(left_start_index:j,1);
       temp_data = temperature(left_start_index:j,1);                                                           %make new x-variables voltage colunm corresponding to VB_data 
@@ -69,9 +70,7 @@ clear
   temp_data = temperature(1:location,1);                                                           %make new x-variables voltage colunm corresponding to VB_data 
   [temp_fit, temp_stat] = polyfit(time_data, temp_data, 1);                   
   temp_Rsquared_final =  1 - temp_stat.normr^2 / norm(temp_data-mean(temp_data))^2 
-  phase_transition_temp = temperature(location)
- 
- 
+  phase_transition_temp = mean(temperature(location-10:location))       %take average of temp's surrounding phase transition area to get accurate estimate b/c temp. oscillates
  
  
  %temperature_avg = mean(temperature(1:5));  %start off averging temperature
@@ -101,21 +100,21 @@ clear
  h = plot(time,diffusion_coeff);   %3D plot is called by plot3
  set(h,'LineWidth',1.5);                              
  hold on     
- set(gca,'fontsize',20, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
+ set(gca,'fontsize',26, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
  xlabel({'Time (s)'});
- ylabel({'Diffusion Coefficient'});
+ ylabel({'Diffusion Coefficient (m^2/s)'});
  hold off          %to not add more plot data to this figure window
  
  figure;     %to create new figure window
  g = plot(time,kinetic_E);
  hold on
- set(gca,'fontsize',20, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
+ set(gca,'fontsize',26, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
  plot(time,potential_E);
  plot(time,total_E);
  xlim([-0.1e-9 inf]);   %set left axis limit so can see the inital rise in energy at system initialization
- title('System Energies vs. Time', 'FontSize', 24, 'FontName', 'Times');
- xlabel({'Time (s)'},'FontSize', 22, 'FontName','Times');
- ylabel({'Energy (J)'},'FontSize', 22, 'FontName','Times');
+ %title('System Energies vs. Time', 'FontSize', 30, 'FontName', 'Times');
+ xlabel({'Time (s)'},'FontSize', 30, 'FontName','Times');
+ ylabel({'Energy (J)'},'FontSize', 30, 'FontName','Times');
  Legend = legend('Kinetic Energy', 'Potential Energy', 'Total Energy');                         %define Legend as an object
  legend boxoff                                         %remove the box around legend
  set(Legend, 'FontSize', 20, 'FontName', 'Times');     %set properties of legend
@@ -134,10 +133,10 @@ clear
  set(k,'LineWidth',1.5);      
  xlim([left_axis_limit inf]);
  ylim([-inf inf]);  %tell it to auto reset the axes based on what's on the plot
- set(gca,'fontsize',20, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
+ set(gca,'fontsize',26, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
  xlabel({'Time (s)'});
  ylabel({'Temperature (K)'});
- title('System Temperature vs. Time', 'FontSize', 24, 'FontName', 'Times');
+ %title('System Temperature vs. Time', 'FontSize', 30, 'FontName', 'Times');
  hold off  
  
 %NOTE: KE and PE have sharp change near time=0
