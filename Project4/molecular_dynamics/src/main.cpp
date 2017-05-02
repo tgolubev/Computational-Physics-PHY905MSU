@@ -16,10 +16,9 @@ using namespace chrono;
 
 int main(int numberOfArguments, char **argumentList)
 {
-    vec3 numberOfUnitCellsEachDimension(5,5,5);
-    double initialTemperature = UnitConverter::temperatureFromSI(300.0); // measured in Kelvin
-    double latticeConstant = UnitConverter::lengthFromAngstroms(5.256); // measured in angstroms: for Ar is 5.256anstrom
-    //FOR FREEZING, SEEMS 6.0anstrom is good initial start, to get it to form decent crystal at low temp.'s
+    vec3 numberOfUnitCellsEachDimension(7,7,7);
+    double initialTemperature = UnitConverter::temperatureFromSI(615.0); // measured in Kelvin
+    double latticeConstant = UnitConverter::lengthFromAngstroms(5.256); // measured in angstroms
 
     // If a first argument is provided, it is the number of unit cells and use same # of unit cells for all dimensions
     if(numberOfArguments > 1) numberOfUnitCellsEachDimension[0] = numberOfUnitCellsEachDimension[1] = numberOfUnitCellsEachDimension[2]= atoi(argumentList[1]);
@@ -30,7 +29,6 @@ int main(int numberOfArguments, char **argumentList)
 
     double dt = UnitConverter::timeFromSI(2e-14); // Measured in seconds (1fs is common). ANYTHING LARGER THAN 2E-14 HAS ISSUES: T at step 1 is already overshooted
 
-
     cout << "One unit of length is " << UnitConverter::lengthToSI(1.0) << " meters" << endl;
     cout << "One unit of velocity is " << UnitConverter::velocityToSI(1.0) << " meters/second" << endl;
     cout << "One unit of time is " << UnitConverter::timeToSI(1.0) << " seconds" << endl;
@@ -39,17 +37,9 @@ int main(int numberOfArguments, char **argumentList)
 
     System system;
     system.createFCCLattice(numberOfUnitCellsEachDimension, latticeConstant, initialTemperature);
-    //set the potential parameters
-    system.potential().setEpsilon(1.0);    //i.e. LJ depth//from 1999 paper epsilon = 125.7K = 1.049 in MD units, sigma = 3.345
-    system.potential().setSigma(UnitConverter::lengthFromAngstroms(3.405));      //i.e. LJ atom diameter. Ar = 3.405 Angstroms
-    //if make sigma be 3.3345, it melts much faster!
-    //BUT 3.405 AND 119.8k ARE MOST POPULAR PARAMETERS!
-    //try parameters from 1999 paper:  see: http://www.sklogwiki.org/SklogWiki/index.php/Argon#cite_note-10
-    //NOTE THAT THIS SLIGHT CHANGE IN PARAMETERS DRASTICALLY LOWERED THE MELTING TEMPERATURE!!
-    //IF SET SIGMA = 1, then it melts!! at the lower temperatures!!, but  at even nlower temps (ie 15K, it collapsed into a big ball!)
-
-
-    system.m_sample_freq=100;
+    system.potential().setEpsilon(1.0);
+    system.potential().setSigma(UnitConverter::lengthFromAngstroms(3.405));      //i.e. LJ atom diameter, Ar = 3.405 Angstroms
+    system.m_sample_freq=100; //statistics sampler freq.
     system.removeTotalMomentum();
 
     StatisticsSampler statisticsSampler;
@@ -64,18 +54,15 @@ int main(int numberOfArguments, char **argumentList)
 
     high_resolution_clock::time_point start2 = high_resolution_clock::now();  //start clock timer
 
-    for(int timestep=0; timestep<50000000; timestep++) {  //chose # of timesteps here
+    for(int timestep=0; timestep<10000; timestep++) {  //chose # of timesteps here
         system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
 
+        /*
         //heat system gradually
-        //IF START IN SOLID  FORM, shouldn't  have to wait for system to equilibrate, b/c starting from equil. already!!. Fcc lattice is equil. for this system
-
-        //statisticsSampler.sampleKineticEnergy(system);      //can't sample temperature w/o sampling KE!
-        //statisticsSampler.sampleTemperature(system);  //sample temp at every timestep
-
-        //system.increaseTemperature(statisticsSampler, UnitConverter::temperatureFromSI(0.0001));  //Increase T by this increment (in K)
-
-
+        statisticsSampler.sampleKineticEnergy(system);      //can't sample temperature w/o sampling KE!
+        statisticsSampler.sampleTemperature(system);  //sample temp at every timestep
+        system.increaseTemperature(statisticsSampler, UnitConverter::temperatureFromSI(0.0001));  //Increase T by this increment (in K)
+        */
 
         //use sampler to calculate system parameters
         if(timestep % system.m_sample_freq ==0){
@@ -83,19 +70,15 @@ int main(int numberOfArguments, char **argumentList)
             statisticsSampler.sample(system);
         }
 
-
+        /*
         //periodically rescale Velocities to keep T constant (NVT ensemble)
-        //PERHAPS TRY TO DO ONLY A FEW VELOCITY RESCALES IN THE BEGINING OF SIMULATION, AND THEN LET IT EVOLVE
-        //NATURALLY (so still NVE ensemble)
         if(timestep % 100 == 0){
             //CAN'T RESCALE MORE FREQUENTLY THAN STAT SAMPLING RATE!
            system.rescaleVelocities(statisticsSampler, initialTemperature);
         }
+        */
 
-
-
-
-         if( timestep % 10000 == 0 ) {
+         if( timestep % 1000 == 0 ) {
             // Print the timestep and system properties every 1000 timesteps
             cout << setw(20) << system.steps() <<
                     setw(20) << system.time() <<
@@ -105,8 +88,7 @@ int main(int numberOfArguments, char **argumentList)
                     setw(20) << statisticsSampler.totalEnergy() << endl;
         }
         if(timestep % 1000 ==0){
-          //save atom coordinates only periodically to save CPU and file size: ie going from every step to every 100steps (for 108atom, 10fs steps)
-          //CPU went from 252sec to 178sec
+          //save atom coordinates only periodically to save CPU and file size
           movie.saveState(system);  //calls saveState fnc in io.cpp which saves the state to the movie.xyz file
         }
     }

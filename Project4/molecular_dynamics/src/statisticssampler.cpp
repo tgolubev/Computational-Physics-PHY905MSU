@@ -17,7 +17,6 @@ void StatisticsSampler::saveToFile(System &system)
     // Save the statistical properties for each timestep for plotting etc.
     // First, open the file if it's not open already
 
-    //MAKE HERE BE ABLE TO CREATE MANY FILES, 1 FOR EACH TEMPERATURE SO CAN COMPUTE FOR MANY T'S WITH 1 RUN!
     if(!m_file.good()) {   //m_file is an ofstream
         m_file.open("statistics.txt", ofstream::out);
         // If it's still not open, something bad happened...
@@ -51,7 +50,7 @@ void StatisticsSampler::sample(System &system)
 {
     // Here you should measure different kinds of statistical properties and save it to a file.
     //sampleMomentum(system);
-    sampleKineticEnergy(system);  //commented out b/c already sampled every step anyway
+    sampleKineticEnergy(system);
     samplePotentialEnergy(system);
     sampleTemperature(system);
     sampleDiffusionCoeff(system);

@@ -5,7 +5,7 @@
 void VelocityVerlet::integrate(System &system, double dt)
 {
 
-    double half_dt = 0.5*dt;  //VERIFIED THAT GIVES EXACTLY EQUIVALENT RESULTS TO WRITING 0.5* INSIDE THE LOOPS
+    double half_dt = 0.5*dt;
     if(m_firstStep) {
         system.calculateForces();
         m_firstStep = false;

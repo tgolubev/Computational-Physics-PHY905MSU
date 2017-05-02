@@ -42,17 +42,12 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
 
         //distance and vector btw objects dx should obey min. image convention: only closest distance to particle or its image is considered
         vec3 displacement(0.,0.,0.);
-
-
         for(int j=0;j<3;j++){
              displacement[j] = current_atom->position[j] - other_atom->position[j];
              //for cases where the folded back particle will be closer than its image to a given particle
              if (displacement[j] >  system.halfsystemSize(j)) displacement[j] -= system.systemSize(j);   //systemSize(j) returns m_systemSize[j] from system class
              if (displacement[j] <= -system.halfsystemSize(j)) displacement[j] += system.systemSize(j);
          }
-
-
-        //precalculate
         //declare the variables inside loop since they are only needed within the loop
         double radiusSqrd = displacement.lengthSquared();
         double radius = sqrt(radiusSqrd);
@@ -62,45 +57,31 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
         //if(radius > 5.0*m_sigma) continue;
         //THIS DOESN'T WORK FOR SOME REASON!
 
-
-        //double sigma_over_radius = m_sigma/radius;
-        //double sigma_over_radius_sqrd = m_sigma/radiusSqrd;
-        //double sigma_over_radius_sqrd = m_sigma/(radius*radius);  //IF REPLACE ABOVE LINE WITH THIS ONE, GET DIFFERENT RESULTS!!!!!
-        //double total_force = m_twntyfour_epsilon*(2.0*pow(sigma_over_radius,11.)-pow(sigma_over_radius,5.))*(sigma_over_radius_sqrd); //for a single pair
-
-        double total_force = m_twntyfour_epsilon*(2.0*pow(radius,-13.)-pow(radius,-7.)); //for a single pair  //-13 and -7 due to (1/r^11-1/r^5)(1/r^2) from chain rule
-         //CAN ACTUALLY IMMEDIATELY CALCULATE total_force_over_r here!! just change the power!
-
+        double total_force_over_r = m_twntyfour_epsilon*(2.0*pow(radius,-14.)-pow(radius,-8.));
         //ATTRACTIVE FORCE SHOULD POINT TOWARDS OTHER ATOM. REPULSIVE AWAY FROM OTHER ATOM!!!
 
-        //find and set force components    
-        double total_force_over_r = total_force/radius; //precalculate to save 2 FLOPS
+        //find and set force components
+        //double total_force_over_r = total_force/radius; //precalculate to save 2 FLOPS
         for(int j=0;j<3;j++) {
             current_atom->force[j] += total_force_over_r*displacement[j]; //i.e. Fx = (F/r)*x
-            other_atom->force[j] -= current_atom->force[j]; //using Newton's 3rd law  //VERIFIED THAT EQACTLY SAME AS WRITING += -current_atom....
+            other_atom->force[j] -= current_atom->force[j]; //using Newton's 3rd law
         }
 
         if(system.steps() % system.m_sample_freq ==0){
             //calculate potential energy every m_sample_freq steps
-            //m_potentialEnergy += m_four_epsilon*(pow(sigma_over_radius,12.)-pow(sigma_over_radius,6));
             m_potentialEnergy += m_four_epsilon*(pow(radius,-12.)-pow(radius,-6));
-        }//IF CALCULATE EVERY TIME STEP VS. EVERY 10, CPU TIME IS 60sec INSTEAD OF ~43sec
+        }
     }
-
-    //std::cout<<"current_atom total force = " << current_atom->force <<std::endl;
  }
 
 
 
  //Implementing it in the above way, with only 1 calculation  per pair, made CPU time decrease from ~70sec to ~42sec for 108 atoms and 50k steps
  //1fs step size calculation
-
-//I'VE CHECKED TO MAKE SURE THAT THE ABOVE IMPLEMENTATION GIVES SAME RESULTS AS THE BELOW OLDER IMPLEMENTATION OF CALCULATING ALL FORCES EXPLICITELY.
+ //I'VE CHECKED TO MAKE SURE THAT THE ABOVE IMPLEMENTATION GIVES SAME RESULTS AS THE BELOW OLDER IMPLEMENTATION OF CALCULATING ALL FORCES EXPLICITELY.
  //Below is previous version which loops over all atoms: so uncessesarily counts each pairwise force twice
 
  /*
-//int i = 0;
-
  for(Atom *current_atom : system.atoms()) {
      //loop over the entire vector m_atoms (atoms() returns m_atoms: vector of pointers to the atoms objects
 
@@ -108,11 +89,6 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
      //check if forces are already reset
      //std::cout << "current_atom force = " <<  current_atom->force[0] << current_atom->force[1]<< current_atom->force[2]<<std::endl;
      //std::cout << current_atom <<std::endl;    //shows that current_atom is a pointer to the location of the atom position
-
-
-     //i++;
-    //std::cout<<"atom number = " <<i <<std::endl;
-
 
     for(Atom *other_atom : system.atoms()){     //Calculate pairwise forces
         if(other_atom == current_atom) continue; //skip case of same atom
@@ -141,17 +117,11 @@ void LennardJones::calculateForces(System &system)  //object system is passed by
         double total_force_over_r = total_force/radius; //precalculate to save 2 FLOPS
         for(int j=0;j<3;j++) current_atom->force[j] += total_force_over_r*displacement[j]; //i.e. Fx = (F/r)*x
 
-        //NOTE: THIS IS CURRENTLY DOUBLE COUNTING: NEED TO REIMPLEMENT FORCE TO SAVE 1/2 OF THE COMPUTATION'S USING NEWTON'S 3RD LAW!!
-        //ALSO MAKE THE 10 THE FREQUENCY THAT THE POTENTIAL IS CALCULATED BE PASSED TO THE FUNCITON FROM MAIN.CPP SO IT CAN BE EASILY  CHANGED.
         if(system.steps() % 10 ==0){
             //calculate potential energy every 10 steps
             m_potentialEnergy += m_four_epsilon*pow(sigma_over_radius,12.)-pow(sigma_over_radius,6);
         }
-
-
     }
-    //std::cout<<"current_atom total force = " << current_atom->force <<std::endl;
-
  }
 
 */

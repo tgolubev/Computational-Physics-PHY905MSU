@@ -36,8 +36,6 @@ void System::applyPeriodicBoundaryConditions() {
                 atom->num_bndry_crossings[j] += 1;    //crossing right or top boundary is counted as +1 crossing
             }
 
-
-
             /*
             //for using center of system as origin. This is  not convinient when building a lattice
             if (atom->position[j] <  -m_systemSize[j] * 0.5) atom->position[j] += m_systemSize[j];
@@ -53,7 +51,7 @@ void System::applyPeriodicBoundaryConditions() {
         }
         //attempt to make an equilibrium between liquid and gas phases in the simulation cell
         if(atom->position[2]> 10.*m_systemSize[2]){
-            atom->position[2] = m_systemSize[2]  ;        //particles reappears at ceiling/lid
+            atom->position[2] = m_systemSize[2]  ;     //particles reappears at ceiling/lid
             atom->velocity[2] = - atom->velocity[2];   //particle gets rebounded in z-direction (i.e. like bouncing off the ceiling/lid of container
         }
         //note: in +z direction have no boundary condition: is free.

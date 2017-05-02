@@ -1,4 +1,4 @@
-%This plots the results for Project 3 part e.
+%This attempts to find the transition temperature from the jump in energies
 
 clear 
 [File,Path]=uigetfile('*.txt','MultiSelect','off');
@@ -8,15 +8,13 @@ clear
  data= load (str);                                          %load the .txt file into matrix called "data"
    
     
- time = data(:,1);               %this column are the indices which identify the planets 
- %THE UNITS FOR TIME ARE WEIRD: CONVERT EITHER HERE OR IN CPP CODE!
+ time = data(:,1);              
  kinetic_E = data(:,2);
  potential_E = data(:,3);
  total_E = kinetic_E + potential_E;
  temperature = data(:,4);
  diffusion_coeff = data(:,5);
- 
- %total_values = size(planet_index);     
+ size(planet_index);     
  
  %energies analysis
  average_KE = mean(kinetic_E)
@@ -32,11 +30,7 @@ clear
  
  set(gcf, 'PaperPositionMode', 'manual');              %Makes sure that when resize figure box while viewing, the actual figure size doesn't change
                                                          %Ensures that all saved figures have consistent size
-                                                        
- 
- %axes1 = gca;   %create an axes object
- %axes1.Position = [ 0.11 0.775 0.815]; 
- 
+                                                       
  %------------------------------------------------------------
  %fit the Potential energy with a line up to transition point: where E
  %jumps: Use this to find the temperature at phase transition
@@ -47,7 +41,7 @@ clear
  %of the graph before have phase transition.
  
  
-  clearvars potentialE_Rsquared                                                          %clear VB_Rsquared matrix b/c otherwise might have leftover rows from previous file/curve (which had different bandedge position)
+  clearvars potentialE_Rsquared                                                         
   clearvars phase_transition_temp
   
   minpts = 500;                                                                     %minimum # of points over which to do a fit (i.e. don't want to fit a line btw. just 2 pts)
@@ -58,29 +52,26 @@ clear
       %FIT OVER RIGHT REGION,  OTHERWISE IT DOESN'T WORK PROPERTLY!
              
       time_data = time(left_start_index:j,1);
-      potentialE_data = potential_E(left_start_index:j,1);                                                           %make new x-variables voltage colunm corresponding to VB_data 
-      [~, potentialE_stat] = polyfit(time_data, potentialE_data, 1);                             %find linear fit parameters. Format is [temo_fit, temp_stat] = polyfit(x_value, y_values, degree_of_polynomial) where temp_fit gives the m and b values of linear fit
-                                                                                  %since I don't use this VB_fit output (this one is just to calculate R^2) insert ~ to not calculate temp_fit here
+      potentialE_data = potential_E(left_start_index:j,1);                                                   
+      [~, potentialE_stat] = polyfit(time_data, potentialE_data, 1);               %find linear fit parameters. Format is [temo_fit, temp_stat] = polyfit(x_value, y_values, degree_of_polynomial) where temp_fit gives the m and b values of linear fit
+                                                                                  %since I don't use this temp_fit output (this one is just to calculate R^2) insert ~ to not calculate temp_fit here
       potentialE_Rsquared(j,1) =  1 - potentialE_stat.normr^2 / norm(potentialE_data-mean(potentialE_data))^2;    %calculate Rsquared and save values in column vector
  
   end
  
   [value,location] = max(potentialE_Rsquared);                                            %returns value and location (index) of maximum VB_Rsquared
-                                                                   %use k to not rename j
-  
+                                                                 
   %redo the fit which gave maximum R^2
   time_data = time(1:location,1);
-  potentialE_data = potential_E(1:location,1);                                                           %make new x-variables voltage colunm corresponding to VB_data 
+  potentialE_data = potential_E(1:location,1);                                                          
   [potentialE_fit, potentialE_stat] = polyfit(time_data, potentialE_data, 1);                   
   potentialE_Rsquared_final = 1 - potentialE_stat.normr^2 / norm(potentialE_data-mean(potentialE_data))^2 
   phase_transition_temp = temperature(location)
  
  syms x;
  potentialE_fitline = potentialE_fit(1)*x+potentialE_fit(2);
-
-
  
- h = plot(time,diffusion_coeff);   %3D plot is called by plot3
+ h = plot(time,diffusion_coeff);   
  set(h,'LineWidth',1.5);                              
  hold on     
  set(gca,'fontsize',20, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
@@ -95,19 +86,19 @@ clear
  left_axis_limit = -0.1e-9;
  %right_fit_limit = time(k);
  set(k,'LineWidth',1);      
- k=refline(left_axis_limit,phase_transition_temp);                        %add reference line with 0 slope of the bandgap log(dI/dV) floor value   
+ k=refline(left_axis_limit,phase_transition_temp);         %add reference line 
  set(k,'Color','r')
  set(k,'LineWidth',2); 
  set(k,'LineStyle',':')
  xlim([left_axis_limit inf]);
  ylim([-inf inf]);  %tell it to auto reset the axes based on what's on the plot
- set(gca,'fontsize',20, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
+ set(gca,'fontsize',20, 'fontname', 'Times');   
  xlabel({'Time (s)'});
  ylabel({'Temperature (K)'});
  title('System Temperature vs. Time', 'FontSize', 24, 'FontName', 'Times');
  hold off  
  
- figure;     %to create new figure window
+ figure;     %create new figure window
  g = plot(time,kinetic_E);
  hold on
  g = plot(time,potential_E);
@@ -128,4 +119,3 @@ clear
  %set(Legend, 'FontSize', 20, 'FontName', 'Times');     %set properties of legend
  hold off
  
-%NOTE: KE and PE have sharp change near time=0

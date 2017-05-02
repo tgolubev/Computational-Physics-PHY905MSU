@@ -1,3 +1,5 @@
+%This plots results statistics.txt file and analyses the energy
+%oscillations.
 
 clear 
 [File,Path]=uigetfile('*.txt','MultiSelect','off');
@@ -8,14 +10,11 @@ clear
    
     
  time = data(:,1);               %this column are the indices which identify the planets 
- %THE UNITS FOR TIME ARE WEIRD: CONVERT EITHER HERE OR IN CPP CODE!
  kinetic_E = data(:,2);
  potential_E = data(:,3);
  total_E = kinetic_E + potential_E;
  temperature = data(:,4);
- diffusion_coeff = data(:,5);
- 
- %total_values = size(planet_index);     
+ diffusion_coeff = data(:,5);   
  
  %energies analysis
  average_KE = mean(kinetic_E)
@@ -31,11 +30,8 @@ clear
  
  set(gcf, 'PaperPositionMode', 'manual');              %Makes sure that when resize figure box while viewing, the actual figure size doesn't change
                                                          %Ensures that all saved figures have consistent size
-                                                        
-
- 
- h = plot(time,diffusion_coeff);   %3D plot is called by plot3
- set(h,'LineWidth',1.5);                              
+                                                       
+ h = plot(time,diffusion_coeff);  
  hold on     
  set(gca,'fontsize',24, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
  xlabel({'Time (s)'});
@@ -47,14 +43,14 @@ clear
  figure;     %to create new figure window
  g = plot(time,kinetic_E);
  hold on
- set(gca,'fontsize',24, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
+ set(gca,'fontsize',24, 'fontname', 'Times');   
  plot(time,potential_E);
  plot(time,total_E);
  xlim([-0.1e-9 inf]);   %set left axis limit so can see the inital rise in energy at system initialization
  title('System Energies vs. Time', 'FontSize', 26, 'FontName', 'Times');
  xlabel({'Time (s)'},'FontSize', 24, 'FontName','Times');
  ylabel({'Energy (J)'},'FontSize', 24, 'FontName','Times');
- Legend = legend('Kinetic Energy', 'Potential Energy', 'Total Energy');                         %define Legend as an object
+ Legend = legend('Kinetic Energy', 'Potential Energy', 'Total Energy');  %define Legend as an object
  legend boxoff                                         %remove the box around legend
  set(Legend, 'FontSize', 20, 'FontName', 'Times');     %set properties of legend
  hold off
@@ -66,10 +62,8 @@ clear
  set(k,'LineWidth',1);      
  xlim([left_axis_limit inf]);
  ylim([-inf inf]);  %tell it to auto reset the axes based on what's on the plot
- set(gca,'fontsize',24, 'fontname', 'Times');   %sets the size of tick mark numbers on axes
+ set(gca,'fontsize',24, 'fontname', 'Times');  
  xlabel({'Time (s)'});
  ylabel({'Temperature (K)'});
  title('System Temperature vs. Time', 'FontSize', 26, 'FontName', 'Times');
  hold off  
- 
-%NOTE: KE and PE have sharp change near time=0
