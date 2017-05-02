@@ -1,0 +1,16 @@
+This contains benchmarks of the statistical sampler output for different simulation approaches. 
+Also a sample .xyz file which can be used in visualization software such as Ovito is included in the NVE folder.
+
+NVE: Microcanonical ensemble: particle #, volume, and energy kept constant. Temperature is allowed to evolve freely.
+
+NVT: Canonical ensemble, particle #, volume, and temperature kept constant. 
+     System will gain or lose energy in order to keep T constant.
+
+Gradual Heating: Particle # and volume are kept constant and system temperature is slightly increased at every MD 
+                 step by rescaling the velocities.
+
+
+The columns of the statistics.txt files are:
+
+Time(s)     KineticEnergy(J)    PotentialEnergy(J)    Temperature(K)    DiffusionCoefficient(m^2/s)
+
