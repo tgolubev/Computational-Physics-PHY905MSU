@@ -1,6 +1,6 @@
-This is an object oriented molecular dynamics code which makes use of the Lennard Jones potential for the interparticle interactions 
-and velocity Verlet Method for the integrator. It was used to study a system of Argon initialized in an fcc lattice, but can be easily
-adapted to other systems.
+This is an object oriented molecular dynamics code which makes use of the Lennard Jones potential 
+for the interparticle interactions and velocity Verlet Method for the integrator. It was used to 
+study a system of Argon initialized in an fcc lattice, but can be easily adapted to other systems.
 
 File organization:
 src contains the C++ code along with Matlab code for plotting and analyzing the results from the c++ code output files.
