@@ -7,7 +7,7 @@ NVT: Canonical ensemble, particle #, volume, and temperature kept constant.
      System will gain or lose energy in order to keep T constant.
 
 Gradual Heating: Particle # and volume are kept constant and system temperature is slightly increased at every MD 
-                 step by rescaling the velocities.
+step by rescaling the velocities.
 
 
 The columns of the statistics.txt files are:
