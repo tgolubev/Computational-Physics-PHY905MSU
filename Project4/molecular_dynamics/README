@@ -8,3 +8,6 @@ src contains the C++ code along with Matlab code for plotting and analyzing the 
 Benchmarks contains sample output files. 
 
 Report contains the report.
+
+I have developed this code from the code found at https://github.com/andeplane/molecular-dynamics-fys3150.
+
