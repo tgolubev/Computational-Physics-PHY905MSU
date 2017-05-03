@@ -1,3 +1,14 @@
+//This is an object oriented molecular dynamics code which relies on many classes. This file allows to control most of the
+//program parameters and choose which simulation approach (NVT, NVE, or gradual heating) to use. Certain blocks need
+//to be commented/uncommented to use different approaches. This file can take input arguments, but they are not required.
+
+//Outputs are a movie.xyz file with atom positions which can allow to create animations in i.e Ovito and statistics.txt
+//which calculates system energetics, temperature, and diffusion coefficient. The frequency of output can be varied as
+//desired. Of course, less frequent output, makes the program run faster.
+
+//Author: Timofey Golubev based on the code found at https://github.com/andeplane/molecular-dynamics-fys3150.
+
+
 #include "math/random.h"
 #include "lennardjones.h"
 #include "velocityverlet.h"
@@ -16,8 +27,8 @@ using namespace chrono;
 
 int main(int numberOfArguments, char **argumentList)
 {
-    vec3 numberOfUnitCellsEachDimension(7,7,7);
-    double initialTemperature = UnitConverter::temperatureFromSI(615.0); // measured in Kelvin
+    vec3 numberOfUnitCellsEachDimension(5,5,5);
+    double initialTemperature = UnitConverter::temperatureFromSI(610.0); // measured in Kelvin
     double latticeConstant = UnitConverter::lengthFromAngstroms(5.256); // measured in angstroms
 
     // If a first argument is provided, it is the number of unit cells and use same # of unit cells for all dimensions
@@ -54,9 +65,10 @@ int main(int numberOfArguments, char **argumentList)
 
     high_resolution_clock::time_point start2 = high_resolution_clock::now();  //start clock timer
 
-    for(int timestep=0; timestep<10000; timestep++) {  //chose # of timesteps here
+    for(int timestep=0; timestep<50000000; timestep++) {  //chose # of timesteps here
         system.step(dt);   //advance system by 1 step. NOTE: PBCs ARE APPLIED IN THIS STEP: CALLS INTEGRATE WHICH IS IN velocityverlet.cpp
 
+        //Uncomment the below block to implement gradual heating of the system.
         /*
         //heat system gradually
         statisticsSampler.sampleKineticEnergy(system);      //can't sample temperature w/o sampling KE!
@@ -70,6 +82,7 @@ int main(int numberOfArguments, char **argumentList)
             statisticsSampler.sample(system);
         }
 
+        //Uncoment the below block to use NVT ensemble.
         /*
         //periodically rescale Velocities to keep T constant (NVT ensemble)
         if(timestep % 100 == 0){
@@ -78,7 +91,7 @@ int main(int numberOfArguments, char **argumentList)
         }
         */
 
-         if( timestep % 1000 == 0 ) {
+         if( timestep % 10000 == 0 ) {
             // Print the timestep and system properties every 1000 timesteps
             cout << setw(20) << system.steps() <<
                     setw(20) << system.time() <<

@@ -1,6 +1,8 @@
 %This plots results statistics.txt file and analyses the energy
 %oscillations.
 
+%Timofey Golubev
+
 clear 
 [File,Path]=uigetfile('*.txt','MultiSelect','off');
  
